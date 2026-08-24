@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">Lock In logo</title>
+  <desc id="desc">A minimal ink focus mark: four hand-drawn corner brackets gathering around a small star.</desc>
+  <rect width="512" height="512" rx="112" fill="#FFFDFA"/>
+  <g fill="none" stroke="#171514" stroke-width="19" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M202 139c-38 2-62 24-64 63m1-63h63"/>
+    <path d="M310 139c37 2 61 24 63 63m0-63h-63"/>
+    <path d="M202 373c-38-2-62-24-64-63m1 63h63"/>
+    <path d="M310 373c37-2 61-24 63-63m0 63h-63"/>
+  </g>
+  <path d="M256 206l12 38 38 12-38 12-12 38-12-38-38-12 38-12z" fill="#F0CDBD" stroke="#171514" stroke-width="13" stroke-linejoin="round"/>
+</svg>
