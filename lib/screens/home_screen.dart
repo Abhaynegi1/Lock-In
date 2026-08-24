@@ -26,7 +26,10 @@ class _HomeScreenState extends State<HomeScreen> {
       body: IndexedStack(
         index: _currentTabIndex,
         children: [
-          _TodayView(onNavigateToTab: (index) => setState(() => _currentTabIndex = index)),
+          _TodayView(
+            onNavigateToTab: (index) =>
+                setState(() => _currentTabIndex = index),
+          ),
           const BattlesScreen(),
           const HistoryScreen(),
           const ProfileScreen(),
@@ -102,7 +105,11 @@ class _TodayView extends StatelessWidget {
                       border: Border.all(color: AppTheme.ink, width: 1.5),
                     ),
                     child: const Center(
-                      child: Icon(Icons.person_outline, size: 18, color: AppTheme.ink),
+                      child: Icon(
+                        Icons.person_outline,
+                        size: 18,
+                        color: AppTheme.ink,
+                      ),
                     ),
                   ),
                 ),
@@ -112,10 +119,7 @@ class _TodayView extends StatelessWidget {
             const SizedBox(height: 28),
 
             // Solo Focus Label & Serif Headline
-            Text(
-              'SOLO FOCUS',
-              style: AppTheme.sansLabel(),
-            ),
+            Text('SOLO FOCUS', style: AppTheme.sansLabel()),
             const SizedBox(height: 6),
             Text(
               'One thing\nat a time.',
@@ -138,74 +142,90 @@ class _TodayView extends StatelessWidget {
             const SizedBox(height: 18),
 
             // Duration selector chips
-            Row(
-              children: [
-                for (final mins in [15, 25, 45, 60])
-                  Padding(
-                    padding: const EdgeInsets.only(right: 8.0),
-                    child: DurationChip(
-                      minutes: mins,
-                      isSelected: selectedMinutes == mins,
-                      onTap: () => provider.selectDuration(mins),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              clipBehavior: Clip.none,
+              child: Row(
+                children: [
+                  for (final mins in [15, 25, 45, 60])
+                    Padding(
+                      padding: const EdgeInsets.only(right: 8.0),
+                      child: DurationChip(
+                        minutes: mins,
+                        isSelected: selectedMinutes == mins,
+                        onTap: () => provider.selectDuration(mins),
+                      ),
                     ),
+                  // Custom duration option
+                  DurationChip(
+                    label: ![15, 25, 45, 60].contains(selectedMinutes)
+                        ? 'Custom (${selectedMinutes}m)'
+                        : 'Custom',
+                    isSelected: ![15, 25, 45, 60].contains(selectedMinutes),
+                    onTap: () => _showCustomTimeDialog(context, provider),
                   ),
-              ],
+                ],
+              ),
             ),
 
             const SizedBox(height: 28),
 
             // Main Timer / Intent Area (Organic hand-drawn circle with sparkle doodles)
             Center(
-              child: SizedBox(
-                width: 220,
-                height: 220,
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    // Organic Hand-Drawn doodle circle outline
-                    CustomPaint(
-                      size: const Size(210, 210),
-                      painter: const OrganicCirclePainter(
-                        color: AppTheme.ink,
-                        strokeWidth: 1.5,
+              child: GestureDetector(
+                onDoubleTap: () => _showCustomTimeDialog(context, provider),
+                behavior: HitTestBehavior.opaque,
+                child: SizedBox(
+                  width: 220,
+                  height: 220,
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      // Organic Hand-Drawn doodle circle outline
+                      CustomPaint(
+                        size: const Size(210, 210),
+                        painter: const OrganicCirclePainter(
+                          color: AppTheme.ink,
+                          strokeWidth: 1.5,
+                        ),
                       ),
-                    ),
 
-                    // Tiny decorative sparkle doodles around timer
-                    const Positioned(
-                      top: 14,
-                      right: 18,
-                      child: SparkleDoodle(size: 16, color: AppTheme.ink),
-                    ),
-                    const Positioned(
-                      bottom: 22,
-                      left: 16,
-                      child: SparkleDoodle(size: 12, color: AppTheme.ink),
-                    ),
+                      // Tiny decorative sparkle doodles around timer
+                      const Positioned(
+                        top: 14,
+                        right: 18,
+                        child: SparkleDoodle(size: 16, color: AppTheme.ink),
+                      ),
+                      const Positioned(
+                        bottom: 22,
+                        left: 16,
+                        child: SparkleDoodle(size: 12, color: AppTheme.ink),
+                      ),
 
-                    // Timer value & sublabel
-                    Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          provider.selectedTimerFormatted,
-                          style: AppTheme.serifTimer(
-                            fontSize: 48,
-                            fontWeight: FontWeight.w800,
+                      // Timer value & sublabel
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            provider.selectedTimerFormatted,
+                            style: AppTheme.serifTimer(
+                              fontSize: 48,
+                              fontWeight: FontWeight.w800,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          'your next session',
-                          style: AppTheme.sansBody(
-                            fontSize: 12,
-                            color: AppTheme.inkMuted,
-                            fontWeight: FontWeight.w500,
+                          const SizedBox(height: 2),
+                          Text(
+                            'your next session',
+                            style: AppTheme.sansBody(
+                              fontSize: 12,
+                              color: AppTheme.inkMuted,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -235,10 +255,7 @@ class _TodayView extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 8),
-            InkProgressBar(
-              progress: provider.todayProgressRatio,
-              height: 7,
-            ),
+            InkProgressBar(progress: provider.todayProgressRatio, height: 7),
 
             const SizedBox(height: 20),
 
@@ -342,7 +359,10 @@ class _TodayView extends StatelessWidget {
                       ),
                     ),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
                       decoration: BoxDecoration(
                         color: AppTheme.sand,
                         borderRadius: BorderRadius.circular(10),
@@ -366,6 +386,196 @@ class _TodayView extends StatelessWidget {
       ),
     );
   }
+
+  void _showCustomTimeDialog(BuildContext context, TimerProvider provider) {
+    final controller = TextEditingController(
+      text: provider.selectedDurationMinutes.toString(),
+    );
+    // Select all text so typing immediately replaces
+    controller.selection = TextSelection(
+      baseOffset: 0,
+      extentOffset: controller.text.length,
+    );
+
+    showDialog(
+      context: context,
+      builder: (dialogCtx) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return Dialog(
+              backgroundColor: Colors.transparent,
+              insetPadding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Container(
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: AppTheme.background,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: AppTheme.ink, width: 1.5),
+                  boxShadow: AppTheme.tactileShadow,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Custom focus time',
+                          style: AppTheme.serifHeading(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () => Navigator.pop(dialogCtx),
+                          child: const Icon(
+                            Icons.close,
+                            size: 20,
+                            color: AppTheme.inkMuted,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      'Enter focus time in minutes (1 - 180):',
+                      style: AppTheme.sansBody(
+                        fontSize: 13,
+                        color: AppTheme.inkMuted,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    // Quick numeric stepper + input field
+                    Row(
+                      children: [
+                        _DialogAdjustBtn(
+                          icon: Icons.remove,
+                          onTap: () {
+                            final current = int.tryParse(controller.text) ?? provider.selectedDurationMinutes;
+                            final next = (current - 5).clamp(1, 180);
+                            controller.text = next.toString();
+                            controller.selection = TextSelection(
+                              baseOffset: 0,
+                              extentOffset: controller.text.length,
+                            );
+                            setDialogState(() {});
+                          },
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: TextField(
+                            controller: controller,
+                            keyboardType: TextInputType.number,
+                            textAlign: TextAlign.center,
+                            autofocus: true,
+                            style: AppTheme.serifTimer(
+                              fontSize: 32,
+                              fontWeight: FontWeight.w800,
+                            ),
+                            decoration: InputDecoration(
+                              contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                              filled: true,
+                              fillColor: AppTheme.sand,
+                              suffixText: 'min ',
+                              suffixStyle: AppTheme.sansBody(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: AppTheme.inkMuted,
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(14),
+                                borderSide: const BorderSide(color: AppTheme.ink, width: 1.5),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(14),
+                                borderSide: const BorderSide(color: AppTheme.ink, width: 2.0),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        _DialogAdjustBtn(
+                          icon: Icons.add,
+                          onTap: () {
+                            final current = int.tryParse(controller.text) ?? provider.selectedDurationMinutes;
+                            final next = (current + 5).clamp(1, 180);
+                            controller.text = next.toString();
+                            controller.selection = TextSelection(
+                              baseOffset: 0,
+                              extentOffset: controller.text.length,
+                            );
+                            setDialogState(() {});
+                          },
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TactileButton(
+                            label: 'Cancel',
+                            fillColor: AppTheme.sand,
+                            height: 48,
+                            borderRadius: 14,
+                            fontSize: 14,
+                            onTap: () => Navigator.pop(dialogCtx),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: TactileButton(
+                            label: 'Set time',
+                            fillColor: AppTheme.peach,
+                            height: 48,
+                            borderRadius: 14,
+                            fontSize: 14,
+                            onTap: () {
+                              final mins = int.tryParse(controller.text.trim());
+                              if (mins != null && mins > 0) {
+                                provider.selectDuration(mins.clamp(1, 180));
+                              }
+                              Navigator.pop(dialogCtx);
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+}
+
+class _DialogAdjustBtn extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback onTap;
+
+  const _DialogAdjustBtn({required this.icon, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 46,
+        height: 46,
+        decoration: BoxDecoration(
+          color: AppTheme.sand,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: AppTheme.ink, width: 1.5),
+          boxShadow: AppTheme.smallTactileShadow,
+        ),
+        child: Icon(icon, color: AppTheme.ink, size: 20),
+      ),
+    );
+  }
 }
 
 /// Quiet, minimal bottom navigation with simple text & active ink marker
@@ -373,10 +583,7 @@ class _QuietBottomNav extends StatelessWidget {
   final int currentIndex;
   final ValueChanged<int> onTap;
 
-  const _QuietBottomNav({
-    required this.currentIndex,
-    required this.onTap,
-  });
+  const _QuietBottomNav({required this.currentIndex, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -385,9 +592,7 @@ class _QuietBottomNav extends StatelessWidget {
     return Container(
       decoration: const BoxDecoration(
         color: AppTheme.background,
-        border: Border(
-          top: BorderSide(color: AppTheme.inkFaint, width: 1.0),
-        ),
+        border: Border(top: BorderSide(color: AppTheme.inkFaint, width: 1.0)),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
       child: SafeArea(
@@ -400,7 +605,10 @@ class _QuietBottomNav extends StatelessWidget {
               onTap: () => onTap(index),
               behavior: HitTestBehavior.opaque,
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 4.0),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12.0,
+                  vertical: 4.0,
+                ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -408,7 +616,9 @@ class _QuietBottomNav extends StatelessWidget {
                       items[index],
                       style: AppTheme.sansBody(
                         fontSize: 13,
-                        fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                        fontWeight: isSelected
+                            ? FontWeight.w700
+                            : FontWeight.w500,
                         color: isSelected ? AppTheme.ink : AppTheme.inkLight,
                       ),
                     ),

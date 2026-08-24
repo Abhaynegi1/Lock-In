@@ -48,7 +48,7 @@ class TimerProvider with ChangeNotifier {
   }
 
   String get selectedTimerFormatted {
-    return '$_selectedDurationMinutes:00';
+    return '${_selectedDurationMinutes.toString().padLeft(2, '0')}:00';
   }
 
   // Real today's focus calculation based only on completed sessions

@@ -234,19 +234,23 @@ class _FocusScreenState extends State<FocusScreen> with WidgetsBindingObserver {
 
               const Spacer(),
 
-              // Give Up Action
-              TextButton(
-                onPressed: () => _showGiveUpDialog(context),
-                style: TextButton.styleFrom(
-                  foregroundColor: AppTheme.inkLight,
-                ),
-                child: Text(
-                  'End session early',
-                  style: AppTheme.sansBody(
-                    fontSize: 13,
-                    color: AppTheme.inkMuted,
-                    fontWeight: FontWeight.w500,
+              // End Session Action: Tactile secondary button
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: TactileButton(
+                  label: 'End session early',
+                  leading: const Icon(
+                    Icons.stop_circle_outlined,
+                    size: 18,
+                    color: AppTheme.ink,
                   ),
+                  fillColor: AppTheme.sand,
+                  textColor: AppTheme.ink,
+                  borderColor: AppTheme.ink,
+                  height: 48,
+                  borderRadius: 14,
+                  fontSize: 14,
+                  onTap: () => _showGiveUpDialog(context),
                 ),
               ),
               const SizedBox(height: 16),
@@ -271,50 +275,70 @@ class _FocusScreenState extends State<FocusScreen> with WidgetsBindingObserver {
   void _showGiveUpDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: AppTheme.background,
-        surfaceTintColor: Colors.transparent,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-          side: const BorderSide(color: AppTheme.ink, width: 1.5),
-        ),
-        title: Text(
-          'End focus session?',
-          style: AppTheme.serifHeading(fontSize: 20),
-        ),
-        content: Text(
-          'Leaving now will mark this session as incomplete and reset your current streak.',
-          style: AppTheme.sansBody(
-            fontSize: 14,
-            color: AppTheme.inkMuted,
-            height: 1.4,
+      builder: (ctx) => Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 24),
+        child: Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: AppTheme.background,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: AppTheme.ink, width: 1.5),
+            boxShadow: AppTheme.tactileShadow,
           ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text(
-              'Stay locked in',
-              style: AppTheme.sansBody(
-                fontWeight: FontWeight.w600,
-                color: AppTheme.ink,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'End focus session?',
+                style: AppTheme.serifHeading(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
-            ),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(ctx);
-              context.read<TimerProvider>().forfeitSession();
-            },
-            child: Text(
-              'End session',
-              style: AppTheme.sansBody(
-                fontWeight: FontWeight.w600,
-                color: AppTheme.errorMuted,
+              const SizedBox(height: 10),
+              Text(
+                'Leaving now will mark this session as incomplete and reset your current streak.',
+                style: AppTheme.sansBody(
+                  fontSize: 14,
+                  color: AppTheme.inkMuted,
+                  height: 1.4,
+                ),
               ),
-            ),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Expanded(
+                    child: TactileButton(
+                      label: 'Stay locked in',
+                      fillColor: AppTheme.sage,
+                      height: 46,
+                      borderRadius: 14,
+                      fontSize: 13,
+                      onTap: () => Navigator.pop(ctx),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: TactileButton(
+                      label: 'End session',
+                      fillColor: const Color(0xFFFBEBE8),
+                      textColor: AppTheme.errorMuted,
+                      height: 46,
+                      borderRadius: 14,
+                      fontSize: 13,
+                      onTap: () {
+                        Navigator.pop(ctx);
+                        context.read<TimerProvider>().forfeitSession();
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

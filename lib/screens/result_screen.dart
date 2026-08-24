@@ -26,22 +26,28 @@ class ResultScreen extends StatelessWidget {
             children: [
               const SizedBox(height: 20),
 
-              // Status Icon / Doodle Badge
-              isWin
-                  ? const LockInLogo(size: 52, hasBorder: true)
-                  : Container(
-                      width: 52,
-                      height: 52,
-                      decoration: BoxDecoration(
-                        color: AppTheme.sand,
-                        shape: BoxShape.circle,
-                        border: Border.all(color: AppTheme.ink, width: 1.5),
-                        boxShadow: AppTheme.smallTactileShadow,
+              // Status Icon / Doodle Badge (tappable to quickly dismiss/return)
+              GestureDetector(
+                onTap: () {
+                  provider.reset();
+                  Navigator.popUntil(context, (route) => route.isFirst);
+                },
+                child: isWin
+                    ? const LockInLogo(size: 52, hasBorder: true)
+                    : Container(
+                        width: 52,
+                        height: 52,
+                        decoration: BoxDecoration(
+                          color: AppTheme.sand,
+                          shape: BoxShape.circle,
+                          border: Border.all(color: AppTheme.ink, width: 1.5),
+                          boxShadow: AppTheme.smallTactileShadow,
+                        ),
+                        child: const Center(
+                          child: Icon(Icons.close, size: 24, color: AppTheme.ink),
+                        ),
                       ),
-                      child: const Center(
-                        child: Icon(Icons.close, size: 24, color: AppTheme.ink),
-                      ),
-                    ),
+              ),
               const SizedBox(height: 20),
 
               // Headline & Description

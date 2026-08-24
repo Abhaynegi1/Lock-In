@@ -304,19 +304,22 @@ class InkProgressBar extends StatelessWidget {
 
 /// Minimal duration selection chip
 class DurationChip extends StatelessWidget {
-  final int minutes;
+  final int? minutes;
+  final String? label;
   final bool isSelected;
   final VoidCallback onTap;
 
   const DurationChip({
     super.key,
-    required this.minutes,
+    this.minutes,
+    this.label,
     required this.isSelected,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
+    final text = label ?? '${minutes ?? 0} m';
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
@@ -332,7 +335,7 @@ class DurationChip extends StatelessWidget {
           boxShadow: isSelected ? AppTheme.smallTactileShadow : [],
         ),
         child: Text(
-          '$minutes m',
+          text,
           style: AppTheme.sansBody(
             fontSize: 13,
             fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
