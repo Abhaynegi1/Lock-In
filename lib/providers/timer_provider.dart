@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 import '../models/battle_model.dart';
 import '../models/focus_session.dart';
+import '../services/notification_service.dart';
 import '../services/storage_service.dart';
 
 enum SessionStatus { idle, running, won, lost }
@@ -56,13 +57,12 @@ class TimerProvider with ChangeNotifier {
     return '${_selectedDurationMinutes.toString().padLeft(2, '0')}:00';
   }
 
-  // Real today's focus calculation based only on completed sessions
+  // Real today's focus calculation based on all focused minutes recorded
   int get todayFocusMinutes {
     final now = DateTime.now();
     int minutes = 0;
     for (var s in _history) {
-      if (s.isWin &&
-          s.dateTime.year == now.year &&
+      if (s.dateTime.year == now.year &&
           s.dateTime.month == now.month &&
           s.dateTime.day == now.day) {
         minutes += s.durationMinutes;
@@ -130,6 +130,19 @@ class TimerProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  void _syncNotification() {
+    if (_status == SessionStatus.running) {
+      final title = _activeSessionType == SessionType.battle
+          ? 'Battle with ${_activeBattle?.opponentName ?? "Opponent"}'
+          : 'Solo Focus';
+      NotificationService().updateTimerNotification(
+        timeRemaining: timerString,
+        title: title,
+        isBattle: _activeSessionType == SessionType.battle,
+      );
+    }
+  }
+
   void startSession({int? minutes, SessionType type = SessionType.solo, BattleModel? battle}) {
     _activeSessionType = type;
     _activeBattle = battle ?? (type == SessionType.battle ? featuredBattle : null);
@@ -139,6 +152,7 @@ class TimerProvider with ChangeNotifier {
     _secondsRemaining = _totalSeconds;
     _sessionEndTime = DateTime.now().add(Duration(seconds: _totalSeconds));
     notifyListeners();
+    _syncNotification();
 
     _timer?.cancel();
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
@@ -147,6 +161,7 @@ class TimerProvider with ChangeNotifier {
         if (diff > 0) {
           _secondsRemaining = diff;
           notifyListeners();
+          _syncNotification();
         } else {
           _secondsRemaining = 0;
           _onSessionComplete(true);
@@ -155,6 +170,7 @@ class TimerProvider with ChangeNotifier {
         if (_secondsRemaining > 0) {
           _secondsRemaining--;
           notifyListeners();
+          _syncNotification();
         } else {
           _onSessionComplete(true);
         }
@@ -168,6 +184,7 @@ class TimerProvider with ChangeNotifier {
     if (diff > 0) {
       _secondsRemaining = diff;
       notifyListeners();
+      _syncNotification();
     } else {
       _secondsRemaining = 0;
       _onSessionComplete(true);
@@ -176,6 +193,7 @@ class TimerProvider with ChangeNotifier {
 
   void forfeitSession() {
     if (_status == SessionStatus.running) {
+      NotificationService().cancelTimerNotification();
       _onSessionComplete(false);
     }
   }
@@ -183,11 +201,31 @@ class TimerProvider with ChangeNotifier {
   Future<void> _onSessionComplete(bool isWin) async {
     _timer?.cancel();
     _status = isWin ? SessionStatus.won : SessionStatus.lost;
-    final completedDuration = _totalSeconds ~/ 60;
+    
+    final targetDuration = _totalSeconds ~/ 60;
+    final elapsedSeconds = _totalSeconds - _secondsRemaining;
+    
+    // Calculate actual elapsed minutes spent focusing
+    int actualFocusedMinutes;
+    if (isWin) {
+      actualFocusedMinutes = targetDuration;
+    } else {
+      actualFocusedMinutes = (elapsedSeconds / 60).round();
+    }
+
+    if (isWin) {
+      NotificationService().showSessionCompleteNotification(
+        title: '🎉 Focus Block Completed!',
+        body: 'You completed $actualFocusedMinutes minutes of deep focus unbroken.',
+      );
+    } else {
+      NotificationService().cancelTimerNotification();
+    }
 
     final session = FocusSession(
       id: const Uuid().v4(),
-      durationMinutes: completedDuration,
+      durationMinutes: actualFocusedMinutes,
+      targetDurationMinutes: targetDuration,
       dateTime: DateTime.now(),
       isWin: isWin,
       sessionType: _activeSessionType,
@@ -195,11 +233,11 @@ class TimerProvider with ChangeNotifier {
       opponentScore: _activeBattle?.scoreComparison,
     );
 
-    if (isWin && _activeBattle != null) {
+    if (_activeBattle != null && actualFocusedMinutes > 0) {
       // Add minutes to active battle
       final updatedBattles = _battles.map((b) {
         if (b.id == _activeBattle!.id) {
-          return b.copyWith(userMinutes: b.userMinutes + completedDuration);
+          return b.copyWith(userMinutes: b.userMinutes + actualFocusedMinutes);
         }
         return b;
       }).toList();
@@ -233,6 +271,7 @@ class TimerProvider with ChangeNotifier {
 
   void reset() {
     _timer?.cancel();
+    NotificationService().cancelTimerNotification();
     _status = SessionStatus.idle;
     _secondsRemaining = 0;
     _totalSeconds = 0;

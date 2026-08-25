@@ -4,8 +4,11 @@ import 'providers/timer_provider.dart';
 import 'screens/home_screen.dart';
 import 'utils/app_theme.dart';
 
-void main() {
+import 'services/notification_service.dart';
+
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await NotificationService().init();
   runApp(
     ChangeNotifierProvider(
       create: (_) => TimerProvider(),

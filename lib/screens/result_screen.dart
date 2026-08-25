@@ -14,149 +14,159 @@ class ResultScreen extends StatelessWidget {
     final isWin = provider.status == SessionStatus.won;
     final isBattle = provider.activeSessionType == SessionType.battle;
     final activeBattle = provider.activeBattle;
-    final durationMinutes = provider.totalSeconds ~/ 60;
+    final targetMinutes = provider.totalSeconds ~/ 60;
+    final lastSession = provider.history.isNotEmpty ? provider.history.first : null;
+    final actualMinutes = isWin ? targetMinutes : (lastSession?.durationMinutes ?? ((provider.totalSeconds - provider.secondsRemaining) / 60).round());
 
     return Scaffold(
       backgroundColor: AppTheme.background,
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 20),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight - 40),
+                child: IntrinsicHeight(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Status Icon / Doodle Badge (tappable to quickly dismiss/return)
+                      GestureDetector(
+                        onTap: () {
+                          provider.reset();
+                          Navigator.popUntil(context, (route) => route.isFirst);
+                        },
+                        child: isWin
+                            ? const LockInLogo(size: 48, hasBorder: true)
+                            : Container(
+                                width: 48,
+                                height: 48,
+                                decoration: BoxDecoration(
+                                  color: AppTheme.sand,
+                                  shape: BoxShape.circle,
+                                  border: Border.all(color: AppTheme.ink, width: 1.5),
+                                  boxShadow: AppTheme.smallTactileShadow,
+                                ),
+                                child: const Center(
+                                  child: Icon(Icons.close, size: 22, color: AppTheme.ink),
+                                ),
+                              ),
+                      ),
+                      const SizedBox(height: 16),
 
-              // Status Icon / Doodle Badge (tappable to quickly dismiss/return)
-              GestureDetector(
-                onTap: () {
-                  provider.reset();
-                  Navigator.popUntil(context, (route) => route.isFirst);
-                },
-                child: isWin
-                    ? const LockInLogo(size: 52, hasBorder: true)
-                    : Container(
-                        width: 52,
-                        height: 52,
-                        decoration: BoxDecoration(
-                          color: AppTheme.sand,
-                          shape: BoxShape.circle,
-                          border: Border.all(color: AppTheme.ink, width: 1.5),
-                          boxShadow: AppTheme.smallTactileShadow,
-                        ),
-                        child: const Center(
-                          child: Icon(Icons.close, size: 24, color: AppTheme.ink),
+                      // Headline & Description
+                      Text(
+                        isWin ? 'Session completed.' : 'Session interrupted.',
+                        style: AppTheme.serifHeading(
+                          fontSize: 28,
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
-              ),
-              const SizedBox(height: 20),
+                      const SizedBox(height: 6),
+                      Text(
+                        isWin
+                            ? (isBattle
+                                ? 'Great accountability work. Your minutes have been added to the battle.'
+                                : 'Unbroken deep work recorded. Your momentum continues.')
+                            : 'The session ended early. Rest for a minute and start fresh when ready.',
+                        style: AppTheme.sansBody(
+                          fontSize: 14,
+                          color: AppTheme.inkMuted,
+                          height: 1.4,
+                        ),
+                      ),
 
-              // Headline & Description
-              Text(
-                isWin ? 'Session completed.' : 'Session interrupted.',
-                style: AppTheme.serifHeading(
-                  fontSize: 32,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                isWin
-                    ? (isBattle
-                        ? 'Great accountability work. Your minutes have been added to the battle.'
-                        : 'Unbroken deep work recorded. Your momentum continues.')
-                    : 'The session ended early. Rest for a minute and start fresh when ready.',
-                style: AppTheme.sansBody(
-                  fontSize: 14,
-                  color: AppTheme.inkMuted,
-                  height: 1.4,
-                ),
-              ),
+                      const SizedBox(height: 24),
+                      const Divider(color: AppTheme.inkFaint, thickness: 1),
+                      const SizedBox(height: 20),
 
-              const SizedBox(height: 36),
-              const Divider(color: AppTheme.inkFaint, thickness: 1),
-              const SizedBox(height: 28),
-
-              // Stats Cards
-              Row(
-                children: [
-                  Expanded(
-                    child: _ResultStatCard(
-                      label: 'DURATION',
-                      value: '${durationMinutes}m',
-                      subtitle: isWin ? 'Focused' : 'Target was',
-                    ),
-                  ),
-                  const SizedBox(width: 14),
-                  Expanded(
-                    child: _ResultStatCard(
-                      label: 'CURRENT STREAK',
-                      value: '${provider.currentStreak}',
-                      subtitle: 'Consecutive days',
-                    ),
-                  ),
-                ],
-              ),
-
-              if (isBattle && activeBattle != null) ...[
-                const SizedBox(height: 14),
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: AppTheme.sand,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: AppTheme.ink, width: 1.2),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      // Stats Cards
+                      Row(
                         children: [
-                          Text(
-                            'BATTLE WITH ${activeBattle.opponentName.toUpperCase()}',
-                            style: AppTheme.sansLabel(fontSize: 10),
+                          Expanded(
+                            child: _ResultStatCard(
+                              label: 'DURATION',
+                              value: '${actualMinutes}m',
+                              subtitle: isWin ? 'Focused' : 'Target was ${targetMinutes}m',
+                            ),
                           ),
-                          const SizedBox(height: 4),
-                          Text(
-                            isWin
-                                ? '+$durationMinutes minutes added'
-                                : 'No minutes recorded',
-                            style: AppTheme.sansBody(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
+                          const SizedBox(width: 14),
+                          Expanded(
+                            child: _ResultStatCard(
+                              label: 'CURRENT STREAK',
+                              value: '${provider.currentStreak}',
+                              subtitle: 'Consecutive days',
                             ),
                           ),
                         ],
                       ),
-                      Text(
-                        activeBattle.scoreComparison,
-                        style: AppTheme.serifHeading(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w700,
+
+                      if (isBattle && activeBattle != null) ...[
+                        const SizedBox(height: 14),
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: AppTheme.sand,
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(color: AppTheme.ink, width: 1.2),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'BATTLE WITH ${activeBattle.opponentName.toUpperCase()}',
+                                    style: AppTheme.sansLabel(fontSize: 10),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    actualMinutes > 0
+                                        ? '+$actualMinutes minutes added'
+                                        : 'No minutes recorded',
+                                    style: AppTheme.sansBody(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Text(
+                                activeBattle.scoreComparison,
+                                style: AppTheme.serifHeading(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
+                      ],
+
+                      const Spacer(),
+                      const SizedBox(height: 24),
+
+                      // Primary return action
+                      TactileButton(
+                        label: 'Back to Today',
+                        fillColor: isWin ? AppTheme.peach : AppTheme.sand,
+                        height: 52,
+                        borderRadius: 16,
+                        fontSize: 16,
+                        onTap: () {
+                          provider.reset();
+                          Navigator.popUntil(context, (route) => route.isFirst);
+                        },
                       ),
+                      const SizedBox(height: 8),
                     ],
                   ),
                 ),
-              ],
-
-              const Spacer(),
-
-              // Primary return action
-              TactileButton(
-                label: 'Back to Today',
-                fillColor: isWin ? AppTheme.peach : AppTheme.sand,
-                height: 54,
-                borderRadius: 16,
-                fontSize: 16,
-                onTap: () {
-                  provider.reset();
-                  Navigator.popUntil(context, (route) => route.isFirst);
-                },
               ),
-              const SizedBox(height: 16),
-            ],
-          ),
+            );
+          },
         ),
       ),
     );

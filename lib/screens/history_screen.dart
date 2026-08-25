@@ -15,9 +15,7 @@ class HistoryScreen extends StatelessWidget {
     final history = provider.history;
 
     final wonSessions = history.where((s) => s.isWin).length;
-    final totalMinutes = history
-        .where((s) => s.isWin)
-        .fold(0, (sum, s) => sum + s.durationMinutes);
+    final totalMinutes = history.fold(0, (sum, s) => sum + s.durationMinutes);
     final totalHours = (totalMinutes / 60).toStringAsFixed(1);
 
     return Scaffold(
@@ -236,7 +234,9 @@ class _LogItem extends StatelessWidget {
                 ),
                 const SizedBox(height: 3),
                 Text(
-                  dateStr,
+                  !session.isWin && session.targetDurationMinutes != null && session.targetDurationMinutes! > session.durationMinutes
+                      ? '$dateStr · Target was ${session.targetDurationMinutes}m'
+                      : dateStr,
                   style: AppTheme.sansBody(
                     fontSize: 12,
                     color: AppTheme.inkMuted,

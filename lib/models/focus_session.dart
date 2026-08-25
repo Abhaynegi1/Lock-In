@@ -5,6 +5,7 @@ enum SessionType { solo, battle }
 class FocusSession {
   final String id;
   final int durationMinutes;
+  final int? targetDurationMinutes;
   final DateTime dateTime;
   final bool isWin;
   final SessionType sessionType;
@@ -14,6 +15,7 @@ class FocusSession {
   FocusSession({
     required this.id,
     required this.durationMinutes,
+    this.targetDurationMinutes,
     required this.dateTime,
     required this.isWin,
     this.sessionType = SessionType.solo,
@@ -25,6 +27,7 @@ class FocusSession {
     return {
       'id': id,
       'durationMinutes': durationMinutes,
+      'targetDurationMinutes': targetDurationMinutes ?? durationMinutes,
       'dateTime': dateTime.toIso8601String(),
       'isWin': isWin,
       'sessionType': sessionType.name,
@@ -36,9 +39,10 @@ class FocusSession {
   factory FocusSession.fromMap(Map<String, dynamic> map) {
     return FocusSession(
       id: map['id'],
-      durationMinutes: map['durationMinutes'],
+      durationMinutes: map['durationMinutes'] ?? 0,
+      targetDurationMinutes: map['targetDurationMinutes'] ?? map['durationMinutes'],
       dateTime: DateTime.parse(map['dateTime']),
-      isWin: map['isWin'],
+      isWin: map['isWin'] ?? true,
       sessionType: map['sessionType'] == 'battle'
           ? SessionType.battle
           : SessionType.solo,
