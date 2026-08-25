@@ -14,7 +14,9 @@ class NotificationService {
   static const String _completeChannelId = 'lockin_session_complete';
 
   Future<void> init() async {
-    const androidSettings = AndroidInitializationSettings('@mipmap/launcher_icon');
+    const androidSettings = AndroidInitializationSettings(
+      '@mipmap/launcher_icon',
+    );
     const darwinSettings = DarwinInitializationSettings(
       requestAlertPermission: true,
       requestBadgePermission: true,
@@ -31,7 +33,8 @@ class NotificationService {
     // Request permissions on Android 13+
     await _notificationsPlugin
         .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>()
+          AndroidFlutterLocalNotificationsPlugin
+        >()
         ?.requestNotificationsPermission();
   }
 
@@ -40,7 +43,7 @@ class NotificationService {
     required String title,
     bool isBattle = false,
   }) async {
-    final androidDetails = AndroidNotificationDetails(
+    const androidDetails = AndroidNotificationDetails(
       _timerChannelId,
       'Active Focus Timer',
       channelDescription: 'Shows remaining time for your active focus session',
@@ -59,7 +62,7 @@ class NotificationService {
       presentSound: false,
     );
 
-    final notificationDetails = NotificationDetails(
+    const notificationDetails = NotificationDetails(
       android: androidDetails,
       iOS: darwinDetails,
     );

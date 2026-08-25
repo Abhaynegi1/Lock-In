@@ -30,10 +30,7 @@ class BattlesScreen extends StatelessWidget {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'FOCUS BATTLES',
-                        style: AppTheme.sansLabel(),
-                      ),
+                      Text('FOCUS BATTLES', style: AppTheme.sansLabel()),
                       const SizedBox(height: 4),
                       Text(
                         'Friendly accountability.',
@@ -49,7 +46,11 @@ class BattlesScreen extends StatelessWidget {
                         shape: BoxShape.circle,
                         border: Border.all(color: AppTheme.ink, width: 1.2),
                       ),
-                      child: const Icon(Icons.add, size: 18, color: AppTheme.ink),
+                      child: const Icon(
+                        Icons.add,
+                        size: 18,
+                        color: AppTheme.ink,
+                      ),
                     ),
                     tooltip: 'New battle',
                   ),
@@ -131,10 +132,7 @@ class BattlesScreen extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Opponent name',
-                style: AppTheme.sansLabel(),
-              ),
+              Text('Opponent name', style: AppTheme.sansLabel()),
               const SizedBox(height: 6),
               TextField(
                 controller: nameController,
@@ -148,19 +146,22 @@ class BattlesScreen extends StatelessWidget {
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: AppTheme.ink, width: 1.2),
+                    borderSide: const BorderSide(
+                      color: AppTheme.ink,
+                      width: 1.2,
+                    ),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: AppTheme.ink, width: 1.5),
+                    borderSide: const BorderSide(
+                      color: AppTheme.ink,
+                      width: 1.5,
+                    ),
                   ),
                 ),
               ),
               const SizedBox(height: 16),
-              Text(
-                'Target battle window',
-                style: AppTheme.sansLabel(),
-              ),
+              Text('Target battle window', style: AppTheme.sansLabel()),
               const SizedBox(height: 8),
               Row(
                 children: [
@@ -221,7 +222,10 @@ class BattlesScreen extends StatelessWidget {
               onTap: () {
                 final name = nameController.text.trim();
                 if (name.isNotEmpty) {
-                  context.read<TimerProvider>().createBattle(name, selectedHours);
+                  context.read<TimerProvider>().createBattle(
+                    name,
+                    selectedHours,
+                  );
                   Navigator.pop(dialogCtx);
                 }
               },
@@ -382,10 +386,10 @@ class _BattleCard extends StatelessWidget {
             fillColor: AppTheme.peach,
             onTap: () {
               context.read<TimerProvider>().startSession(
-                    minutes: 45,
-                    type: SessionType.battle,
-                    battle: battle,
-                  );
+                minutes: 45,
+                type: SessionType.battle,
+                battle: battle,
+              );
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (_) => const FocusScreen()),

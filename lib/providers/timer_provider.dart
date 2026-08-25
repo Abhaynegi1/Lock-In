@@ -44,12 +44,13 @@ class TimerProvider with ChangeNotifier {
   double get progress =>
       _totalSeconds > 0 ? _secondsRemaining / _totalSeconds : 0.0;
 
-  double get completionRatio =>
-      _totalSeconds > 0 ? (_totalSeconds - _secondsRemaining) / _totalSeconds : 0.0;
+  double get completionRatio => _totalSeconds > 0
+      ? (_totalSeconds - _secondsRemaining) / _totalSeconds
+      : 0.0;
 
   String get timerString {
-    int minutes = _secondsRemaining ~/ 60;
-    int seconds = _secondsRemaining % 60;
+    final int minutes = _secondsRemaining ~/ 60;
+    final int seconds = _secondsRemaining % 60;
     return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
   }
 
@@ -143,9 +144,14 @@ class TimerProvider with ChangeNotifier {
     }
   }
 
-  void startSession({int? minutes, SessionType type = SessionType.solo, BattleModel? battle}) {
+  void startSession({
+    int? minutes,
+    SessionType type = SessionType.solo,
+    BattleModel? battle,
+  }) {
     _activeSessionType = type;
-    _activeBattle = battle ?? (type == SessionType.battle ? featuredBattle : null);
+    _activeBattle =
+        battle ?? (type == SessionType.battle ? featuredBattle : null);
     final duration = minutes ?? _selectedDurationMinutes;
     _status = SessionStatus.running;
     _totalSeconds = duration * 60;
@@ -201,10 +207,10 @@ class TimerProvider with ChangeNotifier {
   Future<void> _onSessionComplete(bool isWin) async {
     _timer?.cancel();
     _status = isWin ? SessionStatus.won : SessionStatus.lost;
-    
+
     final targetDuration = _totalSeconds ~/ 60;
     final elapsedSeconds = _totalSeconds - _secondsRemaining;
-    
+
     // Calculate actual elapsed minutes spent focusing
     int actualFocusedMinutes;
     if (isWin) {
@@ -214,12 +220,13 @@ class TimerProvider with ChangeNotifier {
     }
 
     if (isWin) {
-      NotificationService().showSessionCompleteNotification(
+      await NotificationService().showSessionCompleteNotification(
         title: '🎉 Focus Block Completed!',
-        body: 'You completed $actualFocusedMinutes minutes of deep focus unbroken.',
+        body:
+            'You completed $actualFocusedMinutes minutes of deep focus unbroken.',
       );
     } else {
-      NotificationService().cancelTimerNotification();
+      await NotificationService().cancelTimerNotification();
     }
 
     final session = FocusSession(
@@ -251,7 +258,10 @@ class TimerProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> createBattle(String opponentName, int targetDurationHours) async {
+  Future<void> createBattle(
+    String opponentName,
+    int targetDurationHours,
+  ) async {
     final initials = opponentName.trim().isNotEmpty
         ? opponentName.trim()[0].toUpperCase()
         : 'F';

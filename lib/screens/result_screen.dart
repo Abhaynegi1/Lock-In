@@ -15,8 +15,14 @@ class ResultScreen extends StatelessWidget {
     final isBattle = provider.activeSessionType == SessionType.battle;
     final activeBattle = provider.activeBattle;
     final targetMinutes = provider.totalSeconds ~/ 60;
-    final lastSession = provider.history.isNotEmpty ? provider.history.first : null;
-    final actualMinutes = isWin ? targetMinutes : (lastSession?.durationMinutes ?? ((provider.totalSeconds - provider.secondsRemaining) / 60).round());
+    final lastSession = provider.history.isNotEmpty
+        ? provider.history.first
+        : null;
+    final actualMinutes = isWin
+        ? targetMinutes
+        : (lastSession?.durationMinutes ??
+              ((provider.totalSeconds - provider.secondsRemaining) / 60)
+                  .round());
 
     return Scaffold(
       backgroundColor: AppTheme.background,
@@ -24,9 +30,14 @@ class ResultScreen extends StatelessWidget {
         child: LayoutBuilder(
           builder: (context, constraints) {
             return SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 24.0,
+                vertical: 20.0,
+              ),
               child: ConstrainedBox(
-                constraints: BoxConstraints(minHeight: constraints.maxHeight - 40),
+                constraints: BoxConstraints(
+                  minHeight: constraints.maxHeight - 40,
+                ),
                 child: IntrinsicHeight(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -45,11 +56,18 @@ class ResultScreen extends StatelessWidget {
                                 decoration: BoxDecoration(
                                   color: AppTheme.sand,
                                   shape: BoxShape.circle,
-                                  border: Border.all(color: AppTheme.ink, width: 1.5),
+                                  border: Border.all(
+                                    color: AppTheme.ink,
+                                    width: 1.5,
+                                  ),
                                   boxShadow: AppTheme.smallTactileShadow,
                                 ),
                                 child: const Center(
-                                  child: Icon(Icons.close, size: 22, color: AppTheme.ink),
+                                  child: Icon(
+                                    Icons.close,
+                                    size: 22,
+                                    color: AppTheme.ink,
+                                  ),
                                 ),
                               ),
                       ),
@@ -67,8 +85,8 @@ class ResultScreen extends StatelessWidget {
                       Text(
                         isWin
                             ? (isBattle
-                                ? 'Great accountability work. Your minutes have been added to the battle.'
-                                : 'Unbroken deep work recorded. Your momentum continues.')
+                                  ? 'Great accountability work. Your minutes have been added to the battle.'
+                                  : 'Unbroken deep work recorded. Your momentum continues.')
                             : 'The session ended early. Rest for a minute and start fresh when ready.',
                         style: AppTheme.sansBody(
                           fontSize: 14,
@@ -88,7 +106,9 @@ class ResultScreen extends StatelessWidget {
                             child: _ResultStatCard(
                               label: 'DURATION',
                               value: '${actualMinutes}m',
-                              subtitle: isWin ? 'Focused' : 'Target was ${targetMinutes}m',
+                              subtitle: isWin
+                                  ? 'Focused'
+                                  : 'Target was ${targetMinutes}m',
                             ),
                           ),
                           const SizedBox(width: 14),
@@ -203,7 +223,10 @@ class _ResultStatCard extends StatelessWidget {
           const SizedBox(height: 6),
           Text(
             value,
-            style: AppTheme.serifHeading(fontSize: 24, fontWeight: FontWeight.w700),
+            style: AppTheme.serifHeading(
+              fontSize: 24,
+              fontWeight: FontWeight.w700,
+            ),
           ),
           const SizedBox(height: 4),
           Text(

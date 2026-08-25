@@ -8,7 +8,8 @@ class StorageService {
   static const String _battlesKey = 'focus_battles';
   static const String _dailyGoalKey = 'focus_daily_goal';
   static const String _userNameKey = 'focus_username';
-  static const String _strictAntiDistractionKey = 'focus_strict_anti_distraction';
+  static const String _strictAntiDistractionKey =
+      'focus_strict_anti_distraction';
 
   Future<String> getUserName() async {
     final prefs = await SharedPreferences.getInstance();

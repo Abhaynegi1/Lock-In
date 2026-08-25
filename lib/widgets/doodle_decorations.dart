@@ -8,11 +8,7 @@ class LockInLogo extends StatelessWidget {
   final double size;
   final bool hasBorder;
 
-  const LockInLogo({
-    super.key,
-    this.size = 36,
-    this.hasBorder = false,
-  });
+  const LockInLogo({super.key, this.size = 36, this.hasBorder = false});
 
   @override
   Widget build(BuildContext context) {
@@ -67,12 +63,54 @@ class OrganicCirclePainter extends CustomPainter {
     const segments = 48;
     // Controlled subtle wobble offsets to give natural hand-drawn quality
     final wobble = [
-      0.0, 0.8, 1.2, 0.6, -0.4, -1.0, -0.7, 0.3,
-      0.9, 1.4, 0.8, -0.2, -0.9, -1.2, -0.5, 0.4,
-      1.1, 1.3, 0.5, -0.6, -1.1, -0.8, 0.2, 0.9,
-      1.2, 0.7, -0.3, -1.0, -1.3, -0.4, 0.5, 1.0,
-      1.3, 0.6, -0.5, -1.1, -0.9, 0.1, 0.8, 1.2,
-      0.7, -0.2, -0.8, -1.2, -0.6, 0.3, 0.9, 0.0,
+      0.0,
+      0.8,
+      1.2,
+      0.6,
+      -0.4,
+      -1.0,
+      -0.7,
+      0.3,
+      0.9,
+      1.4,
+      0.8,
+      -0.2,
+      -0.9,
+      -1.2,
+      -0.5,
+      0.4,
+      1.1,
+      1.3,
+      0.5,
+      -0.6,
+      -1.1,
+      -0.8,
+      0.2,
+      0.9,
+      1.2,
+      0.7,
+      -0.3,
+      -1.0,
+      -1.3,
+      -0.4,
+      0.5,
+      1.0,
+      1.3,
+      0.6,
+      -0.5,
+      -1.1,
+      -0.9,
+      0.1,
+      0.8,
+      1.2,
+      0.7,
+      -0.2,
+      -0.8,
+      -1.2,
+      -0.6,
+      0.3,
+      0.9,
+      0.0,
     ];
 
     for (int i = 0; i <= segments; i++) {
@@ -111,11 +149,7 @@ class SparkleDoodle extends StatelessWidget {
   final double size;
   final Color color;
 
-  const SparkleDoodle({
-    super.key,
-    this.size = 20,
-    this.color = AppTheme.ink,
-  });
+  const SparkleDoodle({super.key, this.size = 20, this.color = AppTheme.ink});
 
   @override
   Widget build(BuildContext context) {
@@ -197,9 +231,7 @@ class _TactileButtonState extends State<TactileButton> {
       duration: const Duration(milliseconds: 70),
       height: widget.height,
       width: widget.isFullWidth ? double.infinity : null,
-      padding: EdgeInsets.symmetric(
-        horizontal: widget.isFullWidth ? 16 : 22,
-      ),
+      padding: EdgeInsets.symmetric(horizontal: widget.isFullWidth ? 16 : 22),
       transform: _isPressed
           ? Matrix4.translationValues(2, 2, 0)
           : Matrix4.identity(),
@@ -213,19 +245,18 @@ class _TactileButtonState extends State<TactileButton> {
                   color: widget.borderColor,
                   offset: const Offset(1, 1),
                   blurRadius: 0,
-                )
+                ),
               ]
             : [
                 BoxShadow(
                   color: widget.borderColor,
                   offset: const Offset(3, 3),
                   blurRadius: 0,
-                )
+                ),
               ],
       ),
       child: Row(
-        mainAxisSize:
-            widget.isFullWidth ? MainAxisSize.max : MainAxisSize.min,
+        mainAxisSize: widget.isFullWidth ? MainAxisSize.max : MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           if (widget.leading != null) ...[

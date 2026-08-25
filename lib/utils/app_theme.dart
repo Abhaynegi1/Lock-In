@@ -15,21 +15,11 @@ class AppTheme {
 
   // Hard offset shadow for tactile buttons
   static const List<BoxShadow> tactileShadow = [
-    BoxShadow(
-      color: ink,
-      offset: Offset(3, 3),
-      blurRadius: 0,
-      spreadRadius: 0,
-    ),
+    BoxShadow(color: ink, offset: Offset(3, 3), blurRadius: 0, spreadRadius: 0),
   ];
 
   static const List<BoxShadow> smallTactileShadow = [
-    BoxShadow(
-      color: ink,
-      offset: Offset(2, 2),
-      blurRadius: 0,
-      spreadRadius: 0,
-    ),
+    BoxShadow(color: ink, offset: Offset(2, 2), blurRadius: 0, spreadRadius: 0),
   ];
 
   // Typography Styles

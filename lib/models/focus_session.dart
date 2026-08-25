@@ -40,7 +40,8 @@ class FocusSession {
     return FocusSession(
       id: map['id'],
       durationMinutes: map['durationMinutes'] ?? 0,
-      targetDurationMinutes: map['targetDurationMinutes'] ?? map['durationMinutes'],
+      targetDurationMinutes:
+          map['targetDurationMinutes'] ?? map['durationMinutes'],
       dateTime: DateTime.parse(map['dateTime']),
       isWin: map['isWin'] ?? true,
       sessionType: map['sessionType'] == 'battle'

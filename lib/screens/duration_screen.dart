@@ -77,9 +77,9 @@ class _DurationScreenState extends State<DurationScreen> {
               fillColor: AppTheme.peach,
               onTap: () {
                 context.read<TimerProvider>().startSession(
-                      minutes: _selectedDuration,
-                      type: SessionType.solo,
-                    );
+                  minutes: _selectedDuration,
+                  type: SessionType.solo,
+                );
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(builder: (_) => const FocusScreen()),

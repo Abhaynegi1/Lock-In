@@ -186,9 +186,9 @@ class _TodayView extends StatelessWidget {
                     alignment: Alignment.center,
                     children: [
                       // Organic Hand-Drawn doodle circle outline
-                      CustomPaint(
-                        size: const Size(210, 210),
-                        painter: const OrganicCirclePainter(
+                      const CustomPaint(
+                        size: Size(210, 210),
+                        painter: OrganicCirclePainter(
                           color: AppTheme.ink,
                           strokeWidth: 1.5,
                         ),
@@ -456,7 +456,9 @@ class _TodayView extends StatelessWidget {
                         _DialogAdjustBtn(
                           icon: Icons.remove,
                           onTap: () {
-                            final current = int.tryParse(controller.text) ?? provider.selectedDurationMinutes;
+                            final current =
+                                int.tryParse(controller.text) ??
+                                provider.selectedDurationMinutes;
                             final next = (current - 5).clamp(1, 180);
                             controller.text = next.toString();
                             controller.selection = TextSelection(
@@ -478,7 +480,9 @@ class _TodayView extends StatelessWidget {
                               fontWeight: FontWeight.w800,
                             ),
                             decoration: InputDecoration(
-                              contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                              contentPadding: const EdgeInsets.symmetric(
+                                vertical: 12,
+                              ),
                               filled: true,
                               fillColor: AppTheme.sand,
                               suffixText: 'min ',
@@ -489,11 +493,17 @@ class _TodayView extends StatelessWidget {
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(14),
-                                borderSide: const BorderSide(color: AppTheme.ink, width: 1.5),
+                                borderSide: const BorderSide(
+                                  color: AppTheme.ink,
+                                  width: 1.5,
+                                ),
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(14),
-                                borderSide: const BorderSide(color: AppTheme.ink, width: 2.0),
+                                borderSide: const BorderSide(
+                                  color: AppTheme.ink,
+                                  width: 2.0,
+                                ),
                               ),
                             ),
                           ),
@@ -502,7 +512,9 @@ class _TodayView extends StatelessWidget {
                         _DialogAdjustBtn(
                           icon: Icons.add,
                           onTap: () {
-                            final current = int.tryParse(controller.text) ?? provider.selectedDurationMinutes;
+                            final current =
+                                int.tryParse(controller.text) ??
+                                provider.selectedDurationMinutes;
                             final next = (current + 5).clamp(1, 180);
                             controller.text = next.toString();
                             controller.selection = TextSelection(

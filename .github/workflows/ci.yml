@@ -1,0 +1,140 @@
+name: CI & Production Quality Checks
+
+on:
+  push:
+    branches:
+      - main
+      - master
+      - 'release/**'
+  pull_request:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ==========================================
+  # 1. Static Analysis, Formatting & Unit Tests
+  # ==========================================
+  code-quality-and-tests:
+    name: Code Quality & Automated Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+          cache-key: 'flutter-:os:-:channel:-:version:-:arch:-:hash:'
+          cache-path: '${{ runner.tool_cache }}/flutter/:channel:-:version:-:arch:'
+
+      - name: Verify Flutter & Environment
+        run: flutter doctor -v
+
+      - name: Install Dependencies
+        run: flutter pub get
+
+      - name: Verify Dart Formatting
+        run: dart format --output=none --set-exit-if-changed .
+
+      - name: Static Code Analysis
+        run: flutter analyze --fatal-infos --fatal-warnings
+
+      - name: Run Unit & Widget Tests with Coverage
+        run: flutter test --coverage
+
+      - name: Upload Test Coverage Artifact
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lcov-coverage-report
+          path: coverage/lcov.info
+          retention-days: 14
+
+  # ==========================================
+  # 2. Android Build Validation
+  # ==========================================
+  build-android:
+    name: Android Build Verification
+    needs: code-quality-and-tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: Install Dependencies
+        run: flutter pub get
+
+      - name: Build Debug APK
+        run: flutter build apk --debug
+
+      - name: Build Release App Bundle (No-CodeSign Check)
+        run: flutter build appbundle --release --no-pub
+
+      - name: Upload Debug APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-debug-apk
+          path: build/app/outputs/flutter-apk/app-debug.apk
+          retention-days: 14
+
+  # ==========================================
+  # 3. Web Build Validation
+  # ==========================================
+  build-web:
+    name: Web Build Verification
+    needs: code-quality-and-tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: Install Dependencies
+        run: flutter pub get
+
+      - name: Build Web Release
+        run: flutter build web --release
+
+      - name: Upload Web Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-release-bundle
+          path: build/web
+          retention-days: 14

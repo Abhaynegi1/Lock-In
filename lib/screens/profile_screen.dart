@@ -23,7 +23,10 @@ class ProfileScreen extends StatelessWidget {
                 GestureDetector(
                   onTap: () => Navigator.pop(context),
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
                     decoration: BoxDecoration(
                       color: AppTheme.sand,
                       borderRadius: BorderRadius.circular(10),
@@ -32,7 +35,11 @@ class ProfileScreen extends StatelessWidget {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(Icons.arrow_back, size: 16, color: AppTheme.ink),
+                        const Icon(
+                          Icons.arrow_back,
+                          size: 16,
+                          color: AppTheme.ink,
+                        ),
                         const SizedBox(width: 6),
                         Text(
                           'Back',
@@ -65,7 +72,10 @@ class ProfileScreen extends StatelessWidget {
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               color: AppTheme.sand,
-                              border: Border.all(color: AppTheme.ink, width: 2.0),
+                              border: Border.all(
+                                color: AppTheme.ink,
+                                width: 2.0,
+                              ),
                               boxShadow: AppTheme.tactileShadow,
                             ),
                             child: const Center(
@@ -86,7 +96,10 @@ class ProfileScreen extends StatelessWidget {
                               decoration: BoxDecoration(
                                 color: AppTheme.peach,
                                 shape: BoxShape.circle,
-                                border: Border.all(color: AppTheme.ink, width: 1.5),
+                                border: Border.all(
+                                  color: AppTheme.ink,
+                                  width: 1.5,
+                                ),
                                 boxShadow: AppTheme.smallTactileShadow,
                               ),
                               child: const Center(
@@ -140,10 +153,7 @@ class ProfileScreen extends StatelessWidget {
               const SizedBox(height: 24),
 
               // Overview Section
-              Text(
-                'PERSONAL STATS',
-                style: AppTheme.sansLabel(),
-              ),
+              Text('PERSONAL STATS', style: AppTheme.sansLabel()),
               const SizedBox(height: 12),
               Row(
                 children: [
@@ -163,7 +173,8 @@ class ProfileScreen extends StatelessWidget {
                           : '${(provider.dailyGoalMinutes / 60).toStringAsFixed(1)} hours',
                       subtitle: 'Tap to edit goal',
                       isEditable: true,
-                      onTap: () => _showEditDailyTargetDialog(context, provider),
+                      onTap: () =>
+                          _showEditDailyTargetDialog(context, provider),
                     ),
                   ),
                 ],
@@ -209,10 +220,7 @@ class ProfileScreen extends StatelessWidget {
               const SizedBox(height: 24),
 
               // Accountability Rules
-              Text(
-                'PREFERENCES',
-                style: AppTheme.sansLabel(),
-              ),
+              Text('PREFERENCES', style: AppTheme.sansLabel()),
               const SizedBox(height: 12),
               _SettingTile(
                 title: 'Strict anti-distraction',
@@ -221,7 +229,10 @@ class ProfileScreen extends StatelessWidget {
                     : 'Session continues when leaving app',
                 onTap: () => _showAntiDistractionModal(context, provider),
                 trailing: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: provider.isStrictAntiDistraction
                         ? AppTheme.sage
@@ -492,7 +503,10 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  void _showEditDailyTargetDialog(BuildContext context, TimerProvider provider) {
+  void _showEditDailyTargetDialog(
+    BuildContext context,
+    TimerProvider provider,
+  ) {
     int targetMinutes = provider.dailyGoalMinutes;
 
     showDialog(
@@ -502,7 +516,9 @@ class ProfileScreen extends StatelessWidget {
           builder: (context, setDialogState) {
             final hours = targetMinutes ~/ 60;
             final mins = targetMinutes % 60;
-            final displayText = mins > 0 ? '${hours}h ${mins}m' : '$hours hours';
+            final displayText = mins > 0
+                ? '${hours}h ${mins}m'
+                : '$hours hours';
 
             return Dialog(
               backgroundColor: Colors.transparent,
@@ -567,7 +583,9 @@ class ProfileScreen extends StatelessWidget {
                               vertical: 6,
                             ),
                             decoration: BoxDecoration(
-                              color: isSelected ? AppTheme.peach : AppTheme.sand,
+                              color: isSelected
+                                  ? AppTheme.peach
+                                  : AppTheme.sand,
                               borderRadius: BorderRadius.circular(10),
                               border: Border.all(
                                 color: AppTheme.ink,
@@ -864,7 +882,10 @@ class _ProfileMetricBox extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: AppTheme.sansLabel(fontSize: 10, color: AppTheme.inkMuted),
+                  style: AppTheme.sansLabel(
+                    fontSize: 10,
+                    color: AppTheme.inkMuted,
+                  ),
                 ),
                 if (isEditable)
                   const Icon(
@@ -877,7 +898,10 @@ class _ProfileMetricBox extends StatelessWidget {
             const SizedBox(height: 6),
             Text(
               value,
-              style: AppTheme.serifHeading(fontSize: 20, fontWeight: FontWeight.w700),
+              style: AppTheme.serifHeading(
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+              ),
             ),
             const SizedBox(height: 4),
             Text(

@@ -136,17 +136,11 @@ class _FocusScreenState extends State<FocusScreen> with WidgetsBindingObserver {
           children: [
             const LockInLogo(size: 24, hasBorder: true),
             const SizedBox(width: 8),
-            Text(
-              'SOLO FOCUS',
-              style: AppTheme.sansLabel(fontSize: 10),
-            ),
+            Text('SOLO FOCUS', style: AppTheme.sansLabel(fontSize: 10)),
           ],
         ),
         Container(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 10,
-            vertical: 4,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
           decoration: BoxDecoration(
             color: provider.isStrictAntiDistraction
                 ? AppTheme.sand
@@ -170,10 +164,7 @@ class _FocusScreenState extends State<FocusScreen> with WidgetsBindingObserver {
                 provider.isStrictAntiDistraction
                     ? 'STAY IN APP'
                     : 'FLEXIBLE FOCUS',
-                style: AppTheme.sansLabel(
-                  fontSize: 9,
-                  color: AppTheme.ink,
-                ),
+                style: AppTheme.sansLabel(fontSize: 9, color: AppTheme.ink),
               ),
             ],
           ),
@@ -213,9 +204,9 @@ class _FocusScreenState extends State<FocusScreen> with WidgetsBindingObserver {
                         child: Stack(
                           alignment: Alignment.center,
                           children: [
-                            CustomPaint(
-                              size: const Size(240, 240),
-                              painter: const OrganicCirclePainter(
+                            const CustomPaint(
+                              size: Size(240, 240),
+                              painter: OrganicCirclePainter(
                                 color: AppTheme.ink,
                                 strokeWidth: 1.8,
                               ),
@@ -223,12 +214,18 @@ class _FocusScreenState extends State<FocusScreen> with WidgetsBindingObserver {
                             const Positioned(
                               top: 18,
                               right: 22,
-                              child: SparkleDoodle(size: 18, color: AppTheme.ink),
+                              child: SparkleDoodle(
+                                size: 18,
+                                color: AppTheme.ink,
+                              ),
                             ),
                             const Positioned(
                               bottom: 24,
                               left: 20,
-                              child: SparkleDoodle(size: 14, color: AppTheme.ink),
+                              child: SparkleDoodle(
+                                size: 14,
+                                color: AppTheme.ink,
+                              ),
                             ),
                             Column(
                               mainAxisSize: MainAxisSize.min,
@@ -336,9 +333,9 @@ class _FocusScreenState extends State<FocusScreen> with WidgetsBindingObserver {
                   child: Stack(
                     alignment: Alignment.center,
                     children: [
-                      CustomPaint(
-                        size: const Size(190, 190),
-                        painter: const OrganicCirclePainter(
+                      const CustomPaint(
+                        size: Size(190, 190),
+                        painter: OrganicCirclePainter(
                           color: AppTheme.ink,
                           strokeWidth: 1.6,
                         ),
@@ -399,10 +396,7 @@ class _FocusScreenState extends State<FocusScreen> with WidgetsBindingObserver {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  InkProgressBar(
-                    progress: provider.completionRatio,
-                    height: 6,
-                  ),
+                  InkProgressBar(progress: provider.completionRatio, height: 6),
                   const SizedBox(height: 16),
                   TactileButton(
                     label: 'End session early',
@@ -431,7 +425,9 @@ class _FocusScreenState extends State<FocusScreen> with WidgetsBindingObserver {
   String _getCalmSubtext(double remainingProgress, bool isBattle) {
     if (isBattle) {
       if (remainingProgress > 0.6) return "Holding each other accountable.";
-      if (remainingProgress > 0.2) return "Every deep minute counts toward your score.";
+      if (remainingProgress > 0.2) {
+        return "Every deep minute counts toward your score.";
+      }
       return "Finish unbroken.";
     }
     if (remainingProgress > 0.6) return "Deep, undivided presence.";
