@@ -32,7 +32,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           const BattlesScreen(),
           const HistoryScreen(),
-          const ProfileScreen(),
         ],
       ),
       bottomNavigationBar: _QuietBottomNav(
@@ -95,7 +94,12 @@ class _TodayView extends StatelessWidget {
 
                 // Right Profile Icon
                 GestureDetector(
-                  onTap: () => onNavigateToTab(3), // Navigate to Me
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const ProfileScreen()),
+                    );
+                  },
                   child: Container(
                     width: 36,
                     height: 36,
@@ -587,7 +591,7 @@ class _QuietBottomNav extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const items = ['Today', 'Battles', 'Log', 'Me'];
+    const items = ['Today', 'Battles', 'Log'];
 
     return Container(
       decoration: const BoxDecoration(

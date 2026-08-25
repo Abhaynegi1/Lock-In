@@ -28,13 +28,17 @@ class _FocusScreenState extends State<FocusScreen> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    final provider = context.read<TimerProvider>();
     if (state == AppLifecycleState.paused ||
         state == AppLifecycleState.inactive) {
-      // User left the app - Fail the session under strict anti-distraction rule
-      final provider = context.read<TimerProvider>();
-      if (provider.status == SessionStatus.running) {
+      if (provider.isStrictAntiDistraction &&
+          provider.status == SessionStatus.running) {
+        // User left the app - Fail the session under strict anti-distraction rule
         provider.forfeitSession();
       }
+    } else if (state == AppLifecycleState.resumed) {
+      // App resumed - sync timer based on real elapsed time
+      provider.syncTimer();
     }
   }
 
@@ -118,7 +122,9 @@ class _FocusScreenState extends State<FocusScreen> with WidgetsBindingObserver {
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: AppTheme.sand,
+                        color: provider.isStrictAntiDistraction
+                            ? AppTheme.sand
+                            : AppTheme.sage,
                         borderRadius: BorderRadius.circular(10),
                         border: Border.all(color: AppTheme.inkFaint, width: 1),
                       ),
@@ -128,14 +134,18 @@ class _FocusScreenState extends State<FocusScreen> with WidgetsBindingObserver {
                           Container(
                             width: 6,
                             height: 6,
-                            decoration: const BoxDecoration(
+                            decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: AppTheme.ink,
+                              color: provider.isStrictAntiDistraction
+                                  ? AppTheme.ink
+                                  : AppTheme.ink,
                             ),
                           ),
                           const SizedBox(width: 6),
                           Text(
-                            'STAY IN APP',
+                            provider.isStrictAntiDistraction
+                                ? 'STAY IN APP'
+                                : 'FLEXIBLE FOCUS',
                             style: AppTheme.sansLabel(
                               fontSize: 9,
                               color: AppTheme.ink,

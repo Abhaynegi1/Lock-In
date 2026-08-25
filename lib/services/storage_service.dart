@@ -7,6 +7,28 @@ class StorageService {
   static const String _streakKey = 'focus_streak';
   static const String _battlesKey = 'focus_battles';
   static const String _dailyGoalKey = 'focus_daily_goal';
+  static const String _userNameKey = 'focus_username';
+  static const String _strictAntiDistractionKey = 'focus_strict_anti_distraction';
+
+  Future<String> getUserName() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_userNameKey) ?? 'Lock In Member';
+  }
+
+  Future<void> saveUserName(String name) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_userNameKey, name);
+  }
+
+  Future<bool> getStrictAntiDistraction() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_strictAntiDistractionKey) ?? true;
+  }
+
+  Future<void> saveStrictAntiDistraction(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_strictAntiDistractionKey, value);
+  }
 
   Future<void> saveSession(FocusSession session) async {
     final prefs = await SharedPreferences.getInstance();

@@ -15,6 +15,9 @@ class TimerProvider with ChangeNotifier {
   int _currentStreak = 0;
   int _selectedDurationMinutes = 45;
   int _dailyGoalMinutes = 240; // 4 hours
+  String _userName = 'Lock In Member';
+  bool _isStrictAntiDistraction = true;
+  DateTime? _sessionEndTime;
   SessionStatus _status = SessionStatus.idle;
   SessionType _activeSessionType = SessionType.solo;
   BattleModel? _activeBattle;
@@ -26,6 +29,8 @@ class TimerProvider with ChangeNotifier {
   int get currentStreak => _currentStreak;
   int get selectedDurationMinutes => _selectedDurationMinutes;
   int get dailyGoalMinutes => _dailyGoalMinutes;
+  String get userName => _userName;
+  bool get isStrictAntiDistraction => _isStrictAntiDistraction;
   SessionStatus get status => _status;
   SessionType get activeSessionType => _activeSessionType;
   BattleModel? get activeBattle => _activeBattle;
@@ -89,7 +94,35 @@ class TimerProvider with ChangeNotifier {
     _history = await _storageService.getHistory();
     _battles = await _storageService.getBattles();
     _dailyGoalMinutes = await _storageService.getDailyGoalMinutes();
+    _userName = await _storageService.getUserName();
+    _isStrictAntiDistraction = await _storageService.getStrictAntiDistraction();
     notifyListeners();
+  }
+
+  Future<void> updateUserName(String name) async {
+    _userName = name.trim().isEmpty ? 'Lock In Member' : name.trim();
+    await _storageService.saveUserName(_userName);
+    notifyListeners();
+  }
+
+  Future<void> updateDailyGoalMinutes(int minutes) async {
+    _dailyGoalMinutes = minutes.clamp(15, 960);
+    await _storageService.saveDailyGoalMinutes(_dailyGoalMinutes);
+    notifyListeners();
+  }
+
+  Future<void> updateDailyGoalHours(int hours) async {
+    await updateDailyGoalMinutes(hours * 60);
+  }
+
+  Future<void> setStrictAntiDistraction(bool value) async {
+    _isStrictAntiDistraction = value;
+    await _storageService.saveStrictAntiDistraction(value);
+    notifyListeners();
+  }
+
+  Future<void> toggleStrictAntiDistraction() async {
+    await setStrictAntiDistraction(!_isStrictAntiDistraction);
   }
 
   void selectDuration(int minutes) {
@@ -104,17 +137,41 @@ class TimerProvider with ChangeNotifier {
     _status = SessionStatus.running;
     _totalSeconds = duration * 60;
     _secondsRemaining = _totalSeconds;
+    _sessionEndTime = DateTime.now().add(Duration(seconds: _totalSeconds));
     notifyListeners();
 
     _timer?.cancel();
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (_secondsRemaining > 0) {
-        _secondsRemaining--;
-        notifyListeners();
+      if (_sessionEndTime != null) {
+        final diff = _sessionEndTime!.difference(DateTime.now()).inSeconds;
+        if (diff > 0) {
+          _secondsRemaining = diff;
+          notifyListeners();
+        } else {
+          _secondsRemaining = 0;
+          _onSessionComplete(true);
+        }
       } else {
-        _onSessionComplete(true);
+        if (_secondsRemaining > 0) {
+          _secondsRemaining--;
+          notifyListeners();
+        } else {
+          _onSessionComplete(true);
+        }
       }
     });
+  }
+
+  void syncTimer() {
+    if (_status != SessionStatus.running || _sessionEndTime == null) return;
+    final diff = _sessionEndTime!.difference(DateTime.now()).inSeconds;
+    if (diff > 0) {
+      _secondsRemaining = diff;
+      notifyListeners();
+    } else {
+      _secondsRemaining = 0;
+      _onSessionComplete(true);
+    }
   }
 
   void forfeitSession() {
