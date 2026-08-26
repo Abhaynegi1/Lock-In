@@ -1,5 +1,7 @@
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:uuid/uuid.dart';
 import '../models/battle_model.dart';
+import '../models/battle_state.dart';
 import '../models/focus_session.dart';
 
 class StorageService {
@@ -109,10 +111,59 @@ class StorageService {
     await prefs.setInt(_dailyGoalKey, minutes);
   }
 
+  static const String _anonymousIdKey = 'focus_anonymous_id';
+  static const String _battleSessionsKey = 'focus_battle_sessions';
+
+  /// Returns the persistent, anonymous installation UUID, creating one if not present.
+  Future<String> getOrCreateAnonymousId() async {
+    final prefs = await SharedPreferences.getInstance();
+    String? id = prefs.getString(_anonymousIdKey);
+    if (id == null || id.isEmpty) {
+      id = const Uuid().v4();
+      await prefs.setString(_anonymousIdKey, id);
+    }
+    return id;
+  }
+
+  /// Saves a real-time BattleSessionModel to local storage
+  Future<void> saveBattleSession(BattleSessionModel session) async {
+    final prefs = await SharedPreferences.getInstance();
+    final List<String> stored = prefs.getStringList(_battleSessionsKey) ?? [];
+    // Remove if already exists with same id to avoid duplicates
+    stored.removeWhere((s) {
+      try {
+        final decoded = BattleSessionModel.fromJson(s);
+        return decoded.id == session.id;
+      } catch (_) {
+        return false;
+      }
+    });
+    stored.insert(0, session.toJson());
+    await prefs.setStringList(_battleSessionsKey, stored);
+  }
+
+  /// Retrieves list of saved real-time BattleSessionModels from local storage
+  Future<List<BattleSessionModel>> getBattleSessions() async {
+    final prefs = await SharedPreferences.getInstance();
+    final List<String>? stored = prefs.getStringList(_battleSessionsKey);
+    if (stored == null) return [];
+    return stored
+        .map((s) {
+          try {
+            return BattleSessionModel.fromJson(s);
+          } catch (_) {
+            return null;
+          }
+        })
+        .whereType<BattleSessionModel>()
+        .toList();
+  }
+
   Future<void> clearHistory() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_historyKey);
     await prefs.remove(_streakKey);
     await prefs.remove(_battlesKey);
+    await prefs.remove(_battleSessionsKey);
   }
 }

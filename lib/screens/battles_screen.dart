@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/battle_model.dart';
+import '../models/battle_state.dart';
 import '../models/focus_session.dart';
+import '../providers/battle_provider.dart';
 import '../providers/timer_provider.dart';
 import '../utils/app_theme.dart';
+import '../widgets/create_battle_modal.dart';
 import '../widgets/doodle_decorations.dart';
+import '../widgets/join_battle_modal.dart';
 import 'focus_screen.dart';
 
 class BattlesScreen extends StatelessWidget {
@@ -12,8 +16,12 @@ class BattlesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.watch<TimerProvider>();
-    final battles = provider.battles;
+    final timerProvider = context.watch<TimerProvider>();
+    final battleProvider = context.watch<BattleProvider>();
+    final asyncBattles = timerProvider.battles;
+    final guestBattles = battleProvider.localBattleHistory;
+
+    final hasAnyBattles = asyncBattles.isNotEmpty || guestBattles.isNotEmpty;
 
     return Scaffold(
       backgroundColor: AppTheme.background,
@@ -38,200 +46,235 @@ class BattlesScreen extends StatelessWidget {
                       ),
                     ],
                   ),
-                  IconButton(
-                    onPressed: () => _showNewBattleDialog(context),
-                    icon: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(color: AppTheme.ink, width: 1.2),
-                      ),
-                      child: const Icon(
-                        Icons.add,
-                        size: 18,
-                        color: AppTheme.ink,
-                      ),
-                    ),
-                    tooltip: 'New battle',
-                  ),
+                  const SparkleDoodle(size: 24, color: AppTheme.ink),
                 ],
               ),
               const SizedBox(height: 8),
               Text(
-                'Focus alongside friends. Compare your deep work time without noise or pressure.',
+                'Focus alongside friends with live accountability. No account required.',
                 style: AppTheme.sansBody(
                   fontSize: 14,
                   color: AppTheme.inkMuted,
                   height: 1.4,
                 ),
               ),
+              const SizedBox(height: 20),
+
+              // Live 1v1 Guest Battle Action Cards
+              Row(
+                children: [
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () => CreateBattleModal.show(context),
+                      child: Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: AppTheme.sand,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(color: AppTheme.ink, width: 1.5),
+                          boxShadow: AppTheme.smallTactileShadow,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: AppTheme.peach,
+                                border: Border.all(color: AppTheme.ink, width: 1.2),
+                              ),
+                              child: const Icon(Icons.add, size: 18, color: AppTheme.ink),
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              'Create Battle',
+                              style: AppTheme.serifHeading(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              'Get room code',
+                              style: AppTheme.sansBody(fontSize: 12, color: AppTheme.inkMuted),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () => JoinBattleModal.show(context),
+                      child: Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: AppTheme.sand,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(color: AppTheme.ink, width: 1.5),
+                          boxShadow: AppTheme.smallTactileShadow,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: AppTheme.sage,
+                                border: Border.all(color: AppTheme.ink, width: 1.2),
+                              ),
+                              child: const Icon(Icons.login, size: 18, color: AppTheme.ink),
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              'Join Battle',
+                              style: AppTheme.serifHeading(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              'Enter 6-char code',
+                              style: AppTheme.sansBody(fontSize: 12, color: AppTheme.inkMuted),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+
               const SizedBox(height: 24),
               const Divider(color: AppTheme.inkFaint, thickness: 1),
-              const SizedBox(height: 24),
+              const SizedBox(height: 16),
 
-              if (battles.isEmpty)
+              Text('BATTLE HISTORY', style: AppTheme.sansLabel(fontSize: 11)),
+              const SizedBox(height: 12),
+
+              if (!hasAnyBattles)
                 Center(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 40.0),
+                    padding: const EdgeInsets.symmetric(vertical: 32.0),
                     child: Column(
                       children: [
                         const LockInLogo(size: 44, hasBorder: true),
                         const SizedBox(height: 16),
                         Text(
-                          'No active battles yet.',
+                          'No battles recorded yet.',
                           style: AppTheme.serifHeading(fontSize: 18),
                         ),
                         const SizedBox(height: 6),
                         Text(
-                          'Start a friendly duel with a coworker or friend.',
+                          'Create a room or enter an invite code to duel a friend.',
+                          textAlign: TextAlign.center,
                           style: AppTheme.sansBody(color: AppTheme.inkMuted),
-                        ),
-                        const SizedBox(height: 20),
-                        TactileButton(
-                          label: 'Invite a Friend',
-                          isFullWidth: false,
-                          onTap: () => _showNewBattleDialog(context),
                         ),
                       ],
                     ),
                   ),
                 )
-              else
-                ...battles.map(
-                  (battle) => Padding(
-                    padding: const EdgeInsets.only(bottom: 24.0),
-                    child: _BattleCard(battle: battle),
-                  ),
-                ),
+              else ...[
+                // Render real-time Guest Battles
+                ...guestBattles.map((battle) => Padding(
+                      padding: const EdgeInsets.only(bottom: 16.0),
+                      child: _GuestBattleCard(battle: battle),
+                    )),
+
+                // Render async battles for backwards compatibility
+                ...asyncBattles.map((battle) => Padding(
+                      padding: const EdgeInsets.only(bottom: 16.0),
+                      child: _BattleCard(battle: battle),
+                    )),
+              ],
             ],
           ),
         ),
       ),
     );
   }
+}
 
-  void _showNewBattleDialog(BuildContext context) {
-    final nameController = TextEditingController();
-    int selectedHours = 2;
+class _GuestBattleCard extends StatelessWidget {
+  final BattleSessionModel battle;
 
-    showDialog(
-      context: context,
-      builder: (ctx) => StatefulBuilder(
-        builder: (dialogCtx, setModalState) => AlertDialog(
-          backgroundColor: AppTheme.background,
-          surfaceTintColor: Colors.transparent,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-            side: const BorderSide(color: AppTheme.ink, width: 1.5),
-          ),
-          title: Text(
-            'New Focus Battle',
-            style: AppTheme.serifHeading(fontSize: 22),
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Opponent name', style: AppTheme.sansLabel()),
-              const SizedBox(height: 6),
-              TextField(
-                controller: nameController,
-                style: AppTheme.sansBody(),
-                decoration: InputDecoration(
-                  hintText: 'e.g. Maya, Sam, Liam',
-                  hintStyle: AppTheme.sansBody(color: AppTheme.inkLight),
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 14,
-                    vertical: 10,
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(
-                      color: AppTheme.ink,
-                      width: 1.2,
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(
-                      color: AppTheme.ink,
-                      width: 1.5,
-                    ),
-                  ),
+  const _GuestBattleCard({required this.battle});
+
+  @override
+  Widget build(BuildContext context) {
+    final opponent = battle.participants.length > 1
+        ? battle.participants.last
+        : battle.participants.firstOrNull;
+
+    final opponentName = opponent?.displayName ?? 'Opponent';
+    final initial = opponentName.isNotEmpty ? opponentName[0].toUpperCase() : '?';
+    final isComplete = battle.status == BattleStatus.completed;
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppTheme.background,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppTheme.ink, width: 1.2),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: AppTheme.sand,
+              border: Border.all(color: AppTheme.ink, width: 1.2),
+            ),
+            child: Center(
+              child: Text(
+                initial,
+                style: AppTheme.serifHeading(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
-              const SizedBox(height: 16),
-              Text('Target battle window', style: AppTheme.sansLabel()),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  for (final h in [2, 4, 8])
-                    Padding(
-                      padding: const EdgeInsets.only(right: 8.0),
-                      child: GestureDetector(
-                        onTap: () => setModalState(() => selectedHours = h),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 14,
-                            vertical: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            color: selectedHours == h
-                                ? AppTheme.ink
-                                : Colors.transparent,
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(
-                              color: selectedHours == h
-                                  ? AppTheme.ink
-                                  : AppTheme.inkFaint,
-                              width: 1.2,
-                            ),
-                          ),
-                          child: Text(
-                            '${h}h',
-                            style: AppTheme.sansBody(
-                              fontSize: 13,
-                              fontWeight: selectedHours == h
-                                  ? FontWeight.w600
-                                  : FontWeight.w500,
-                              color: selectedHours == h
-                                  ? AppTheme.background
-                                  : AppTheme.inkMuted,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-            ],
+            ),
           ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(dialogCtx),
-              child: Text(
-                'Cancel',
-                style: AppTheme.sansBody(color: AppTheme.inkMuted),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '1v1 with $opponentName',
+                  style: AppTheme.sansBody(fontSize: 15, fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  '${battle.durationMinutes} min · Room ${battle.roomCode}',
+                  style: AppTheme.sansBody(fontSize: 12, color: AppTheme.inkMuted),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            decoration: BoxDecoration(
+              color: isComplete ? AppTheme.sage : AppTheme.sand,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: AppTheme.ink, width: 1),
+            ),
+            child: Text(
+              isComplete ? 'FINISHED' : 'SAVED',
+              style: AppTheme.sansLabel(
+                fontSize: 9,
+                color: AppTheme.ink,
+                fontWeight: FontWeight.w700,
               ),
             ),
-            TactileButton(
-              label: 'Create Battle',
-              isFullWidth: false,
-              height: 44,
-              fontSize: 14,
-              onTap: () {
-                final name = nameController.text.trim();
-                if (name.isNotEmpty) {
-                  context.read<TimerProvider>().createBattle(
-                    name,
-                    selectedHours,
-                  );
-                  Navigator.pop(dialogCtx);
-                }
-              },
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -257,10 +300,8 @@ class _BattleCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header: Avatar, Name, Status, Score
           Row(
             children: [
-              // Doodle-style avatar circle
               Container(
                 width: 36,
                 height: 36,
@@ -315,7 +356,6 @@ class _BattleCard extends StatelessWidget {
           ),
           const SizedBox(height: 18),
 
-          // Comparison progress bar
           Column(
             children: [
               Row(
@@ -338,7 +378,6 @@ class _BattleCard extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 6),
-              // Dual-ratio outlined comparison bar
               Container(
                 height: 8,
                 width: double.infinity,
@@ -378,7 +417,6 @@ class _BattleCard extends StatelessWidget {
           ),
           const SizedBox(height: 18),
 
-          // Primary action
           TactileButton(
             label: 'Enter battle focus',
             height: 48,

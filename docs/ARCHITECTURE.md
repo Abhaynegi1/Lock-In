@@ -837,23 +837,16 @@ The following are explicitly **non-goals** of the core architecture:
 
 ---
 
-## 25. Architectural Summary
+---
 
-```text
-                         LOCKIN
-                           │
-              ┌────────────┴────────────┐
-              │                         │
-          LOCAL-FIRST                OPTIONAL
-            CORE                    CLOUD LAYER
-              │                         │
-       ┌──────┼──────┐            ┌─────┼──────┐
-       │      │      │            │     │      │
-     Timer  History Goals       Sync Friends Battles
-       │      │      │            │     │      │
-       └──────┴──────┘            └─────┴──────┘
-              │                         │
-              └──────────┬──────────────┘
-                         ↓
-                  COMPLETE LOCKIN
-```
+## 26. Guest Focus Battle Subsystem
+
+### 26.1 Principles
+- **No Login Required:** Two users can create, share (via 6-character room codes), join, and complete live focus battles anonymously.
+- **Anonymous Identity vs. Account:**
+  - `anonymousId`: Random installation UUIDv4 stored locally.
+  - `participantToken`: Ephemeral, scoped bearer token issued per battle room.
+- **Authoritative Server Time:** Clocks are derived strictly from `serverStartTime + durationSeconds - currentTimestamp`. No per-second WebSocket tick spam.
+- **Lock-In Coordination:** App lifecycle transitions (pause/hide) trigger forfeit after debounce, while network socket drops enter a 30s reconnect grace period before forfeit.
+- **Non-Destructive Local Persistence:** Completed battles are saved locally in guest mode, ready for future non-destructive sync when an optional cloud account is registered.
+

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:lock_in/providers/battle_provider.dart';
 import 'package:lock_in/providers/timer_provider.dart';
 import 'package:lock_in/screens/home_screen.dart';
 import 'package:lock_in/screens/battles_screen.dart';
@@ -11,8 +12,11 @@ import 'package:lock_in/screens/history_screen.dart';
 import 'package:lock_in/screens/result_screen.dart';
 
 Widget createTestApp(Widget child) {
-  return ChangeNotifierProvider(
-    create: (_) => TimerProvider(),
+  return MultiProvider(
+    providers: [
+      ChangeNotifierProvider(create: (_) => TimerProvider()),
+      ChangeNotifierProvider(create: (_) => BattleProvider()),
+    ],
     child: MaterialApp(home: child),
   );
 }
