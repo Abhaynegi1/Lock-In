@@ -1,60 +1,153 @@
-# LockIn
+# 🔒 LockIn
 
-A competitive and tactile focus timer app built with Flutter.
+> **The competitive, anti-distraction focus timer designed to cultivate unbreakable deep work.**
 
-## Features
-- **Solo Mode Focus**: Choose between 15, 25, 45, 60-minute or custom sessions.
-- **Strict Anti-Distraction Protection**: If enabled, leaving or backgrounding the app forfeits the session to cultivate unbroken focus.
-- **Accountability Battles**: Compete against friends and accountability partners in live focus battles.
-- **Streak & Goal Tracking**: Track daily progress against configurable focus goals and consecutive day streaks.
-- **Tactile Editorial Aesthetic**: Distinctive warm paper background, rich typography, hand-drawn doodle accents, and clean tactile components.
+[![CI & Production Quality Checks](https://github.com/Abhaynegi1/Lock-In/actions/workflows/ci.yml/badge.svg)](https://github.com/Abhaynegi1/Lock-In/actions/workflows/ci.yml)
+[![Flutter](https://img.shields.io/badge/Flutter-3.10%2B-02569B?logo=flutter&logoColor=white)](https://flutter.dev)
+[![Dart](https://img.shields.io/badge/Dart-3.0%2B-0175C2?logo=dart&logoColor=white)](https://dart.dev)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-## Getting Started
+---
+
+## 🎯 Why We Built LockIn
+
+Most productivity and Pomodoro timers fail for two fundamental reasons:
+
+1. **They have no teeth**: When a timer has zero consequences, it’s effortless to swipe away to social media, answer non-urgent notifications, and pretend you're working.
+2. **They feel lonely and clinical**: Deep work can feel isolating, and most timer apps look like sterile medical dashboards or neon-soaked arcade games.
+
+**LockIn was built to change how you relate to your focus hours:**
+- **High-Stakes Accountability**: If you leave the app while locked in, you forfeit. No excuses.
+- **Social Accountability (Focus Battles)**: Turn solitary grind sessions into thrilling 1-on-1 focus duels against friends, study buddies, and colleagues.
+- **Tactile Editorial Aesthetic**: Designed like a physical artisanal desk journal—warm paper tones, ink-black typography, and hand-drawn doodles that create a calm, grounded headspace for real work.
+
+---
+
+## ✨ Key Features
+
+### ⏱️ 1. Solo Deep Work & Custom Sessions
+- Choose from standard focus intervals (**15m sprint**, **25m classic Pomodoro**, **45m deep focus**, **60m endurance**) or configure custom durations.
+- Clean circular progress visualization with real-time countdown.
+- Full support for **Portrait** and **Landscape / Desk Stand** modes for zero-distraction desk setups.
+
+### 🛡️ 2. Strict Anti-Distraction Protection (*Lock-In Mode*)
+- When enabled, leaving the app, switching apps, or returning to the home screen immediately triggers a forfeit countdown.
+- Fosters true presence and unbroken flow state by making distraction costly.
+- Win/loss outcomes are logged in your permanent session record.
+
+### ⚔️ 3. Live 1-on-1 Focus Battles
+- Challenge friends and accountability partners to head-to-head focus duels.
+- Real-time score comparison (`Your Minutes` vs. `Opponent's Minutes`).
+- Live countdown timers showing remaining battle time and dynamic status indicators showing who is currently leading.
+
+### 📊 4. Daily Goals, Streaks & Session History
+- **Configurable Daily Target**: Set daily focus goals (e.g., 2h, 4h, 6h) with live progress percentage and visual gauges.
+- **Streak Protection**: Track consecutive days of completed deep work to build lasting habits.
+- **Detailed History Log**: Review every session with duration timestamps, win/forfeit badges, and opponent matchup details.
+
+### 🎨 5. Tactile Editorial & Journal Design
+- Built around a bespoke color palette featuring warm sand/parchment surfaces (`#FBF9F4`), rich ink (`#1A1A1A`), and subtle terracotta accents (`#D95D39`).
+- Elegant typography pairings with hand-drawn doodle badges, stamps, and underlines.
+- Tactile interactions with micro-animations that feel organic and deliberate.
+
+---
+
+## 🏗️ Architecture & Technology Stack
+
+LockIn is engineered using clean architecture principles and modern Flutter best practices:
+
+- **Framework**: [Flutter](https://flutter.dev) (Dart 3+)
+- **State Management**: [Provider](https://pub.dev/packages/provider) for reactive, decoupled state propagation
+- **Local Persistence**: [shared_preferences](https://pub.dev/packages/shared_preferences) for offline-first data synchronization (streaks, history, settings, battles)
+- **Notifications**: [flutter_local_notifications](https://pub.dev/packages/flutter_local_notifications) with Java 8+ Core Library Desugaring for scheduled background alerts
+- **Typography & Icons**: Google Fonts ([Outfit](https://fonts.google.com/specimen/Outfit), [Playfair Display](https://fonts.google.com/specimen/Playfair+Display)) and Cupertino / Material Icons
+- **Motion & UI**: [flutter_animate](https://pub.dev/packages/flutter_animate), [percent_indicator](https://pub.dev/packages/percent_indicator), [flutter_svg](https://pub.dev/packages/flutter_svg)
+
+```
+lib/
+├── models/         # Domain models (FocusSession, BattleModel)
+├── providers/      # Application state (TimerProvider, lifecycle sync)
+├── screens/        # UI Views (Home, Focus, Battles, History, Profile, Result)
+├── services/       # Persistent storage & system notification handlers
+├── utils/          # AppTheme tokens, typography, and color palette
+└── widgets/        # Reusable tactile components, buttons & hand-drawn doodles
+```
+
+---
+
+## 🚀 Getting Started
 
 ### Prerequisites
-- [Flutter SDK](https://flutter.dev/docs/get-started/install) (3.10.8+)
-- Dart SDK
-- Java JDK 17 (for Android builds)
+- [Flutter SDK](https://flutter.dev/docs/get-started/install) `^3.10.8` or higher
+- [Dart SDK](https://dart.dev/get-dart) `^3.0.0`
+- [Android Studio](https://developer.android.com/studio) / [Xcode](https://developer.apple.com/xcode/) with configured emulators
+- Java JDK 17 (required for Android Gradle builds)
 
-### Installation & Running
-1. Clone the repository and install dependencies:
+### Installation
+
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/Abhaynegi1/Lock-In.git
+   cd Lock-In
+   ```
+
+2. **Install Flutter dependencies**:
    ```bash
    flutter pub get
    ```
-2. Run on a connected device or emulator:
-   ```bash
-   flutter run
-   ```
 
-## Continuous Integration & Quality Checks
+3. **Run the application**:
+   - On an Android Emulator / Device:
+     ```bash
+     flutter run -d android
+     ```
+   - On iOS Simulator / Device:
+     ```bash
+     flutter run -d ios
+     ```
+   - On Chrome (Web):
+     ```bash
+     flutter run -d chrome
+     ```
 
-This repository is guarded by automated GitHub Actions CI (`.github/workflows/ci.yml`) to ensure that code changes never break in production.
+---
 
-### Local Verification Commands
-Before pushing commits or submitting pull requests, run the following verification suite:
+## 🧪 Testing & Continuous Integration
 
-1. **Check Code Formatting**:
+LockIn incorporates a strict Continuous Integration (CI) pipeline running on GitHub Actions (`.github/workflows/ci.yml`) that validates every commit and pull request.
+
+### Quality Verification Commands
+
+Before pushing code or creating a PR, run the local verification suite:
+
+1. **Format Check**:
    ```bash
    dart format --output=none --set-exit-if-changed .
    ```
-   *(To auto-format files, run `dart format .`)*
+   *(To apply formatting automatically, run `dart format .`)*
 
-2. **Run Static Code Analysis**:
+2. **Static Analysis & Linting**:
    ```bash
    flutter analyze --fatal-infos --fatal-warnings
    ```
 
-3. **Run Automated Test Suite & Coverage**:
+3. **Automated Unit & Widget Tests**:
    ```bash
    flutter test --coverage
    ```
 
-4. **Verify Android Build**:
+4. **Android Build Verification**:
    ```bash
    flutter build apk --debug
    ```
 
-5. **Verify Web Build**:
+5. **Web Build Verification**:
    ```bash
    flutter build web --release
    ```
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
