@@ -73,6 +73,8 @@ lib/
 └── widgets/        # Reusable tactile components, buttons & hand-drawn doodles
 ```
 
+> 📖 **Deep Dive**: For full details on the local-first design, anonymous-to-authenticated migration, sync queues, and the multi-phase technology roadmap, see the [Architecture Guide](docs/ARCHITECTURE.md).
+
 ---
 
 ## 🚀 Getting Started
