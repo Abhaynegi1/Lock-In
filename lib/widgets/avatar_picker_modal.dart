@@ -8,10 +8,7 @@ import 'user_avatar.dart';
 class AvatarPickerModal extends StatefulWidget {
   final TimerProvider provider;
 
-  const AvatarPickerModal({
-    super.key,
-    required this.provider,
-  });
+  const AvatarPickerModal({super.key, required this.provider});
 
   static Future<void> show(BuildContext context, TimerProvider provider) {
     return showModalBottomSheet(
@@ -45,8 +42,18 @@ class _AvatarPickerModalState extends State<AvatarPickerModal> {
 
       if (pickedFile != null) {
         final path = pickedFile.path;
-        final ext = path.contains('.') ? path.split('.').last.toLowerCase() : '';
-        const allowedExtensions = {'jpg', 'jpeg', 'png', 'webp', 'gif', 'heic', 'bmp'};
+        final ext = path.contains('.')
+            ? path.split('.').last.toLowerCase()
+            : '';
+        const allowedExtensions = {
+          'jpg',
+          'jpeg',
+          'png',
+          'webp',
+          'gif',
+          'heic',
+          'bmp',
+        };
 
         if (allowedExtensions.contains(ext)) {
           await widget.provider.updateUserAvatar(path);
@@ -77,10 +84,7 @@ class _AvatarPickerModalState extends State<AvatarPickerModal> {
               SnackBar(
                 content: Text(
                   'Only photo files (PNG, JPG, WEBP) are allowed, not documents.',
-                  style: AppTheme.sansBody(
-                    fontSize: 13,
-                    color: AppTheme.sand,
-                  ),
+                  style: AppTheme.sansBody(fontSize: 13, color: AppTheme.sand),
                 ),
                 backgroundColor: AppTheme.errorMuted,
                 behavior: SnackBarBehavior.floating,
@@ -98,10 +102,7 @@ class _AvatarPickerModalState extends State<AvatarPickerModal> {
           SnackBar(
             content: Text(
               'Could not pick image: $e',
-              style: AppTheme.sansBody(
-                fontSize: 13,
-                color: AppTheme.sand,
-              ),
+              style: AppTheme.sansBody(fontSize: 13, color: AppTheme.sand),
             ),
             backgroundColor: AppTheme.errorMuted,
             behavior: SnackBarBehavior.floating,
@@ -143,8 +144,8 @@ class _AvatarPickerModalState extends State<AvatarPickerModal> {
   @override
   Widget build(BuildContext context) {
     final currentAvatar = widget.provider.userAvatar;
-    final isCustomPhoto = !AppAvatars.isPreset(currentAvatar) &&
-        File(currentAvatar).existsSync();
+    final isCustomPhoto =
+        !AppAvatars.isPreset(currentAvatar) && File(currentAvatar).existsSync();
 
     return Container(
       constraints: BoxConstraints(
@@ -228,7 +229,10 @@ class _AvatarPickerModalState extends State<AvatarPickerModal> {
               // Active Avatar Preview Card
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 16,
+                  horizontal: 20,
+                ),
                 decoration: BoxDecoration(
                   color: AppTheme.sand,
                   borderRadius: BorderRadius.circular(16),
@@ -261,10 +265,10 @@ class _AvatarPickerModalState extends State<AvatarPickerModal> {
                             isCustomPhoto
                                 ? 'Custom Gallery Photo'
                                 : (AppAvatars.presets
-                                        .where((p) => p.path == currentAvatar)
-                                        .firstOrNull
-                                        ?.label ??
-                                    'Default Preset'),
+                                          .where((p) => p.path == currentAvatar)
+                                          .firstOrNull
+                                          ?.label ??
+                                      'Default Preset'),
                             style: AppTheme.serifHeading(
                               fontSize: 17,
                               fontWeight: FontWeight.w700,
@@ -362,8 +366,9 @@ class _AvatarPickerModalState extends State<AvatarPickerModal> {
                             preset.label,
                             style: AppTheme.sansBody(
                               fontSize: 12,
-                              fontWeight:
-                                  isSelected ? FontWeight.w700 : FontWeight.w600,
+                              fontWeight: isSelected
+                                  ? FontWeight.w700
+                                  : FontWeight.w600,
                               color: AppTheme.ink,
                             ),
                           ),
@@ -458,10 +463,7 @@ class _AvatarPickerModalState extends State<AvatarPickerModal> {
                           ],
                         ),
                       ),
-                      const Icon(
-                        Icons.chevron_right,
-                        color: AppTheme.ink,
-                      ),
+                      const Icon(Icons.chevron_right, color: AppTheme.ink),
                     ],
                   ),
                 ),

@@ -82,9 +82,7 @@ class UserAvatar extends StatelessWidget {
             : null,
         boxShadow: customShadow ?? (showShadow ? AppTheme.tactileShadow : null),
       ),
-      child: ClipOval(
-        child: _buildAvatarContent(effectivePath),
-      ),
+      child: ClipOval(child: _buildAvatarContent(effectivePath)),
     );
   }
 
@@ -129,11 +127,7 @@ class UserAvatar extends StatelessWidget {
 
   Widget _fallbackIcon() {
     return Center(
-      child: Icon(
-        Icons.person_rounded,
-        size: size * 0.55,
-        color: AppTheme.ink,
-      ),
+      child: Icon(Icons.person_rounded, size: size * 0.55, color: AppTheme.ink),
     );
   }
 }

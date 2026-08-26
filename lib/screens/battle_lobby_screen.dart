@@ -25,7 +25,9 @@ class _BattleLobbyScreenState extends State<BattleLobbyScreen> {
     final isActive = battleProvider.status == BattleStatus.active;
 
     // Navigate to focus screen once battle starts or countdown finishes
-    if ((isActive || isCountdown) && !_navigatedToFocus && battleProvider.lobbyCountdown == 1) {
+    if ((isActive || isCountdown) &&
+        !_navigatedToFocus &&
+        battleProvider.lobbyCountdown == 1) {
       _navigatedToFocus = true;
       Future.microtask(() {
         if (!context.mounted) return;
@@ -122,7 +124,10 @@ class _BattleLobbyScreenState extends State<BattleLobbyScreen> {
                     ),
                     child: Column(
                       children: [
-                        Text('SHARE ROOM CODE', style: AppTheme.sansLabel(fontSize: 10)),
+                        Text(
+                          'SHARE ROOM CODE',
+                          style: AppTheme.sansLabel(fontSize: 10),
+                        ),
                         const SizedBox(height: 8),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -143,7 +148,9 @@ class _BattleLobbyScreenState extends State<BattleLobbyScreen> {
                                 );
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
-                                    content: Text('Room code copied to clipboard!'),
+                                    content: Text(
+                                      'Room code copied to clipboard!',
+                                    ),
                                     duration: Duration(seconds: 2),
                                     backgroundColor: AppTheme.ink,
                                   ),
@@ -154,9 +161,16 @@ class _BattleLobbyScreenState extends State<BattleLobbyScreen> {
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   color: AppTheme.background,
-                                  border: Border.all(color: AppTheme.ink, width: 1.2),
+                                  border: Border.all(
+                                    color: AppTheme.ink,
+                                    width: 1.2,
+                                  ),
                                 ),
-                                child: const Icon(Icons.copy, size: 16, color: AppTheme.ink),
+                                child: const Icon(
+                                  Icons.copy,
+                                  size: 16,
+                                  color: AppTheme.ink,
+                                ),
                               ),
                               tooltip: 'Copy Code',
                             ),
@@ -166,14 +180,20 @@ class _BattleLobbyScreenState extends State<BattleLobbyScreen> {
                         Text(
                           'Your friend can enter this code in LockIn without signing up.',
                           textAlign: TextAlign.center,
-                          style: AppTheme.sansBody(fontSize: 12, color: AppTheme.inkMuted),
+                          style: AppTheme.sansBody(
+                            fontSize: 12,
+                            color: AppTheme.inkMuted,
+                          ),
                         ),
                       ],
                     ),
                   ),
 
                   const SizedBox(height: 28),
-                  Text('PARTICIPANTS (1V1)', style: AppTheme.sansLabel(fontSize: 11)),
+                  Text(
+                    'PARTICIPANTS (1V1)',
+                    style: AppTheme.sansLabel(fontSize: 11),
+                  ),
                   const SizedBox(height: 12),
 
                   // Host Card
@@ -212,9 +232,16 @@ class _BattleLobbyScreenState extends State<BattleLobbyScreen> {
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               color: AppTheme.sand,
-                              border: Border.all(color: AppTheme.inkFaint, width: 1.0),
+                              border: Border.all(
+                                color: AppTheme.inkFaint,
+                                width: 1.0,
+                              ),
                             ),
-                            child: const Icon(Icons.hourglass_empty, size: 18, color: AppTheme.inkMuted),
+                            child: const Icon(
+                              Icons.hourglass_empty,
+                              size: 18,
+                              color: AppTheme.inkMuted,
+                            ),
                           ),
                           const SizedBox(width: 12),
                           Column(
@@ -230,7 +257,10 @@ class _BattleLobbyScreenState extends State<BattleLobbyScreen> {
                               ),
                               Text(
                                 'Share the code above to connect',
-                                style: AppTheme.sansBody(fontSize: 12, color: AppTheme.inkLight),
+                                style: AppTheme.sansBody(
+                                  fontSize: 12,
+                                  color: AppTheme.inkLight,
+                                ),
                               ),
                             ],
                           ),

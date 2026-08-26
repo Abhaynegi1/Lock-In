@@ -179,15 +179,21 @@ class _CreateBattleModalState extends State<CreateBattleModal> {
                             color: AppTheme.ink,
                             width: isSelected ? 1.5 : 1.0,
                           ),
-                          boxShadow: isSelected ? AppTheme.smallTactileShadow : null,
+                          boxShadow: isSelected
+                              ? AppTheme.smallTactileShadow
+                              : null,
                         ),
                         child: Center(
                           child: Text(
                             '${mins}m',
                             style: AppTheme.sansBody(
                               fontSize: 14,
-                              fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                              color: isSelected ? AppTheme.background : AppTheme.ink,
+                              fontWeight: isSelected
+                                  ? FontWeight.w700
+                                  : FontWeight.w500,
+                              color: isSelected
+                                  ? AppTheme.background
+                                  : AppTheme.ink,
                             ),
                           ),
                         ),
@@ -201,7 +207,9 @@ class _CreateBattleModalState extends State<CreateBattleModal> {
 
             // Create Room Action
             TactileButton(
-              label: battleProvider.isLoading ? 'Creating Room...' : 'Create Room Code',
+              label: battleProvider.isLoading
+                  ? 'Creating Room...'
+                  : 'Create Room Code',
               fillColor: AppTheme.peach,
               height: 52,
               fontSize: 15,

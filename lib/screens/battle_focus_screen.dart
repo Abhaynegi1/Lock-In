@@ -38,20 +38,23 @@ class _BattleFocusScreenState extends State<BattleFocusScreen>
     final timerProvider = context.read<TimerProvider>();
     final battleProvider = context.read<BattleProvider>();
 
-    if (state == AppLifecycleState.paused || state == AppLifecycleState.hidden) {
+    if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.hidden) {
       if (timerProvider.isStrictAntiDistraction &&
           battleProvider.status == BattleStatus.active) {
         // Debounce 1.5 seconds for transient screen lock / orientation flip
         _lifecycleForfeitDebounceTimer?.cancel();
-        _lifecycleForfeitDebounceTimer =
-            Timer(const Duration(milliseconds: 1500), () {
-          if (mounted) {
-            final bProv = context.read<BattleProvider>();
-            if (bProv.status == BattleStatus.active) {
-              bProv.forfeitBattle(reason: 'Left application during battle');
+        _lifecycleForfeitDebounceTimer = Timer(
+          const Duration(milliseconds: 1500),
+          () {
+            if (mounted) {
+              final bProv = context.read<BattleProvider>();
+              if (bProv.status == BattleStatus.active) {
+                bProv.forfeitBattle(reason: 'Left application during battle');
+              }
             }
-          }
-        });
+          },
+        );
       }
     } else if (state == AppLifecycleState.resumed) {
       _lifecycleForfeitDebounceTimer?.cancel();
@@ -69,7 +72,8 @@ class _BattleFocusScreenState extends State<BattleFocusScreen>
         battleProvider.status == BattleStatus.playerDisconnected;
 
     // Navigate to result screen when completed
-    if (battleProvider.status == BattleStatus.completed && !_navigatedToResult) {
+    if (battleProvider.status == BattleStatus.completed &&
+        !_navigatedToResult) {
       _navigatedToResult = true;
       Future.microtask(() {
         if (!context.mounted) return;
@@ -88,14 +92,22 @@ class _BattleFocusScreenState extends State<BattleFocusScreen>
           child: Column(
             children: [
               // Top Header
-              _buildHeader(battleProvider, timerProvider, opponent, isOpponentDisconnected),
+              _buildHeader(
+                battleProvider,
+                timerProvider,
+                opponent,
+                isOpponentDisconnected,
+              ),
               const SizedBox(height: 32),
 
               // Disconnect Grace Notice Banner
               if (isOpponentDisconnected) ...[
                 Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color(0xFFFBEBE8),
                     borderRadius: BorderRadius.circular(14),
@@ -103,7 +115,11 @@ class _BattleFocusScreenState extends State<BattleFocusScreen>
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.wifi_off, size: 20, color: AppTheme.errorMuted),
+                      const Icon(
+                        Icons.wifi_off,
+                        size: 20,
+                        color: AppTheme.errorMuted,
+                      ),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Column(
@@ -261,7 +277,9 @@ class _BattleFocusScreenState extends State<BattleFocusScreen>
                 height: 28,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: isOpponentDisconnected ? const Color(0xFFFBEBE8) : AppTheme.sage,
+                  color: isOpponentDisconnected
+                      ? const Color(0xFFFBEBE8)
+                      : AppTheme.sage,
                   border: Border.all(color: AppTheme.ink, width: 1),
                 ),
                 child: Center(
@@ -269,21 +287,29 @@ class _BattleFocusScreenState extends State<BattleFocusScreen>
                     opponent?.displayName.isNotEmpty == true
                         ? opponent!.displayName[0].toUpperCase()
                         : 'O',
-                    style: AppTheme.sansBody(fontSize: 12, fontWeight: FontWeight.w700),
+                    style: AppTheme.sansBody(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
               ),
               const SizedBox(width: 8),
               Text(
                 'Duel with ${opponent?.displayName ?? "Opponent"}',
-                style: AppTheme.sansBody(fontSize: 13, fontWeight: FontWeight.w600),
+                style: AppTheme.sansBody(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ],
           ),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
-              color: isOpponentDisconnected ? const Color(0xFFFBEBE8) : AppTheme.background,
+              color: isOpponentDisconnected
+                  ? const Color(0xFFFBEBE8)
+                  : AppTheme.background,
               borderRadius: BorderRadius.circular(8),
               border: Border.all(color: AppTheme.inkFaint, width: 1),
             ),
@@ -291,7 +317,9 @@ class _BattleFocusScreenState extends State<BattleFocusScreen>
               isOpponentDisconnected ? 'OFFLINE' : 'LIVE 1V1',
               style: AppTheme.sansLabel(
                 fontSize: 9,
-                color: isOpponentDisconnected ? AppTheme.errorMuted : AppTheme.ink,
+                color: isOpponentDisconnected
+                    ? AppTheme.errorMuted
+                    : AppTheme.ink,
               ),
             ),
           ),

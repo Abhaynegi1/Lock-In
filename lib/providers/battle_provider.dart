@@ -72,7 +72,7 @@ class BattleProvider with ChangeNotifier {
 
   double get completionRatio => _totalDurationSeconds > 0
       ? ((_totalDurationSeconds - _secondsRemaining) / _totalDurationSeconds)
-          .clamp(0.0, 1.0)
+            .clamp(0.0, 1.0)
       : 0.0;
 
   String get timerString {
@@ -81,11 +81,9 @@ class BattleProvider with ChangeNotifier {
     return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
   }
 
-  BattleProvider({
-    BattleRepository? repository,
-    StorageService? storageService,
-  })  : _repository = repository ?? BattleRepository(),
-        _storageService = storageService ?? StorageService() {
+  BattleProvider({BattleRepository? repository, StorageService? storageService})
+    : _repository = repository ?? BattleRepository(),
+      _storageService = storageService ?? StorageService() {
     _init();
   }
 
@@ -176,14 +174,14 @@ class BattleProvider with ChangeNotifier {
       );
 
       // Notify host via real-time that guest has joined
-      await _repository.sendEvent(BattleEvent(
-        type: BattleEventType.playerJoined,
-        battleId: response.battleId,
-        timestamp: DateTime.now(),
-        payload: {
-          'participant': localParticipant?.toMap() ?? {},
-        },
-      ));
+      await _repository.sendEvent(
+        BattleEvent(
+          type: BattleEventType.playerJoined,
+          battleId: response.battleId,
+          timestamp: DateTime.now(),
+          payload: {'participant': localParticipant?.toMap() ?? {}},
+        ),
+      );
 
       _isLoading = false;
       notifyListeners();
@@ -235,8 +233,7 @@ class BattleProvider with ChangeNotifier {
     _status = BattleStatus.countdown;
     notifyListeners();
 
-    _lobbyCountdownTimer =
-        Timer.periodic(const Duration(seconds: 1), (timer) {
+    _lobbyCountdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (_lobbyCountdown > 1) {
         _lobbyCountdown--;
         notifyListeners();
@@ -316,16 +313,15 @@ class BattleProvider with ChangeNotifier {
     _cancelNotification();
 
     // Mark local participant as forfeited
-    _updateParticipantStatus(
-      _localParticipantId!,
-      ParticipantStatus.forfeited,
-    );
+    _updateParticipantStatus(_localParticipantId!, ParticipantStatus.forfeited);
 
-    await _repository.sendEvent(BattleEvent.playerForfeited(
-      battleId: _currentBattle!.id,
-      participantId: _localParticipantId!,
-      reason: reason,
-    ));
+    await _repository.sendEvent(
+      BattleEvent.playerForfeited(
+        battleId: _currentBattle!.id,
+        participantId: _localParticipantId!,
+        reason: reason,
+      ),
+    );
 
     final opponent = opponentParticipant;
     final winnerId = opponent?.id;
@@ -350,11 +346,13 @@ class BattleProvider with ChangeNotifier {
       focusedSeconds: _totalDurationSeconds,
     );
 
-    await _repository.sendEvent(BattleEvent.playerFinished(
-      battleId: _currentBattle!.id,
-      participantId: _localParticipantId!,
-      focusedSeconds: _totalDurationSeconds,
-    ));
+    await _repository.sendEvent(
+      BattleEvent.playerFinished(
+        battleId: _currentBattle!.id,
+        participantId: _localParticipantId!,
+        focusedSeconds: _totalDurationSeconds,
+      ),
+    );
 
     // If opponent is also finished or both reached end, determine winner
     _finalizeBattleResult(
@@ -375,14 +373,16 @@ class BattleProvider with ChangeNotifier {
     _graceTimer?.cancel();
     _cancelNotification();
 
-    final localP = localParticipant ??
+    final localP =
+        localParticipant ??
         const BattleParticipant(
           id: 'local',
           displayName: 'You',
           status: ParticipantStatus.finished,
         );
 
-    final opponentP = opponentParticipant ??
+    final opponentP =
+        opponentParticipant ??
         const BattleParticipant(
           id: 'opponent',
           displayName: 'Opponent',
@@ -390,7 +390,9 @@ class BattleProvider with ChangeNotifier {
         );
 
     _lastResult = BattleResultModel(
-      battleId: _currentBattle?.id ?? 'battle_${DateTime.now().millisecondsSinceEpoch}',
+      battleId:
+          _currentBattle?.id ??
+          'battle_${DateTime.now().millisecondsSinceEpoch}',
       roomCode: _currentBattle?.roomCode ?? '------',
       winnerParticipantId: isDraw ? null : winnerId,
       isDraw: isDraw,
@@ -479,7 +481,8 @@ class BattleProvider with ChangeNotifier {
 
       case BattleEventType.battleStarted:
         final startedAtStr = event.payload['startedAt']?.toString();
-        final duration = event.payload['durationSeconds'] as int? ??
+        final duration =
+            event.payload['durationSeconds'] as int? ??
             (_currentBattle!.durationMinutes * 60);
 
         _serverStartTime = startedAtStr != null

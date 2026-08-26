@@ -82,9 +82,16 @@ class BattlesScreen extends StatelessWidget {
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 color: AppTheme.peach,
-                                border: Border.all(color: AppTheme.ink, width: 1.2),
+                                border: Border.all(
+                                  color: AppTheme.ink,
+                                  width: 1.2,
+                                ),
                               ),
-                              child: const Icon(Icons.add, size: 18, color: AppTheme.ink),
+                              child: const Icon(
+                                Icons.add,
+                                size: 18,
+                                color: AppTheme.ink,
+                              ),
                             ),
                             const SizedBox(height: 12),
                             Text(
@@ -97,7 +104,10 @@ class BattlesScreen extends StatelessWidget {
                             const SizedBox(height: 4),
                             Text(
                               'Get room code',
-                              style: AppTheme.sansBody(fontSize: 12, color: AppTheme.inkMuted),
+                              style: AppTheme.sansBody(
+                                fontSize: 12,
+                                color: AppTheme.inkMuted,
+                              ),
                             ),
                           ],
                         ),
@@ -124,9 +134,16 @@ class BattlesScreen extends StatelessWidget {
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 color: AppTheme.sage,
-                                border: Border.all(color: AppTheme.ink, width: 1.2),
+                                border: Border.all(
+                                  color: AppTheme.ink,
+                                  width: 1.2,
+                                ),
                               ),
-                              child: const Icon(Icons.login, size: 18, color: AppTheme.ink),
+                              child: const Icon(
+                                Icons.login,
+                                size: 18,
+                                color: AppTheme.ink,
+                              ),
                             ),
                             const SizedBox(height: 12),
                             Text(
@@ -139,7 +156,10 @@ class BattlesScreen extends StatelessWidget {
                             const SizedBox(height: 4),
                             Text(
                               'Enter 6-char code',
-                              style: AppTheme.sansBody(fontSize: 12, color: AppTheme.inkMuted),
+                              style: AppTheme.sansBody(
+                                fontSize: 12,
+                                color: AppTheme.inkMuted,
+                              ),
                             ),
                           ],
                         ),
@@ -180,16 +200,20 @@ class BattlesScreen extends StatelessWidget {
                 )
               else ...[
                 // Render real-time Guest Battles
-                ...guestBattles.map((battle) => Padding(
-                      padding: const EdgeInsets.only(bottom: 16.0),
-                      child: _GuestBattleCard(battle: battle),
-                    )),
+                ...guestBattles.map(
+                  (battle) => Padding(
+                    padding: const EdgeInsets.only(bottom: 16.0),
+                    child: _GuestBattleCard(battle: battle),
+                  ),
+                ),
 
                 // Render async battles for backwards compatibility
-                ...asyncBattles.map((battle) => Padding(
-                      padding: const EdgeInsets.only(bottom: 16.0),
-                      child: _BattleCard(battle: battle),
-                    )),
+                ...asyncBattles.map(
+                  (battle) => Padding(
+                    padding: const EdgeInsets.only(bottom: 16.0),
+                    child: _BattleCard(battle: battle),
+                  ),
+                ),
               ],
             ],
           ),
@@ -211,7 +235,9 @@ class _GuestBattleCard extends StatelessWidget {
         : battle.participants.firstOrNull;
 
     final opponentName = opponent?.displayName ?? 'Opponent';
-    final initial = opponentName.isNotEmpty ? opponentName[0].toUpperCase() : '?';
+    final initial = opponentName.isNotEmpty
+        ? opponentName[0].toUpperCase()
+        : '?';
     final isComplete = battle.status == BattleStatus.completed;
 
     return Container(
@@ -248,12 +274,18 @@ class _GuestBattleCard extends StatelessWidget {
               children: [
                 Text(
                   '1v1 with $opponentName',
-                  style: AppTheme.sansBody(fontSize: 15, fontWeight: FontWeight.w600),
+                  style: AppTheme.sansBody(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   '${battle.durationMinutes} min · Room ${battle.roomCode}',
-                  style: AppTheme.sansBody(fontSize: 12, color: AppTheme.inkMuted),
+                  style: AppTheme.sansBody(
+                    fontSize: 12,
+                    color: AppTheme.inkMuted,
+                  ),
                 ),
               ],
             ),

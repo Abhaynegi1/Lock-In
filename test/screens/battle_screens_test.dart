@@ -32,20 +32,17 @@ void main() {
       providers: [
         ChangeNotifierProvider(create: (_) => TimerProvider()),
         ChangeNotifierProvider(
-          create: (_) => BattleProvider(
-            repository: repository,
-            storageService: storage,
-          ),
+          create: (_) =>
+              BattleProvider(repository: repository, storageService: storage),
         ),
       ],
-      child: MaterialApp(
-        theme: AppTheme.lightTheme,
-        home: child,
-      ),
+      child: MaterialApp(theme: AppTheme.lightTheme, home: child),
     );
   }
 
-  testWidgets('BattlesScreen renders action cards for Create and Join', (tester) async {
+  testWidgets('BattlesScreen renders action cards for Create and Join', (
+    tester,
+  ) async {
     await tester.pumpWidget(createTestWidget(const BattlesScreen()));
     await tester.pumpAndSettle();
 

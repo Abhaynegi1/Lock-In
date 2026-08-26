@@ -111,10 +111,16 @@ class BattleResultScreen extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('MATCH STATS', style: AppTheme.sansLabel(fontSize: 10)),
+                        Text(
+                          'MATCH STATS',
+                          style: AppTheme.sansLabel(fontSize: 10),
+                        ),
                         Text(
                           'Room: ${result?.roomCode ?? "------"}',
-                          style: AppTheme.sansLabel(fontSize: 10, color: AppTheme.inkMuted),
+                          style: AppTheme.sansLabel(
+                            fontSize: 10,
+                            color: AppTheme.inkMuted,
+                          ),
                         ),
                       ],
                     ),
@@ -123,7 +129,8 @@ class BattleResultScreen extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         _PlayerSummaryColumn(
-                          name: '${result?.localParticipant.displayName ?? "You"} (You)',
+                          name:
+                              '${result?.localParticipant.displayName ?? "You"} (You)',
                           isWinner: isWin,
                           isForfeited: isForfeit && !isWin,
                         ),
@@ -150,7 +157,10 @@ class BattleResultScreen extends StatelessWidget {
 
               // Guest note
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
                 decoration: BoxDecoration(
                   color: AppTheme.background,
                   borderRadius: BorderRadius.circular(14),
@@ -158,12 +168,19 @@ class BattleResultScreen extends StatelessWidget {
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.check_circle_outline, size: 18, color: AppTheme.ink),
+                    const Icon(
+                      Icons.check_circle_outline,
+                      size: 18,
+                      color: AppTheme.ink,
+                    ),
                     const SizedBox(width: 10),
                     Expanded(
                       child: Text(
                         'Battle recorded in your local history.',
-                        style: AppTheme.sansBody(fontSize: 12, color: AppTheme.inkMuted),
+                        style: AppTheme.sansBody(
+                          fontSize: 12,
+                          color: AppTheme.inkMuted,
+                        ),
                       ),
                     ),
                   ],

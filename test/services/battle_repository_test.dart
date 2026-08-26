@@ -22,13 +22,16 @@ void main() {
       );
     });
 
-    test('retrieves anonymous installation ID and preserves across calls', () async {
-      final id1 = await repository.getAnonymousId();
-      expect(id1.isNotEmpty, isTrue);
+    test(
+      'retrieves anonymous installation ID and preserves across calls',
+      () async {
+        final id1 = await repository.getAnonymousId();
+        expect(id1.isNotEmpty, isTrue);
 
-      final id2 = await repository.getAnonymousId();
-      expect(id1, id2);
-    });
+        final id2 = await repository.getAnonymousId();
+        expect(id1, id2);
+      },
+    );
 
     test('creates battle and persists initial record locally', () async {
       final response = await repository.createBattle(

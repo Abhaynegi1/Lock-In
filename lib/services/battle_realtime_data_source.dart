@@ -87,8 +87,9 @@ class WebSocketBattleRealtimeDataSource implements BattleRealtimeDataSource {
         queryParameters: {'token': participantToken},
       );
 
-      _socket = await WebSocket.connect(wsUri.toString())
-          .timeout(const Duration(seconds: 10));
+      _socket = await WebSocket.connect(
+        wsUri.toString(),
+      ).timeout(const Duration(seconds: 10));
 
       _reconnectAttempts = 0;
       _updateState(BattleConnectionState.connected);
@@ -109,7 +110,9 @@ class WebSocketBattleRealtimeDataSource implements BattleRealtimeDataSource {
 
   void _onMessageReceived(dynamic data) {
     try {
-      final String text = data is String ? data : utf8.decode(data as List<int>);
+      final String text = data is String
+          ? data
+          : utf8.decode(data as List<int>);
       final event = BattleEvent.fromJson(text);
       if (!_eventController.isClosed) {
         _eventController.add(event);
@@ -161,10 +164,12 @@ class WebSocketBattleRealtimeDataSource implements BattleRealtimeDataSource {
     _heartbeatTimer?.cancel();
     _heartbeatTimer = Timer.periodic(const Duration(seconds: 15), (_) {
       if (_connectionState == BattleConnectionState.connected) {
-        sendEvent(BattleEvent.heartbeat(
-          battleId: battleId,
-          participantId: participantId,
-        ));
+        sendEvent(
+          BattleEvent.heartbeat(
+            battleId: battleId,
+            participantId: participantId,
+          ),
+        );
       }
     });
   }

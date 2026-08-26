@@ -98,12 +98,16 @@ class HttpBattleRemoteDataSource implements BattleRemoteDataSource {
     final uri = baseServerUri.replace(path: '/api/v1/battles');
     final request = await _client.postUrl(uri);
     request.headers.contentType = ContentType.json;
-    request.add(utf8.encode(json.encode({
-      'durationMinutes': durationMinutes,
-      'displayName': displayName,
-      'anonymousId': anonymousId,
-      'avatar': ?avatar,
-    })));
+    request.add(
+      utf8.encode(
+        json.encode({
+          'durationMinutes': durationMinutes,
+          'displayName': displayName,
+          'anonymousId': anonymousId,
+          'avatar': ?avatar,
+        }),
+      ),
+    );
 
     final response = await request.close();
     final responseBody = await response.transform(utf8.decoder).join();
@@ -129,12 +133,16 @@ class HttpBattleRemoteDataSource implements BattleRemoteDataSource {
     final uri = baseServerUri.replace(path: '/api/v1/battles/join');
     final request = await _client.postUrl(uri);
     request.headers.contentType = ContentType.json;
-    request.add(utf8.encode(json.encode({
-      'roomCode': roomCode.trim().toUpperCase(),
-      'displayName': displayName,
-      'anonymousId': anonymousId,
-      'avatar': ?avatar,
-    })));
+    request.add(
+      utf8.encode(
+        json.encode({
+          'roomCode': roomCode.trim().toUpperCase(),
+          'displayName': displayName,
+          'anonymousId': anonymousId,
+          'avatar': ?avatar,
+        }),
+      ),
+    );
 
     final response = await request.close();
     final responseBody = await response.transform(utf8.decoder).join();
@@ -268,17 +276,18 @@ class MockBattleRemoteDataSource implements BattleRemoteDataSource {
       ];
     }
 
-    final updatedBattle = (existing ??
-            BattleSessionModel(
-              id: battleId,
-              roomCode: code,
-              durationMinutes: 25,
-              createdAt: DateTime.now(),
-            ))
-        .copyWith(
-      status: BattleStatus.waitingForReady,
-      participants: participants,
-    );
+    final updatedBattle =
+        (existing ??
+                BattleSessionModel(
+                  id: battleId,
+                  roomCode: code,
+                  durationMinutes: 25,
+                  createdAt: DateTime.now(),
+                ))
+            .copyWith(
+              status: BattleStatus.waitingForReady,
+              participants: participants,
+            );
 
     _mockStore[code] = updatedBattle;
 

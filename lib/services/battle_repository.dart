@@ -15,10 +15,10 @@ class BattleRepository {
     StorageService? storageService,
     BattleRemoteDataSource? remoteDataSource,
     BattleRealtimeDataSource? realtimeDataSource,
-  })  : _storageService = storageService ?? StorageService(),
-        _remoteDataSource = remoteDataSource ?? MockBattleRemoteDataSource(),
-        _realtimeDataSource =
-            realtimeDataSource ?? MockBattleRealtimeDataSource();
+  }) : _storageService = storageService ?? StorageService(),
+       _remoteDataSource = remoteDataSource ?? MockBattleRemoteDataSource(),
+       _realtimeDataSource =
+           realtimeDataSource ?? MockBattleRealtimeDataSource();
 
   Stream<BattleEvent> get eventStream => _realtimeDataSource.eventStream;
   Stream<BattleConnectionState> get connectionStateStream =>

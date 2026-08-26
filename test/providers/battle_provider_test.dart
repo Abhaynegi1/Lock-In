@@ -25,7 +25,10 @@ void main() {
         remoteDataSource: MockBattleRemoteDataSource(),
         realtimeDataSource: mockRealtime,
       );
-      provider = BattleProvider(repository: repository, storageService: storage);
+      provider = BattleProvider(
+        repository: repository,
+        storageService: storage,
+      );
     });
 
     tearDown(() {
@@ -46,10 +49,7 @@ void main() {
     });
 
     test('toggles ready state and reacts to player events', () async {
-      await provider.createBattle(
-        durationMinutes: 25,
-        displayName: 'Alice',
-      );
+      await provider.createBattle(durationMinutes: 25, displayName: 'Alice');
 
       expect(provider.isLocalReady, isFalse);
 
@@ -60,36 +60,35 @@ void main() {
       expect(provider.isLocalReady, isFalse);
     });
 
-    test('forfeitBattle emits forfeit event and marks battle completed with loss', () async {
-      await provider.createBattle(
-        durationMinutes: 25,
-        displayName: 'Alice',
-      );
+    test(
+      'forfeitBattle emits forfeit event and marks battle completed with loss',
+      () async {
+        await provider.createBattle(durationMinutes: 25, displayName: 'Alice');
 
-      await provider.forfeitBattle(reason: 'Left application');
+        await provider.forfeitBattle(reason: 'Left application');
 
-      expect(provider.status, BattleStatus.completed);
-      expect(provider.lastResult, isNotNull);
-      expect(provider.lastResult?.isForfeit, isTrue);
-    });
+        expect(provider.status, BattleStatus.completed);
+        expect(provider.lastResult, isNotNull);
+        expect(provider.lastResult?.isForfeit, isTrue);
+      },
+    );
 
     test('recovers server-authoritative timer on sync', () async {
-      await provider.createBattle(
-        durationMinutes: 25,
-        displayName: 'Alice',
-      );
+      await provider.createBattle(durationMinutes: 25, displayName: 'Alice');
 
       // Simulate remote BATTLE_STARTED event
       final now = DateTime.now();
-      mockRealtime.simulateRemoteEvent(BattleEvent(
-        type: BattleEventType.battleStarted,
-        battleId: provider.currentBattle!.id,
-        timestamp: now,
-        payload: {
-          'startedAt': now.toIso8601String(),
-          'durationSeconds': 1500,
-        },
-      ));
+      mockRealtime.simulateRemoteEvent(
+        BattleEvent(
+          type: BattleEventType.battleStarted,
+          battleId: provider.currentBattle!.id,
+          timestamp: now,
+          payload: {
+            'startedAt': now.toIso8601String(),
+            'durationSeconds': 1500,
+          },
+        ),
+      );
 
       // Wait a microtask for event loop
       await Future<void>.delayed(const Duration(milliseconds: 20));

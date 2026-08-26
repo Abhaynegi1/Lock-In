@@ -90,7 +90,11 @@ class BattleEvent {
     final eventStr = map['event'] ?? map['type'] ?? 'ERROR';
     final payloadData = map['payload'] is Map<String, dynamic>
         ? map['payload'] as Map<String, dynamic>
-        : (Map<String, dynamic>.from(map)..remove('event')..remove('type')..remove('battleId')..remove('timestamp'));
+        : (Map<String, dynamic>.from(map)
+            ..remove('event')
+            ..remove('type')
+            ..remove('battleId')
+            ..remove('timestamp'));
 
     return BattleEvent(
       type: BattleEventType.fromString(eventStr.toString()),
@@ -141,10 +145,7 @@ class BattleEvent {
       type: BattleEventType.playerForfeited,
       battleId: battleId,
       timestamp: DateTime.now(),
-      payload: {
-        'participantId': participantId,
-        'reason': ?reason,
-      },
+      payload: {'participantId': participantId, 'reason': ?reason},
     );
   }
 

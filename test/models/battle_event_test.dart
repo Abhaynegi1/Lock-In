@@ -38,8 +38,14 @@ void main() {
     });
 
     test('parses incoming wire string variants', () {
-      expect(BattleEventType.fromString('BATTLE_STARTED'), BattleEventType.battleStarted);
-      expect(BattleEventType.fromString('player_disconnected'), BattleEventType.playerDisconnected);
+      expect(
+        BattleEventType.fromString('BATTLE_STARTED'),
+        BattleEventType.battleStarted,
+      );
+      expect(
+        BattleEventType.fromString('player_disconnected'),
+        BattleEventType.playerDisconnected,
+      );
       expect(BattleEventType.fromString('unknown_type'), BattleEventType.error);
     });
   });

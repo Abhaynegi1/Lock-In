@@ -290,9 +290,11 @@ class BattleResultModel {
       winnerParticipantId: map['winnerParticipantId'],
       isDraw: map['isDraw'] ?? false,
       localParticipant: BattleParticipant.fromMap(
-          map['localParticipant'] as Map<String, dynamic>? ?? {}),
+        map['localParticipant'] as Map<String, dynamic>? ?? {},
+      ),
       opponentParticipant: BattleParticipant.fromMap(
-          map['opponentParticipant'] as Map<String, dynamic>? ?? {}),
+        map['opponentParticipant'] as Map<String, dynamic>? ?? {},
+      ),
       completedAt: map['completedAt'] != null
           ? DateTime.parse(map['completedAt'])
           : DateTime.now(),
