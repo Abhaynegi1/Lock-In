@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Peach spark avatar">
+  <rect width="512" height="512" rx="256" fill="#F0CDBD"/>
+  <path d="M256 106l25 94 93 56-93 25-25 125-25-125-93-25 93-56z" fill="#FFFDFA" stroke="#171514" stroke-width="18" stroke-linejoin="round"/>
+  <circle cx="361" cy="145" r="13" fill="#171514"/><circle cx="149" cy="363" r="10" fill="#171514"/>
+</svg>

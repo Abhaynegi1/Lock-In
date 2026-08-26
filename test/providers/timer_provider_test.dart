@@ -44,6 +44,9 @@ void main() {
       await provider.updateUserName('Champion Focus');
       expect(provider.userName, 'Champion Focus');
 
+      await provider.updateUserAvatar('assets/default_pfp/avatar-book.svg');
+      expect(provider.userAvatar, 'assets/default_pfp/avatar-book.svg');
+
       await provider.setStrictAntiDistraction(false);
       expect(provider.isStrictAntiDistraction, false);
 

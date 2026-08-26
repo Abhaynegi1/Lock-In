@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Blue open book avatar">
+  <rect width="512" height="512" rx="256" fill="#CBDCE8"/>
+  <path d="M256 180c-49-37-111-27-139 1v166c30-25 91-35 139 5m0-172c49-37 111-27 139 1v166c-30-25-91-35-139 5" fill="#FFFDFA" stroke="#171514" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M160 235c23-9 48-8 70 1m-70 46c23-9 48-8 70 1m122-48c-23-9-48-8-70 1m70 46c-23-9-48-8-70 1" fill="none" stroke="#171514" stroke-width="14" stroke-linecap="round"/>
+</svg>

@@ -4,6 +4,7 @@ import '../models/focus_session.dart';
 import '../providers/timer_provider.dart';
 import '../utils/app_theme.dart';
 import '../widgets/doodle_decorations.dart';
+import '../widgets/user_avatar.dart';
 import 'battles_screen.dart';
 import 'focus_screen.dart';
 import 'history_screen.dart';
@@ -100,21 +101,11 @@ class _TodayView extends StatelessWidget {
                       MaterialPageRoute(builder: (_) => const ProfileScreen()),
                     );
                   },
-                  child: Container(
-                    width: 36,
-                    height: 36,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: AppTheme.sand,
-                      border: Border.all(color: AppTheme.ink, width: 1.5),
-                    ),
-                    child: const Center(
-                      child: Icon(
-                        Icons.person_outline,
-                        size: 18,
-                        color: AppTheme.ink,
-                      ),
-                    ),
+                  child: UserAvatar(
+                    avatarPath: provider.userAvatar,
+                    size: 38,
+                    borderWidth: 1.5,
+                    showShadow: false,
                   ),
                 ),
               ],

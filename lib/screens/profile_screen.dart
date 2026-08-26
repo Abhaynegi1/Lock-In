@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/timer_provider.dart';
 import '../utils/app_theme.dart';
+import '../widgets/avatar_picker_modal.dart';
 import '../widgets/doodle_decorations.dart';
+import '../widgets/user_avatar.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -62,29 +64,15 @@ class ProfileScreen extends StatelessWidget {
                     const SizedBox(height: 8),
                     // Circular PFP with tactile border and edit badge
                     GestureDetector(
-                      onTap: () => _showEditNicknameDialog(context, provider),
+                      onTap: () => AvatarPickerModal.show(context, provider),
                       child: Stack(
                         clipBehavior: Clip.none,
                         children: [
-                          Container(
-                            width: 88,
-                            height: 88,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: AppTheme.sand,
-                              border: Border.all(
-                                color: AppTheme.ink,
-                                width: 2.0,
-                              ),
-                              boxShadow: AppTheme.tactileShadow,
-                            ),
-                            child: const Center(
-                              child: Icon(
-                                Icons.person_rounded,
-                                size: 48,
-                                color: AppTheme.ink,
-                              ),
-                            ),
+                          UserAvatar(
+                            avatarPath: provider.userAvatar,
+                            size: 88,
+                            borderWidth: 2.0,
+                            showShadow: true,
                           ),
                           // Edit badge icon at bottom right
                           Positioned(

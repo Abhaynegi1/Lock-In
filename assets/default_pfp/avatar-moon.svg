@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Sage moon avatar">
+  <rect width="512" height="512" rx="256" fill="#D9E7CC"/>
+  <path d="M313 114c-83 14-139 92-125 175 13 78 84 133 163 127 18-2 35-7 50-16-67 3-126-43-138-113-12-71 34-139 105-158 15-4 30-5 45-3z" fill="#FFFDFA" stroke="#171514" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M148 178l8 24 24 8-24 8-8 24-8-24-24-8 24-8zM365 293l7 21 21 7-21 7-7 21-7-21-21-7 21-7z" fill="#171514"/>
+</svg>

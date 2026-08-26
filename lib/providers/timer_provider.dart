@@ -17,6 +17,7 @@ class TimerProvider with ChangeNotifier {
   int _selectedDurationMinutes = 45;
   int _dailyGoalMinutes = 240; // 4 hours
   String _userName = 'Lock In Member';
+  String _userAvatar = StorageService.defaultAvatar;
   bool _isStrictAntiDistraction = true;
   DateTime? _sessionEndTime;
   SessionStatus _status = SessionStatus.idle;
@@ -31,6 +32,7 @@ class TimerProvider with ChangeNotifier {
   int get selectedDurationMinutes => _selectedDurationMinutes;
   int get dailyGoalMinutes => _dailyGoalMinutes;
   String get userName => _userName;
+  String get userAvatar => _userAvatar;
   bool get isStrictAntiDistraction => _isStrictAntiDistraction;
   SessionStatus get status => _status;
   SessionType get activeSessionType => _activeSessionType;
@@ -96,6 +98,7 @@ class TimerProvider with ChangeNotifier {
     _battles = await _storageService.getBattles();
     _dailyGoalMinutes = await _storageService.getDailyGoalMinutes();
     _userName = await _storageService.getUserName();
+    _userAvatar = await _storageService.getUserAvatar();
     _isStrictAntiDistraction = await _storageService.getStrictAntiDistraction();
     notifyListeners();
   }
@@ -103,6 +106,14 @@ class TimerProvider with ChangeNotifier {
   Future<void> updateUserName(String name) async {
     _userName = name.trim().isEmpty ? 'Lock In Member' : name.trim();
     await _storageService.saveUserName(_userName);
+    notifyListeners();
+  }
+
+  Future<void> updateUserAvatar(String avatarPath) async {
+    _userAvatar = avatarPath.trim().isEmpty
+        ? StorageService.defaultAvatar
+        : avatarPath.trim();
+    await _storageService.saveUserAvatar(_userAvatar);
     notifyListeners();
   }
 

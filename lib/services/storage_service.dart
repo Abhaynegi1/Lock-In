@@ -8,8 +8,20 @@ class StorageService {
   static const String _battlesKey = 'focus_battles';
   static const String _dailyGoalKey = 'focus_daily_goal';
   static const String _userNameKey = 'focus_username';
+  static const String _userAvatarKey = 'focus_user_avatar';
+  static const String defaultAvatar = 'assets/default_pfp/avatar-spark.svg';
   static const String _strictAntiDistractionKey =
       'focus_strict_anti_distraction';
+
+  Future<String> getUserAvatar() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_userAvatarKey) ?? defaultAvatar;
+  }
+
+  Future<void> saveUserAvatar(String avatarPath) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_userAvatarKey, avatarPath);
+  }
 
   Future<String> getUserName() async {
     final prefs = await SharedPreferences.getInstance();
