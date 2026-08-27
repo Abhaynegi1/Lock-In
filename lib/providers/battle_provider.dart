@@ -139,9 +139,10 @@ class BattleProvider with ChangeNotifier {
       notifyListeners();
       return true;
     } catch (e) {
-      final msg = e
-          .toString()
-          .replaceFirst(RegExp(r'^(Exception|HttpException):\s*'), '');
+      final msg = e.toString().replaceFirst(
+        RegExp(r'^(Exception|HttpException):\s*'),
+        '',
+      );
       _errorMessage = msg.isNotEmpty
           ? msg
           : 'Could not create battle room. Please try again.';
@@ -192,9 +193,10 @@ class BattleProvider with ChangeNotifier {
       notifyListeners();
       return true;
     } catch (e) {
-      final msg = e
-          .toString()
-          .replaceFirst(RegExp(r'^(Exception|HttpException):\s*'), '');
+      final msg = e.toString().replaceFirst(
+        RegExp(r'^(Exception|HttpException):\s*'),
+        '',
+      );
       _errorMessage = msg.isNotEmpty
           ? msg
           : 'Could not join battle room. Please verify the code.';

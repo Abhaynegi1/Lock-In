@@ -242,12 +242,16 @@ class MockBattleRemoteDataSource implements BattleRemoteDataSource {
   }) async {
     final code = roomCode.trim().toUpperCase();
     if (code.length != 6) {
-      throw Exception('Invalid room code. Room codes must be exactly 6 characters.');
+      throw Exception(
+        'Invalid room code. Room codes must be exactly 6 characters.',
+      );
     }
 
     final existing = _mockStore[code];
     if (existing == null) {
-      throw Exception('Room "$code" does not exist. Please verify the room code.');
+      throw Exception(
+        'Room "$code" does not exist. Please verify the room code.',
+      );
     }
 
     if (existing.participants.length >= 2) {
@@ -256,7 +260,9 @@ class MockBattleRemoteDataSource implements BattleRemoteDataSource {
 
     if (existing.status != BattleStatus.waitingForPlayer &&
         existing.status != BattleStatus.created) {
-      throw Exception('This battle room is no longer accepting new participants.');
+      throw Exception(
+        'This battle room is no longer accepting new participants.',
+      );
     }
 
     final participantId = const Uuid().v4();

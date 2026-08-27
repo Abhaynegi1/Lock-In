@@ -79,10 +79,8 @@ void main() {
 
     test('rejects room codes of invalid length', () async {
       expect(
-        () => repository.joinBattle(
-          roomCode: 'KJ67',
-          displayName: 'GuestPlayer',
-        ),
+        () =>
+            repository.joinBattle(roomCode: 'KJ67', displayName: 'GuestPlayer'),
         throwsA(isA<Exception>()),
       );
     });

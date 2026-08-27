@@ -18,6 +18,17 @@ class HistoryScreen extends StatelessWidget {
     final totalMinutes = history.fold(0, (sum, s) => sum + s.durationMinutes);
     final totalHours = (totalMinutes / 60).toStringAsFixed(1);
 
+    // Group history sessions by calendar date
+    final Map<DateTime, List<FocusSession>> groupedHistory = {};
+    for (final session in history) {
+      final dateKey = DateTime(
+        session.dateTime.year,
+        session.dateTime.month,
+        session.dateTime.day,
+      );
+      groupedHistory.putIfAbsent(dateKey, () => []).add(session);
+    }
+
     return Scaffold(
       backgroundColor: AppTheme.background,
       body: SafeArea(
@@ -85,7 +96,7 @@ class HistoryScreen extends StatelessWidget {
               ),
               const SizedBox(height: 24),
               const Divider(color: AppTheme.inkFaint, thickness: 1),
-              const SizedBox(height: 20),
+              const SizedBox(height: 10),
 
               if (history.isEmpty)
                 Center(
@@ -110,7 +121,10 @@ class HistoryScreen extends StatelessWidget {
                   ),
                 )
               else
-                ...history.map((session) => _LogItem(session: session)),
+                for (final entry in groupedHistory.entries) ...[
+                  _DateSeparator(date: entry.key, sessions: entry.value),
+                  ...entry.value.map((session) => _LogItem(session: session)),
+                ],
             ],
           ),
         ),
@@ -146,6 +160,72 @@ class _StatColumn extends StatelessWidget {
   }
 }
 
+class _DateSeparator extends StatelessWidget {
+  final DateTime date;
+  final List<FocusSession> sessions;
+
+  const _DateSeparator({required this.date, required this.sessions});
+
+  String _formatDateHeader(DateTime date) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final yesterday = today.subtract(const Duration(days: 1));
+
+    if (date == today) {
+      return 'TODAY · ${DateFormat('MMM d').format(date).toUpperCase()}';
+    } else if (date == yesterday) {
+      return 'YESTERDAY · ${DateFormat('MMM d').format(date).toUpperCase()}';
+    } else if (date.year == now.year) {
+      return DateFormat('EEE, MMM d').format(date).toUpperCase();
+    } else {
+      return DateFormat('MMM d, yyyy').format(date).toUpperCase();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final totalMins = sessions.fold(0, (sum, s) => sum + s.durationMinutes);
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 14.0, bottom: 10.0),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            decoration: BoxDecoration(
+              color: AppTheme.sand,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: AppTheme.ink, width: 1.0),
+            ),
+            child: Text(
+              _formatDateHeader(date),
+              style: AppTheme.sansLabel(
+                fontSize: 10,
+                color: AppTheme.ink,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.8,
+              ),
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(child: Container(height: 1, color: AppTheme.inkFaint)),
+          const SizedBox(width: 10),
+          Text(
+            totalMins > 0
+                ? '$totalMins min'
+                : '${sessions.length} session${sessions.length == 1 ? "" : "s"}',
+            style: AppTheme.sansLabel(
+              fontSize: 10,
+              color: AppTheme.inkMuted,
+              letterSpacing: 0.4,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _LogItem extends StatelessWidget {
   final FocusSession session;
 
@@ -153,12 +233,12 @@ class _LogItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dateStr = DateFormat('MMM dd · HH:mm').format(session.dateTime);
+    final timeStr = DateFormat('HH:mm').format(session.dateTime);
     final isBattle = session.sessionType == SessionType.battle;
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
       decoration: BoxDecoration(
         color: AppTheme.background,
         borderRadius: BorderRadius.circular(14),
@@ -224,8 +304,8 @@ class _LogItem extends StatelessWidget {
                           session.targetDurationMinutes != null &&
                           session.targetDurationMinutes! >
                               session.durationMinutes
-                      ? '$dateStr · Target was ${session.targetDurationMinutes}m'
-                      : dateStr,
+                      ? '$timeStr · Target was ${session.targetDurationMinutes}m'
+                      : timeStr,
                   style: AppTheme.sansBody(
                     fontSize: 12,
                     color: AppTheme.inkMuted,

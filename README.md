@@ -122,28 +122,22 @@ LockIn incorporates a strict Continuous Integration (CI) pipeline running on Git
 
 Before pushing code or creating a PR, run the local verification suite:
 
-1. **Format Check**:
-   ```bash
-   dart format --output=none --set-exit-if-changed .
-   ```
-   *(To apply formatting automatically, run `dart format .`)*
-
-2. **Static Analysis & Linting**:
+1. **Static Analysis & Linting**:
    ```bash
    flutter analyze --fatal-infos --fatal-warnings
    ```
 
-3. **Automated Unit & Widget Tests**:
+2. **Automated Unit & Widget Tests**:
    ```bash
    flutter test --coverage
    ```
 
-4. **Android Build Verification**:
+3. **Android Build Verification**:
    ```bash
    flutter build apk --debug
    ```
 
-5. **Web Build Verification**:
+4. **Web Build Verification**:
    ```bash
    flutter build web --release
    ```

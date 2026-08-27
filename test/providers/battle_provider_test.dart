@@ -107,15 +107,18 @@ void main() {
       guestProvider.dispose();
     });
 
-    test('fails to join non-existent room and sets descriptive error message', () async {
-      final success = await provider.joinBattle(
-        roomCode: 'NONEX9',
-        displayName: 'Bob',
-      );
+    test(
+      'fails to join non-existent room and sets descriptive error message',
+      () async {
+        final success = await provider.joinBattle(
+          roomCode: 'NONEX9',
+          displayName: 'Bob',
+        );
 
-      expect(success, isFalse);
-      expect(provider.currentBattle, isNull);
-      expect(provider.errorMessage, contains('does not exist'));
-    });
+        expect(success, isFalse);
+        expect(provider.currentBattle, isNull);
+        expect(provider.errorMessage, contains('does not exist'));
+      },
+    );
   });
 }

@@ -62,7 +62,9 @@ class _JoinBattleModalState extends State<JoinBattleModal> {
     }
 
     if (code.length != 6) {
-      setState(() => _errorMessage = 'Room codes must be exactly 6 characters.');
+      setState(
+        () => _errorMessage = 'Room codes must be exactly 6 characters.',
+      );
       return;
     }
 
@@ -92,19 +94,27 @@ class _JoinBattleModalState extends State<JoinBattleModal> {
           MaterialPageRoute(builder: (_) => const BattleLobbyScreen()),
         );
       } else {
-        final err = battleProvider.errorMessage ?? 'Room "$code" does not exist.';
+        final err =
+            battleProvider.errorMessage ?? 'Room "$code" does not exist.';
         setState(() => _errorMessage = err);
         ScaffoldMessenger.of(context).hideCurrentSnackBar();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Row(
               children: [
-                const Icon(Icons.error_outline_rounded, color: AppTheme.background, size: 18),
+                const Icon(
+                  Icons.error_outline_rounded,
+                  color: AppTheme.background,
+                  size: 18,
+                ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     err,
-                    style: AppTheme.sansBody(color: AppTheme.background, fontWeight: FontWeight.w500),
+                    style: AppTheme.sansBody(
+                      color: AppTheme.background,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ),
               ],
@@ -205,14 +215,18 @@ class _JoinBattleModalState extends State<JoinBattleModal> {
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide(
-                    color: _errorMessage != null ? AppTheme.errorMuted : AppTheme.ink,
+                    color: _errorMessage != null
+                        ? AppTheme.errorMuted
+                        : AppTheme.ink,
                     width: 1.2,
                   ),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide(
-                    color: _errorMessage != null ? AppTheme.errorMuted : AppTheme.ink,
+                    color: _errorMessage != null
+                        ? AppTheme.errorMuted
+                        : AppTheme.ink,
                     width: 1.8,
                   ),
                 ),
@@ -251,11 +265,17 @@ class _JoinBattleModalState extends State<JoinBattleModal> {
               const SizedBox(height: 16),
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 10,
+                ),
                 decoration: BoxDecoration(
                   color: const Color(0xFFFBEBE8),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: AppTheme.errorMuted.withValues(alpha: 0.6), width: 1.2),
+                  border: Border.all(
+                    color: AppTheme.errorMuted.withValues(alpha: 0.6),
+                    width: 1.2,
+                  ),
                 ),
                 child: Row(
                   children: [
