@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math' as math;
 import 'package:uuid/uuid.dart';
 import '../models/battle_state.dart';
 
@@ -188,14 +189,8 @@ class MockBattleRemoteDataSource implements BattleRemoteDataSource {
 
   static String _generateRoomCode() {
     const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-    final rand = DateTime.now().millisecondsSinceEpoch;
-    var code = '';
-    var n = rand;
-    for (int i = 0; i < 6; i++) {
-      code += chars[n % chars.length];
-      n ~/= 10;
-    }
-    return code;
+    final rnd = math.Random();
+    return List.generate(6, (_) => chars[rnd.nextInt(chars.length)]).join();
   }
 
   @override
@@ -246,9 +241,24 @@ class MockBattleRemoteDataSource implements BattleRemoteDataSource {
     String? avatar,
   }) async {
     final code = roomCode.trim().toUpperCase();
-    final existing = _mockStore[code];
+    if (code.length != 6) {
+      throw Exception('Invalid room code. Room codes must be exactly 6 characters.');
+    }
 
-    final battleId = existing?.id ?? const Uuid().v4();
+    final existing = _mockStore[code];
+    if (existing == null) {
+      throw Exception('Room "$code" does not exist. Please verify the room code.');
+    }
+
+    if (existing.participants.length >= 2) {
+      throw Exception('Room "$code" is already full (1v1 maximum reached).');
+    }
+
+    if (existing.status != BattleStatus.waitingForPlayer &&
+        existing.status != BattleStatus.created) {
+      throw Exception('This battle room is no longer accepting new participants.');
+    }
+
     final participantId = const Uuid().v4();
     final participantToken = 'mock_token_${const Uuid().v4()}';
 
@@ -260,39 +270,17 @@ class MockBattleRemoteDataSource implements BattleRemoteDataSource {
       isHost: false,
     );
 
-    List<BattleParticipant> participants = [];
-    if (existing != null) {
-      participants = [...existing.participants, guestParticipant];
-    } else {
-      // Create mock host if room didn't exist
-      participants = [
-        const BattleParticipant(
-          id: 'mock_host_id',
-          displayName: 'Player 1',
-          status: ParticipantStatus.ready,
-          isHost: true,
-        ),
-        guestParticipant,
-      ];
-    }
+    final updatedParticipants = [...existing.participants, guestParticipant];
 
-    final updatedBattle =
-        (existing ??
-                BattleSessionModel(
-                  id: battleId,
-                  roomCode: code,
-                  durationMinutes: 25,
-                  createdAt: DateTime.now(),
-                ))
-            .copyWith(
-              status: BattleStatus.waitingForReady,
-              participants: participants,
-            );
+    final updatedBattle = existing.copyWith(
+      status: BattleStatus.waitingForReady,
+      participants: updatedParticipants,
+    );
 
     _mockStore[code] = updatedBattle;
 
     return BattleJoinResponse(
-      battleId: battleId,
+      battleId: existing.id,
       participantId: participantId,
       participantToken: participantToken,
       battle: updatedBattle,

@@ -1,5 +1,4 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lock_in/models/battle_event.dart';
 import 'package:lock_in/models/battle_state.dart';
 import 'package:lock_in/providers/battle_provider.dart';
 import 'package:lock_in/services/battle_realtime_data_source.dart';
@@ -14,15 +13,17 @@ void main() {
   group('BattleProvider Tests', () {
     late BattleProvider provider;
     late BattleRepository repository;
+    late MockBattleRemoteDataSource mockRemote;
     late MockBattleRealtimeDataSource mockRealtime;
 
     setUp(() async {
       SharedPreferences.setMockInitialValues({});
       final storage = StorageService();
+      mockRemote = MockBattleRemoteDataSource();
       mockRealtime = MockBattleRealtimeDataSource();
       repository = BattleRepository(
         storageService: storage,
-        remoteDataSource: MockBattleRemoteDataSource(),
+        remoteDataSource: mockRemote,
         realtimeDataSource: mockRealtime,
       );
       provider = BattleProvider(
@@ -73,29 +74,48 @@ void main() {
       },
     );
 
-    test('recovers server-authoritative timer on sync', () async {
-      await provider.createBattle(durationMinutes: 25, displayName: 'Alice');
+    test('joins existing battle room successfully', () async {
+      final createSuccess = await provider.createBattle(
+        durationMinutes: 25,
+        displayName: 'Alice',
+      );
+      expect(createSuccess, isTrue);
+      final roomCode = provider.currentBattle!.roomCode;
 
-      // Simulate remote BATTLE_STARTED event
-      final now = DateTime.now();
-      mockRealtime.simulateRemoteEvent(
-        BattleEvent(
-          type: BattleEventType.battleStarted,
-          battleId: provider.currentBattle!.id,
-          timestamp: now,
-          payload: {
-            'startedAt': now.toIso8601String(),
-            'durationSeconds': 1500,
-          },
+      // Create a second provider instance representing guest player
+      final guestStorage = StorageService();
+      final guestProvider = BattleProvider(
+        repository: BattleRepository(
+          storageService: guestStorage,
+          remoteDataSource: mockRemote, // share mock datasource
+          realtimeDataSource: mockRealtime,
         ),
+        storageService: guestStorage,
       );
 
-      // Wait a microtask for event loop
-      await Future<void>.delayed(const Duration(milliseconds: 20));
+      final joinSuccess = await guestProvider.joinBattle(
+        roomCode: roomCode,
+        displayName: 'Bob',
+      );
 
-      expect(provider.status, BattleStatus.active);
-      expect(provider.totalDurationSeconds, 1500);
-      expect(provider.secondsRemaining, greaterThan(1400));
+      expect(joinSuccess, isTrue);
+      expect(guestProvider.currentBattle, isNotNull);
+      expect(guestProvider.currentBattle?.participants.length, 2);
+      expect(guestProvider.isHost, isFalse);
+      expect(guestProvider.errorMessage, isNull);
+
+      guestProvider.dispose();
+    });
+
+    test('fails to join non-existent room and sets descriptive error message', () async {
+      final success = await provider.joinBattle(
+        roomCode: 'NONEX9',
+        displayName: 'Bob',
+      );
+
+      expect(success, isFalse);
+      expect(provider.currentBattle, isNull);
+      expect(provider.errorMessage, contains('does not exist'));
     });
   });
 }

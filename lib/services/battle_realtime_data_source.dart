@@ -232,29 +232,41 @@ class MockBattleRealtimeDataSource implements BattleRealtimeDataSource {
     required Uri serverUri,
   }) async {
     _connectionState = BattleConnectionState.connected;
-    _stateController.add(_connectionState);
+    if (!_stateController.isClosed) {
+      _stateController.add(_connectionState);
+    }
   }
 
   @override
   Future<void> sendEvent(BattleEvent event) async {
     // Echo event back or dispatch to event stream
-    _eventController.add(event);
+    if (!_eventController.isClosed) {
+      _eventController.add(event);
+    }
   }
 
   void simulateRemoteEvent(BattleEvent event) {
-    _eventController.add(event);
+    if (!_eventController.isClosed) {
+      _eventController.add(event);
+    }
   }
 
   @override
   Future<void> disconnect() async {
     _connectionState = BattleConnectionState.disconnected;
-    _stateController.add(_connectionState);
+    if (!_stateController.isClosed) {
+      _stateController.add(_connectionState);
+    }
   }
 
   @override
   void dispose() {
-    disconnect();
-    _eventController.close();
-    _stateController.close();
+    _connectionState = BattleConnectionState.disconnected;
+    if (!_eventController.isClosed) {
+      _eventController.close();
+    }
+    if (!_stateController.isClosed) {
+      _stateController.close();
+    }
   }
 }

@@ -26,16 +26,27 @@ class JoinBattleModal extends StatefulWidget {
 class _JoinBattleModalState extends State<JoinBattleModal> {
   late TextEditingController _nameController;
   final TextEditingController _codeController = TextEditingController();
+  String? _errorMessage;
 
   @override
   void initState() {
     super.initState();
     final timerProvider = context.read<TimerProvider>();
     _nameController = TextEditingController(text: timerProvider.userName);
+    _codeController.addListener(_clearError);
+    _nameController.addListener(_clearError);
+  }
+
+  void _clearError() {
+    if (_errorMessage != null) {
+      setState(() => _errorMessage = null);
+    }
   }
 
   @override
   void dispose() {
+    _codeController.removeListener(_clearError);
+    _nameController.removeListener(_clearError);
     _nameController.dispose();
     _codeController.dispose();
     super.dispose();
@@ -45,7 +56,20 @@ class _JoinBattleModalState extends State<JoinBattleModal> {
     final code = _codeController.text.trim().toUpperCase();
     final name = _nameController.text.trim();
 
-    if (code.isEmpty || name.isEmpty) return;
+    if (code.isEmpty) {
+      setState(() => _errorMessage = 'Please enter the 6-character room code.');
+      return;
+    }
+
+    if (code.length != 6) {
+      setState(() => _errorMessage = 'Room codes must be exactly 6 characters.');
+      return;
+    }
+
+    if (name.isEmpty) {
+      setState(() => _errorMessage = 'Please enter your display name.');
+      return;
+    }
 
     final battleProvider = context.read<BattleProvider>();
     final timerProvider = context.read<TimerProvider>();
@@ -68,13 +92,30 @@ class _JoinBattleModalState extends State<JoinBattleModal> {
           MaterialPageRoute(builder: (_) => const BattleLobbyScreen()),
         );
       } else {
+        final err = battleProvider.errorMessage ?? 'Room "$code" does not exist.';
+        setState(() => _errorMessage = err);
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
-              battleProvider.errorMessage ?? 'Could not find or join room.',
-              style: AppTheme.sansBody(color: AppTheme.background),
+            content: Row(
+              children: [
+                const Icon(Icons.error_outline_rounded, color: AppTheme.background, size: 18),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    err,
+                    style: AppTheme.sansBody(color: AppTheme.background, fontWeight: FontWeight.w500),
+                  ),
+                ),
+              ],
             ),
+            behavior: SnackBarBehavior.floating,
             backgroundColor: AppTheme.ink,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+              side: const BorderSide(color: AppTheme.ink, width: 1),
+            ),
+            duration: const Duration(seconds: 3),
           ),
         );
       }
@@ -163,11 +204,17 @@ class _JoinBattleModalState extends State<JoinBattleModal> {
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: AppTheme.ink, width: 1.2),
+                  borderSide: BorderSide(
+                    color: _errorMessage != null ? AppTheme.errorMuted : AppTheme.ink,
+                    width: 1.2,
+                  ),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: AppTheme.ink, width: 1.8),
+                  borderSide: BorderSide(
+                    color: _errorMessage != null ? AppTheme.errorMuted : AppTheme.ink,
+                    width: 1.8,
+                  ),
                 ),
               ),
             ),
@@ -198,6 +245,41 @@ class _JoinBattleModalState extends State<JoinBattleModal> {
                 ),
               ),
             ),
+
+            // Inline Error Banner Toast
+            if (_errorMessage != null) ...[
+              const SizedBox(height: 16),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFBEBE8),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: AppTheme.errorMuted.withValues(alpha: 0.6), width: 1.2),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.error_outline_rounded,
+                      color: AppTheme.errorMuted,
+                      size: 18,
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        _errorMessage!,
+                        style: AppTheme.sansBody(
+                          fontSize: 13,
+                          color: AppTheme.errorMuted,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+
             const SizedBox(height: 24),
 
             // Join Button

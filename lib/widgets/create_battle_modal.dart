@@ -42,7 +42,18 @@ class _CreateBattleModalState extends State<CreateBattleModal> {
 
   Future<void> _handleCreate() async {
     final name = _nameController.text.trim();
-    if (name.isEmpty) return;
+    if (name.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Please enter your display name.',
+            style: AppTheme.sansBody(color: AppTheme.background),
+          ),
+          backgroundColor: AppTheme.ink,
+        ),
+      );
+      return;
+    }
 
     final battleProvider = context.read<BattleProvider>();
     final timerProvider = context.read<TimerProvider>();

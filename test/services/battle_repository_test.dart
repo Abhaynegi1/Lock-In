@@ -66,5 +66,47 @@ void main() {
       final localBattles = await repository.getLocalBattleSessions();
       expect(localBattles.any((b) => b.id == createResp.battleId), isTrue);
     });
+
+    test('rejects non-existent room code with descriptive error', () async {
+      expect(
+        () => repository.joinBattle(
+          roomCode: 'ABCDEF',
+          displayName: 'GuestPlayer',
+        ),
+        throwsA(isA<Exception>()),
+      );
+    });
+
+    test('rejects room codes of invalid length', () async {
+      expect(
+        () => repository.joinBattle(
+          roomCode: 'KJ67',
+          displayName: 'GuestPlayer',
+        ),
+        throwsA(isA<Exception>()),
+      );
+    });
+
+    test('rejects joining when room is already full (1v1)', () async {
+      final createResp = await repository.createBattle(
+        durationMinutes: 25,
+        displayName: 'HostPlayer',
+      );
+
+      // First player joins (fills the room to 2)
+      await repository.joinBattle(
+        roomCode: createResp.roomCode,
+        displayName: 'Player2',
+      );
+
+      // Third player attempts to join
+      expect(
+        () => repository.joinBattle(
+          roomCode: createResp.roomCode,
+          displayName: 'Player3',
+        ),
+        throwsA(isA<Exception>()),
+      );
+    });
   });
 }
