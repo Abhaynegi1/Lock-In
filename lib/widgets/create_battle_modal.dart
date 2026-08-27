@@ -26,16 +26,25 @@ class _CreateBattleModalState extends State<CreateBattleModal> {
   late TextEditingController _nameController;
   int _selectedDuration = 25;
   final List<int> _durations = [15, 25, 45, 60];
+  String? _errorMessage;
 
   @override
   void initState() {
     super.initState();
     final timerProvider = context.read<TimerProvider>();
     _nameController = TextEditingController(text: timerProvider.userName);
+    _nameController.addListener(_clearError);
+  }
+
+  void _clearError() {
+    if (_errorMessage != null) {
+      setState(() => _errorMessage = null);
+    }
   }
 
   @override
   void dispose() {
+    _nameController.removeListener(_clearError);
     _nameController.dispose();
     super.dispose();
   }
@@ -43,15 +52,7 @@ class _CreateBattleModalState extends State<CreateBattleModal> {
   Future<void> _handleCreate() async {
     final name = _nameController.text.trim();
     if (name.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Please enter your display name.',
-            style: AppTheme.sansBody(color: AppTheme.background),
-          ),
-          backgroundColor: AppTheme.ink,
-        ),
-      );
+      setState(() => _errorMessage = 'Please enter your display name.');
       return;
     }
 
@@ -77,13 +78,30 @@ class _CreateBattleModalState extends State<CreateBattleModal> {
           MaterialPageRoute(builder: (_) => const BattleLobbyScreen()),
         );
       } else {
+        final err = battleProvider.errorMessage ?? 'Failed to create battle room.';
+        setState(() => _errorMessage = err);
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
-              battleProvider.errorMessage ?? 'Failed to create battle room',
-              style: AppTheme.sansBody(color: AppTheme.background),
+            content: Row(
+              children: [
+                const Icon(Icons.error_outline_rounded, color: AppTheme.background, size: 18),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    err,
+                    style: AppTheme.sansBody(color: AppTheme.background, fontWeight: FontWeight.w500),
+                  ),
+                ),
+              ],
             ),
+            behavior: SnackBarBehavior.floating,
             backgroundColor: AppTheme.ink,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+              side: const BorderSide(color: AppTheme.ink, width: 1),
+            ),
+            duration: const Duration(seconds: 3),
           ),
         );
       }
@@ -160,11 +178,17 @@ class _CreateBattleModalState extends State<CreateBattleModal> {
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: AppTheme.ink, width: 1.2),
+                  borderSide: BorderSide(
+                    color: _errorMessage != null ? AppTheme.errorMuted : AppTheme.ink,
+                    width: 1.2,
+                  ),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: AppTheme.ink, width: 1.8),
+                  borderSide: BorderSide(
+                    color: _errorMessage != null ? AppTheme.errorMuted : AppTheme.ink,
+                    width: 1.8,
+                  ),
                 ),
               ),
             ),
@@ -214,6 +238,41 @@ class _CreateBattleModalState extends State<CreateBattleModal> {
                 );
               }).toList(),
             ),
+
+            // Inline Error Banner Toast
+            if (_errorMessage != null) ...[
+              const SizedBox(height: 16),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFBEBE8),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: AppTheme.errorMuted.withValues(alpha: 0.6), width: 1.2),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.error_outline_rounded,
+                      color: AppTheme.errorMuted,
+                      size: 18,
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        _errorMessage!,
+                        style: AppTheme.sansBody(
+                          fontSize: 13,
+                          color: AppTheme.errorMuted,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+
             const SizedBox(height: 24),
 
             // Create Room Action

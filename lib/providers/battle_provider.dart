@@ -139,10 +139,17 @@ class BattleProvider with ChangeNotifier {
       notifyListeners();
       return true;
     } catch (e) {
-      final msg = e.toString().replaceFirst(
+      String msg = e.toString().replaceFirst(
         RegExp(r'^(Exception|HttpException):\s*'),
         '',
       );
+      if (msg.contains('SocketException') ||
+          msg.contains('Failed host lookup') ||
+          msg.contains('Network is unreachable') ||
+          msg.contains('Connection refused') ||
+          msg.contains('ClientException')) {
+        msg = 'No internet connection. Please check your network and try again.';
+      }
       _errorMessage = msg.isNotEmpty
           ? msg
           : 'Could not create battle room. Please try again.';
@@ -193,10 +200,17 @@ class BattleProvider with ChangeNotifier {
       notifyListeners();
       return true;
     } catch (e) {
-      final msg = e.toString().replaceFirst(
+      String msg = e.toString().replaceFirst(
         RegExp(r'^(Exception|HttpException):\s*'),
         '',
       );
+      if (msg.contains('SocketException') ||
+          msg.contains('Failed host lookup') ||
+          msg.contains('Network is unreachable') ||
+          msg.contains('Connection refused') ||
+          msg.contains('ClientException')) {
+        msg = 'No internet connection. Please check your network and try again.';
+      }
       _errorMessage = msg.isNotEmpty
           ? msg
           : 'Could not join battle room. Please verify the code.';
