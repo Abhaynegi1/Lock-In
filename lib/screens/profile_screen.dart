@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../providers/auth_provider.dart';
 import '../providers/timer_provider.dart';
 import '../utils/app_theme.dart';
 import '../widgets/avatar_picker_modal.dart';
+import '../widgets/cloud_sync_modal.dart';
 import '../widgets/doodle_decorations.dart';
 import '../widgets/user_avatar.dart';
 
@@ -12,6 +14,7 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<TimerProvider>();
+    final auth = context.watch<AuthProvider>();
 
     return Scaffold(
       backgroundColor: AppTheme.background,
@@ -21,42 +24,98 @@ class ProfileScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (Navigator.canPop(context)) ...[
-                GestureDetector(
-                  onTap: () => Navigator.pop(context),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 6,
-                    ),
-                    decoration: BoxDecoration(
-                      color: AppTheme.sand,
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: AppTheme.ink, width: 1.2),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(
-                          Icons.arrow_back,
-                          size: 16,
-                          color: AppTheme.ink,
+              // Top Bar with Back button and Cloud Sync button
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  if (Navigator.canPop(context))
+                    GestureDetector(
+                      onTap: () => Navigator.pop(context),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
                         ),
-                        const SizedBox(width: 6),
-                        Text(
-                          'Back',
-                          style: AppTheme.sansBody(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
+                        decoration: BoxDecoration(
+                          color: AppTheme.sand,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: AppTheme.ink, width: 1.2),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              Icons.arrow_back,
+                              size: 16,
+                              color: AppTheme.ink,
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              'Back',
+                              style: AppTheme.sansBody(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                color: AppTheme.ink,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
+                  else
+                    const SizedBox.shrink(),
+
+                  // Cloud Sync Button
+                  GestureDetector(
+                    onTap: () => CloudSyncModal.show(context),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: auth.isAuthenticated ? AppTheme.sage : AppTheme.sand,
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: AppTheme.ink, width: 1.2),
+                        boxShadow: AppTheme.smallTactileShadow,
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            auth.isAuthenticated
+                                ? Icons.cloud_done_outlined
+                                : Icons.cloud_outlined,
+                            size: 16,
                             color: AppTheme.ink,
                           ),
-                        ),
-                      ],
+                          const SizedBox(width: 6),
+                          Text(
+                            auth.isAuthenticated ? 'Synced' : 'Cloud',
+                            style: AppTheme.sansBody(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                              color: AppTheme.ink,
+                            ),
+                          ),
+                          if (auth.isSyncing) ...[
+                            const SizedBox(width: 6),
+                            const SizedBox(
+                              width: 10,
+                              height: 10,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 1.5,
+                                color: AppTheme.ink,
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 16),
-              ],
+                ],
+              ),
+              const SizedBox(height: 16),
               // Circular Profile Picture and Nickname Section
               Center(
                 child: Column(

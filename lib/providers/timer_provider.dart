@@ -104,6 +104,10 @@ class TimerProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> refreshFromStorage() async {
+    await _loadInitialData();
+  }
+
   Future<void> updateUserName(String name) async {
     _userName = name.trim().isEmpty ? 'Lock In Member' : name.trim();
     await _storageService.saveUserName(_userName);
