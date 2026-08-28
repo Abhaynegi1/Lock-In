@@ -60,12 +60,13 @@ class TimerProvider with ChangeNotifier {
     return '${_selectedDurationMinutes.toString().padLeft(2, '0')}:00';
   }
 
-  // Real today's focus calculation based on all focused minutes recorded
+  // Real today's focus calculation based on completed focused minutes recorded
   int get todayFocusMinutes {
     final now = DateTime.now();
     int minutes = 0;
     for (var s in _history) {
-      if (s.dateTime.year == now.year &&
+      if (s.isWin &&
+          s.dateTime.year == now.year &&
           s.dateTime.month == now.month &&
           s.dateTime.day == now.day) {
         minutes += s.durationMinutes;

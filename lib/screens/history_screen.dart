@@ -15,7 +15,9 @@ class HistoryScreen extends StatelessWidget {
     final history = provider.history;
 
     final wonSessions = history.where((s) => s.isWin).length;
-    final totalMinutes = history.fold(0, (sum, s) => sum + s.durationMinutes);
+    final totalMinutes = history
+        .where((s) => s.isWin)
+        .fold(0, (sum, s) => sum + s.durationMinutes);
     final totalHours = (totalMinutes / 60).toStringAsFixed(1);
 
     // Group history sessions by calendar date
@@ -184,7 +186,9 @@ class _DateSeparator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final totalMins = sessions.fold(0, (sum, s) => sum + s.durationMinutes);
+    final totalMins = sessions
+        .where((s) => s.isWin)
+        .fold(0, (sum, s) => sum + s.durationMinutes);
 
     return Padding(
       padding: const EdgeInsets.only(top: 14.0, bottom: 10.0),

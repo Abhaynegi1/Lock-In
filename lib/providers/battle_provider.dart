@@ -449,7 +449,7 @@ class BattleProvider with ChangeNotifier {
   ) async {
     final session = FocusSession(
       id: battle.id,
-      durationMinutes: battle.durationMinutes,
+      durationMinutes: isWin ? battle.durationMinutes : 0,
       targetDurationMinutes: battle.durationMinutes,
       dateTime: DateTime.now(),
       isWin: isWin,
