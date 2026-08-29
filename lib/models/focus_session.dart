@@ -56,4 +56,28 @@ class FocusSession {
 
   factory FocusSession.fromJson(String source) =>
       FocusSession.fromMap(json.decode(source));
+
+  FocusSession copyWith({
+    String? id,
+    int? durationMinutes,
+    int? targetDurationMinutes,
+    DateTime? dateTime,
+    bool? isWin,
+    SessionType? sessionType,
+    String? opponentName,
+    String? opponentScore,
+  }) {
+    return FocusSession(
+      id: id ?? this.id,
+      durationMinutes: durationMinutes ?? this.durationMinutes,
+      targetDurationMinutes:
+          targetDurationMinutes ?? this.targetDurationMinutes,
+      dateTime: dateTime ?? this.dateTime,
+      isWin: isWin ?? this.isWin,
+      sessionType: sessionType ?? this.sessionType,
+      opponentName: opponentName ?? this.opponentName,
+      opponentScore: opponentScore ?? this.opponentScore,
+    );
+  }
 }
+

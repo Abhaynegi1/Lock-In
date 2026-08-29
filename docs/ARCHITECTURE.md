@@ -977,4 +977,42 @@ Session Outcome (TimerProvider / BattleProvider)
 - **Non-Punitive Forfeits**: Forfeiting triggers a gentle single tactile click (`•`) with zero audio, reinforcing accountability without punitive buzzer sounds.
 - **Single Source of Truth & Deduplication**: Built-in 1.5-second suppression guard ensures multiplayer battle synchronization and local timers never produce duplicate completion audio.
 
+---
 
+## 30. Flow-State Session Extension Subsystem
+
+### 30.1 Philosophy & State Mechanics
+When a user completes an intense focus block (e.g. 25 minutes) and is in deep flow, breaking concentration to configure a new timer creates friction. The **Session Extension** subsystem allows users to directly extend their current session from the completion screen while protecting completed work.
+
+```text
+[Completed 25m Session (Won)]
+           │
+           ▼
+[ResultScreen: Extend Card (+5m default, stepper, chips)]
+           │
+           ├── Taps Extend (+5m)
+           │          │
+           │          ▼
+           │  [FocusScreen: Extending (+25m saved)]
+           │          │
+           │     ┌────┴────────────────────────┐
+           │     ▼                             ▼
+           │  [Completes Extension]     [Interrupted / Lockout / Exit]
+           │     │                             │
+           │     ▼                             ▼
+           │  Update Session to 30m       Preserve Base 25m Win
+           │  - Local storage & history   - Keep isWin: true
+           │  - Supabase upsert (same id) - Protect streak from penalty
+           │  - Additional battle score   - Display reassurance banner
+```
+
+### 30.2 Core Components & State Machine
+1. **`FocusSession.copyWith`**: Enables creating updated session instances with new `durationMinutes` and `targetDurationMinutes` while preserving immutable ID, timestamps, and battle metadata.
+2. **`StorageService.updateSession`**: Replaces the matching session in persistent storage (`focus_history`) without re-incrementing or resetting the streak.
+3. **`TimerProvider.extendSession(int extensionMinutes)`**:
+   - Captures `_extendingSessionId` and `_baseCompletedMinutes`.
+   - Transitions state to `SessionStatus.running` for the extended duration.
+   - Activates notification and screen wake safeguards.
+4. **Resilient Failure Recovery**:
+   - If an extension is forfeited or strictly locked out, `TimerProvider` preserves `SessionStatus.won`, sets `_totalSeconds = baseCompletedMinutes * 60`, flags `_extensionInterrupted = true`, and avoids any streak penalty.
+   - The user returns to `ResultScreen` with a prominent reassurance banner: *"Extension ended early. Your 25m session was safely recorded!"*.

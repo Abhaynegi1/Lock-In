@@ -41,6 +41,9 @@ class TimerProvider with ChangeNotifier {
   BattleModel? _activeBattle;
   List<FocusSession> _history = [];
   List<BattleModel> _battles = [];
+  String? _extendingSessionId;
+  int _baseCompletedMinutes = 0;
+  bool _extensionInterrupted = false;
 
   int get secondsRemaining => _secondsRemaining;
   int get totalSeconds => _totalSeconds;
@@ -58,6 +61,11 @@ class TimerProvider with ChangeNotifier {
   BattleModel? get activeBattle => _activeBattle;
   List<FocusSession> get history => _history;
   List<BattleModel> get battles => _battles;
+  String? get extendingSessionId => _extendingSessionId;
+  bool get isExtending => _extendingSessionId != null;
+  int get baseCompletedMinutes => _baseCompletedMinutes;
+  bool get extensionInterrupted => _extensionInterrupted;
+
 
   BattleModel? get featuredBattle =>
       _battles.isNotEmpty ? _battles.first : null;
@@ -185,15 +193,63 @@ class TimerProvider with ChangeNotifier {
 
   void _syncNotification() {
     if (_status == SessionStatus.running) {
-      final title = _activeSessionType == SessionType.battle
-          ? 'Battle with ${_activeBattle?.opponentName ?? "Opponent"}'
-          : 'Solo Focus';
+      final String title;
+      if (_extendingSessionId != null) {
+        title = 'Extending Focus (+${_baseCompletedMinutes}m saved)';
+      } else if (_activeSessionType == SessionType.battle) {
+        title = 'Battle with ${_activeBattle?.opponentName ?? "Opponent"}';
+      } else {
+        title = 'Solo Focus';
+      }
       NotificationService().updateTimerNotification(
         timeRemaining: timerString,
         title: title,
         isBattle: _activeSessionType == SessionType.battle,
       );
     }
+  }
+
+  void extendSession(int extensionMinutes) {
+    if (_history.isEmpty) return;
+    final latestSession = _history.first;
+    _extendingSessionId = latestSession.id;
+    _baseCompletedMinutes = latestSession.durationMinutes;
+    _extensionInterrupted = false;
+
+    _activeSessionType = latestSession.sessionType;
+    final duration = extensionMinutes.clamp(1, 180);
+    _status = SessionStatus.running;
+    _totalSeconds = duration * 60;
+    _secondsRemaining = _totalSeconds;
+    _sessionEndTime = DateTime.now().add(Duration(seconds: _totalSeconds));
+    if (_isStrictAntiDistraction) {
+      unawaited(ScreenWakeService.enable());
+    }
+    notifyListeners();
+    _syncNotification();
+
+    _timer?.cancel();
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_sessionEndTime != null) {
+        final diff = _sessionEndTime!.difference(DateTime.now()).inSeconds;
+        if (diff > 0) {
+          _secondsRemaining = diff;
+          notifyListeners();
+          _syncNotification();
+        } else {
+          _secondsRemaining = 0;
+          _onSessionComplete(true);
+        }
+      } else {
+        if (_secondsRemaining > 0) {
+          _secondsRemaining--;
+          notifyListeners();
+          _syncNotification();
+        } else {
+          _onSessionComplete(true);
+        }
+      }
+    });
   }
 
   void startSession({
@@ -252,15 +308,88 @@ class TimerProvider with ChangeNotifier {
     }
   }
 
-  void forfeitSession() {
+  Future<void> forfeitSession() async {
     if (_status == SessionStatus.running) {
+      _timer?.cancel();
       NotificationService().cancelTimerNotification();
-      _onSessionComplete(false);
+      await _onSessionComplete(false);
     }
   }
 
   Future<void> _onSessionComplete(bool isWin) async {
     _timer?.cancel();
+    unawaited(ScreenWakeService.disable());
+
+
+    if (_extendingSessionId != null) {
+      if (isWin) {
+        final extensionMinutes = _totalSeconds ~/ 60;
+        final newTotalMinutes = _baseCompletedMinutes + extensionMinutes;
+
+        // Locate and update session in history and storage
+        final sessionIndex =
+            _history.indexWhere((s) => s.id == _extendingSessionId);
+        if (sessionIndex != -1) {
+          final oldSession = _history[sessionIndex];
+          final updatedSession = oldSession.copyWith(
+            durationMinutes: newTotalMinutes,
+            targetDurationMinutes: newTotalMinutes,
+          );
+          await _storageService.updateSession(updatedSession);
+          _history[sessionIndex] = updatedSession;
+        }
+
+        // Add additional minutes to active battle if applicable
+        if (_activeBattle != null && extensionMinutes > 0) {
+          final updatedBattles = _battles.map((b) {
+            if (b.id == _activeBattle!.id) {
+              return b.copyWith(userMinutes: b.userMinutes + extensionMinutes);
+            }
+            return b;
+          }).toList();
+          _battles = updatedBattles;
+          await _storageService.saveBattles(_battles);
+        }
+
+        unawaited(_feedbackService.onSessionCompleted(
+          mode: _finishCueMode,
+          preset: _finishCuePreset,
+        ));
+
+        await NotificationService().showSessionCompleteNotification(
+          title: '🎉 Focus Block Extended!',
+          body:
+              'You extended and completed $newTotalMinutes minutes of deep focus unbroken.',
+        );
+
+        _totalSeconds = newTotalMinutes * 60;
+        _secondsRemaining = 0;
+        _status = SessionStatus.won;
+        _extendingSessionId = null;
+        _baseCompletedMinutes = 0;
+        _extensionInterrupted = false;
+
+        notifyListeners();
+        _autoSyncCloud();
+        return;
+      } else {
+        // Interrupted / locked out during extension
+        // Protect original win and streak!
+        await NotificationService().cancelTimerNotification();
+        unawaited(_feedbackService.onSessionForfeited());
+
+        _totalSeconds = _baseCompletedMinutes * 60;
+        _secondsRemaining = 0;
+        _status = SessionStatus.won;
+        _extensionInterrupted = true;
+        _extendingSessionId = null;
+        _baseCompletedMinutes = 0;
+
+        notifyListeners();
+        return;
+      }
+    }
+
     _status = isWin ? SessionStatus.won : SessionStatus.lost;
 
     if (isWin) {
@@ -271,8 +400,6 @@ class TimerProvider with ChangeNotifier {
     } else {
       unawaited(_feedbackService.onSessionForfeited());
     }
-
-    await ScreenWakeService.disable();
 
     final targetDuration = _totalSeconds ~/ 60;
     final elapsedSeconds = _totalSeconds - _secondsRemaining;
@@ -354,8 +481,31 @@ class TimerProvider with ChangeNotifier {
     _secondsRemaining = 0;
     _totalSeconds = 0;
     _activeBattle = null;
+    _extendingSessionId = null;
+    _baseCompletedMinutes = 0;
+    _extensionInterrupted = false;
     notifyListeners();
   }
+
+  @visibleForTesting
+  Future<void> completeSessionForTesting([bool isWin = true]) async {
+    await _onSessionComplete(isWin);
+  }
+
+  @visibleForTesting
+  void setStatusForTesting(SessionStatus s, {int? totalSeconds}) {
+    _status = s;
+    if (totalSeconds != null) _totalSeconds = totalSeconds;
+    notifyListeners();
+  }
+
+  @visibleForTesting
+  void setExtensionInterruptedForTesting(bool value) {
+    _extensionInterrupted = value;
+    notifyListeners();
+  }
+
+
 
   void _autoSyncCloud() {
     final supabase = SupabaseService();

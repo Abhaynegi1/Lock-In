@@ -81,6 +81,24 @@ class StorageService {
     }
   }
 
+  Future<void> updateSession(FocusSession updatedSession) async {
+    final prefs = await SharedPreferences.getInstance();
+    final List<String> history = prefs.getStringList(_historyKey) ?? [];
+    final index = history.indexWhere((s) {
+      try {
+        final decoded = FocusSession.fromJson(s);
+        return decoded.id == updatedSession.id;
+      } catch (_) {
+        return false;
+      }
+    });
+    if (index != -1) {
+      history[index] = updatedSession.toJson();
+      await prefs.setStringList(_historyKey, history);
+    }
+  }
+
+
   Future<List<FocusSession>> getHistory() async {
     final prefs = await SharedPreferences.getInstance();
     final List<String> history = prefs.getStringList(_historyKey) ?? [];

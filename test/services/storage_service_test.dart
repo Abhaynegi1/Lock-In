@@ -97,5 +97,29 @@ void main() {
       expect((await storageService.getHistory()).isEmpty, true);
       expect((await storageService.getBattles()).isEmpty, true);
     });
+
+    test('updateSession updates existing session in history without altering streak', () async {
+      final session = FocusSession(
+        id: 's-update',
+        durationMinutes: 25,
+        targetDurationMinutes: 25,
+        dateTime: DateTime.now(),
+        isWin: true,
+      );
+      await storageService.saveSession(session);
+      expect(await storageService.getStreak(), 1);
+
+      final updated = session.copyWith(
+        durationMinutes: 30,
+        targetDurationMinutes: 30,
+      );
+      await storageService.updateSession(updated);
+
+      expect(await storageService.getStreak(), 1); // Streak unchanged
+      final history = await storageService.getHistory();
+      expect(history.length, 1);
+      expect(history.first.durationMinutes, 30);
+      expect(history.first.targetDurationMinutes, 30);
+    });
   });
 }

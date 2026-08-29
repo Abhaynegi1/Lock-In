@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:lock_in/providers/timer_provider.dart';
 import 'package:lock_in/models/focus_session.dart';
+import 'package:lock_in/services/storage_service.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -64,6 +65,87 @@ void main() {
       expect(provider.battles.first.opponentName, 'Sarah Connor');
       expect(provider.battles.first.endsIn, '3h');
       expect(provider.battles.first.userMinutes, 0);
+    });
+
+    test('extendSession successfully completes and updates previous session to 30 mins', () async {
+      final storageService = StorageService();
+      final provider = TimerProvider(storageService: storageService);
+      await Future.delayed(const Duration(milliseconds: 50));
+
+      final baseSession = FocusSession(
+        id: 'sess-25',
+        durationMinutes: 25,
+        targetDurationMinutes: 25,
+        dateTime: DateTime.now(),
+        isWin: true,
+      );
+      await storageService.saveSession(baseSession);
+      await provider.refreshFromStorage();
+
+      expect(provider.history.first.durationMinutes, 25);
+      final initialStreak = provider.currentStreak;
+
+      // Start extending by 5 mins
+      provider.extendSession(5);
+      expect(provider.isExtending, true);
+      expect(provider.baseCompletedMinutes, 25);
+      expect(provider.totalSeconds, 300);
+      expect(provider.status, SessionStatus.running);
+
+      // Complete the extension
+      await provider.completeSessionForTesting(true);
+
+      expect(provider.status, SessionStatus.won);
+      expect(provider.isExtending, false);
+      expect(provider.totalSeconds, 1800); // 30 mins in seconds
+      expect(provider.history.first.durationMinutes, 30);
+      expect(provider.history.first.targetDurationMinutes, 30);
+      expect(provider.currentStreak, initialStreak); // Streak was not incremented twice
+
+      // Verify in persistent storage as well
+      final stored = await storageService.getHistory();
+      expect(stored.first.durationMinutes, 30);
+    });
+
+    test('extendSession edge case: lockout or forfeit preserves original 25 mins win and protects streak', () async {
+      final storageService = StorageService();
+      final provider = TimerProvider(storageService: storageService);
+      await Future.delayed(const Duration(milliseconds: 50));
+
+      final baseSession = FocusSession(
+        id: 'sess-25-safe',
+        durationMinutes: 25,
+        targetDurationMinutes: 25,
+        dateTime: DateTime.now(),
+        isWin: true,
+      );
+      await storageService.saveSession(baseSession);
+      await provider.refreshFromStorage();
+
+      final streakBefore = provider.currentStreak;
+      expect(provider.history.first.durationMinutes, 25);
+
+      // User extends 5 mins
+      provider.extendSession(5);
+      expect(provider.isExtending, true);
+
+      // User gets locked out / app paused / ends extension early
+      await provider.forfeitSession();
+
+      // EDGE CASE GUARANTEE:
+      // Status remains won, session duration remains 25m, streak is NOT reset!
+      expect(provider.status, SessionStatus.won);
+      expect(provider.extensionInterrupted, true);
+      expect(provider.isExtending, false);
+      expect(provider.totalSeconds, 25 * 60);
+      expect(provider.history.first.durationMinutes, 25);
+      expect(provider.history.first.isWin, true);
+      expect(provider.currentStreak, streakBefore); // Streak is untouched!
+
+      final stored = await storageService.getHistory();
+      expect(stored.first.durationMinutes, 25);
+      expect(stored.first.isWin, true);
+      expect(await storageService.getStreak(), streakBefore);
     });
   });
 }

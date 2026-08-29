@@ -152,7 +152,12 @@ class _FocusScreenState extends State<FocusScreen> with WidgetsBindingObserver {
           children: [
             const LockInLogo(size: 24, hasBorder: true),
             const SizedBox(width: 8),
-            Text('SOLO FOCUS', style: AppTheme.sansLabel(fontSize: 10)),
+            Text(
+              provider.isExtending
+                  ? 'EXTENDING FOCUS · ${provider.baseCompletedMinutes}M SAVED'
+                  : 'SOLO FOCUS',
+              style: AppTheme.sansLabel(fontSize: 10),
+            ),
           ],
         ),
         Container(
@@ -255,9 +260,11 @@ class _FocusScreenState extends State<FocusScreen> with WidgetsBindingObserver {
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
-                                  isBattle
-                                      ? 'focusing together'
-                                      : 'remaining focus',
+                                  provider.isExtending
+                                      ? 'extension · ${provider.baseCompletedMinutes}m locked in'
+                                      : (isBattle
+                                          ? 'focusing together'
+                                          : 'remaining focus'),
                                   style: AppTheme.sansBody(
                                     fontSize: 12,
                                     color: AppTheme.inkMuted,
@@ -286,7 +293,9 @@ class _FocusScreenState extends State<FocusScreen> with WidgetsBindingObserver {
 
                     // Supportive calm prompt
                     Text(
-                      _getCalmSubtext(provider.progress, isBattle),
+                      provider.isExtending
+                          ? "Pushing boundaries. Keep momentum rolling."
+                          : _getCalmSubtext(provider.progress, isBattle),
                       textAlign: TextAlign.center,
                       style: AppTheme.serifHeading(
                         fontSize: 18,
@@ -301,7 +310,9 @@ class _FocusScreenState extends State<FocusScreen> with WidgetsBindingObserver {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: TactileButton(
-                        label: 'End session early',
+                        label: provider.isExtending
+                            ? 'End extension early'
+                            : 'End session early',
                         leading: const Icon(
                           Icons.stop_circle_outlined,
                           size: 18,
@@ -378,7 +389,11 @@ class _FocusScreenState extends State<FocusScreen> with WidgetsBindingObserver {
                           ),
                           const SizedBox(height: 2),
                           Text(
-                            isBattle ? 'focusing together' : 'remaining focus',
+                            provider.isExtending
+                                ? 'extension · ${provider.baseCompletedMinutes}m locked in'
+                                : (isBattle
+                                    ? 'focusing together'
+                                    : 'remaining focus'),
                             style: AppTheme.sansBody(
                               fontSize: 11,
                               color: AppTheme.inkMuted,
@@ -404,7 +419,9 @@ class _FocusScreenState extends State<FocusScreen> with WidgetsBindingObserver {
                   _buildHeader(provider, isBattle, activeBattle),
                   const SizedBox(height: 12),
                   Text(
-                    _getCalmSubtext(provider.progress, isBattle),
+                    provider.isExtending
+                        ? "Pushing boundaries. Keep momentum rolling."
+                        : _getCalmSubtext(provider.progress, isBattle),
                     style: AppTheme.serifHeading(
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
@@ -415,7 +432,9 @@ class _FocusScreenState extends State<FocusScreen> with WidgetsBindingObserver {
                   InkProgressBar(progress: provider.completionRatio, height: 6),
                   const SizedBox(height: 16),
                   TactileButton(
-                    label: 'End session early',
+                    label: provider.isExtending
+                        ? 'End extension early'
+                        : 'End session early',
                     leading: const Icon(
                       Icons.stop_circle_outlined,
                       size: 18,
@@ -452,6 +471,10 @@ class _FocusScreenState extends State<FocusScreen> with WidgetsBindingObserver {
   }
 
   void _showGiveUpDialog(BuildContext context) {
+    final prov = context.read<TimerProvider>();
+    final isExtending = prov.isExtending;
+    final baseMinutes = prov.baseCompletedMinutes;
+
     showDialog(
       context: context,
       builder: (ctx) => Dialog(
@@ -470,7 +493,7 @@ class _FocusScreenState extends State<FocusScreen> with WidgetsBindingObserver {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'End focus session?',
+                isExtending ? 'End extension?' : 'End focus session?',
                 style: AppTheme.serifHeading(
                   fontSize: 20,
                   fontWeight: FontWeight.w700,
@@ -478,7 +501,9 @@ class _FocusScreenState extends State<FocusScreen> with WidgetsBindingObserver {
               ),
               const SizedBox(height: 10),
               Text(
-                'Leaving now will mark this session as incomplete and reset your current streak.',
+                isExtending
+                    ? 'Leaving now will end the extension early. Your completed ${baseMinutes}m session is already safely saved!'
+                    : 'Leaving now will mark this session as incomplete and reset your current streak.',
                 style: AppTheme.sansBody(
                   fontSize: 14,
                   color: AppTheme.inkMuted,
@@ -490,7 +515,7 @@ class _FocusScreenState extends State<FocusScreen> with WidgetsBindingObserver {
                 children: [
                   Expanded(
                     child: TactileButton(
-                      label: 'Stay locked in',
+                      label: isExtending ? 'Keep extending' : 'Stay locked in',
                       fillColor: AppTheme.sage,
                       height: 46,
                       borderRadius: 14,
@@ -501,7 +526,7 @@ class _FocusScreenState extends State<FocusScreen> with WidgetsBindingObserver {
                   const SizedBox(width: 12),
                   Expanded(
                     child: TactileButton(
-                      label: 'End session',
+                      label: isExtending ? 'End extension' : 'End session',
                       fillColor: const Color(0xFFFBEBE8),
                       textColor: AppTheme.errorMuted,
                       height: 46,

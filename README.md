@@ -63,7 +63,14 @@ Most productivity and Pomodoro timers fail for two fundamental reasons:
 - **Library Mode (Vibration Only)**: Completely silent, subtle double-pulse haptic (`• •`) for quiet study spaces, coffee shops, and libraries.
 - **Live Previews**: Sample each tone directly from the profile settings sheet before selecting.
 
+### ⚡ 8. Flow-State Session Extension
+- **Keep the Momentum Going**: When a session finishes and you're in deep flow, extend without leaving the zone.
+- **Customizable Extension**: Choose from a default +5m extension with tactile `[-]`/`[+]` steppers or quick preset chips (`+5m`, `+10m`, `+15m`, `+25m`).
+- **Seamless Database Upsert**: Upon finishing the extension, your session updates in place in local storage and cloud database (e.g. 25m base + 5m extension = 30m unbroken focus).
+- **Bulletproof Streak Protection**: If interrupted or ended early during the extension, your completed 25m session is 100% safeguarded in storage and your streak is never penalized.
+
 ---
+
 
 ## 🏗️ Architecture & Technology Stack
 
