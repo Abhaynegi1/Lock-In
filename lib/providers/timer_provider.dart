@@ -304,14 +304,14 @@ class TimerProvider with ChangeNotifier {
       _syncNotification();
     } else {
       _secondsRemaining = 0;
-      _onSessionComplete(true);
+      unawaited(_onSessionComplete(true));
     }
   }
 
   Future<void> forfeitSession() async {
     if (_status == SessionStatus.running) {
       _timer?.cancel();
-      NotificationService().cancelTimerNotification();
+      await NotificationService().cancelTimerNotification();
       await _onSessionComplete(false);
     }
   }

@@ -64,7 +64,7 @@ void main() {
     test('forfeit triggers onSessionForfeited, never onSessionCompleted',
         () async {
       provider.startSession(minutes: 25);
-      provider.forfeitSession();
+      await provider.forfeitSession();
       await Future.delayed(const Duration(milliseconds: 20));
 
       expect(mockFeedback.forfeitCalls, 1);
