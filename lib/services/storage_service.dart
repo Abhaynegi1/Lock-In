@@ -14,6 +14,8 @@ class StorageService {
   static const String defaultAvatar = 'assets/default_pfp/avatar-spark.svg';
   static const String _strictAntiDistractionKey =
       'focus_strict_anti_distraction';
+  static const String _finishCueModeKey = 'focus_finish_cue_mode';
+  static const String _finishCuePresetKey = 'focus_finish_cue_preset';
 
   Future<String> getUserAvatar() async {
     final prefs = await SharedPreferences.getInstance();
@@ -43,6 +45,26 @@ class StorageService {
   Future<void> saveStrictAntiDistraction(bool value) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_strictAntiDistractionKey, value);
+  }
+
+  Future<String> getFinishCueMode() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_finishCueModeKey) ?? 'silent';
+  }
+
+  Future<void> saveFinishCueMode(String mode) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_finishCueModeKey, mode);
+  }
+
+  Future<String> getFinishCuePreset() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_finishCuePresetKey) ?? 'soft_bell';
+  }
+
+  Future<void> saveFinishCuePreset(String preset) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_finishCuePresetKey, preset);
   }
 
   Future<void> saveSession(FocusSession session) async {

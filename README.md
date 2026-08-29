@@ -32,6 +32,7 @@ Most productivity and Pomodoro timers fail for two fundamental reasons:
 
 ### 🛡️ 2. Strict Anti-Distraction Protection (*Lock-In Mode*)
 - When enabled, leaving the app, switching apps, or returning to the home screen immediately triggers a forfeit countdown.
+- **Display Keep-Awake**: While actively focusing in strict mode, the screen is safely kept awake to prevent mobile inactivity sleep timeouts from prematurely forfeiting your session.
 - Fosters true presence and unbroken flow state by making distraction costly.
 - Win/loss outcomes are logged in your permanent session record.
 
@@ -55,6 +56,12 @@ Most productivity and Pomodoro timers fail for two fundamental reasons:
 - **Optional Google Sign-In via Supabase**: Seamless OAuth 2.0 PKCE authentication with deep linking (`io.supabase.lockin://login-callback`).
 - **Silent Background Auto-Sync**: Automatically synchronizes focus blocks, streaks, daily goals, and preferences across devices upon session completion, app launch, or settings update without manual effort.
 - **Row Level Security (RLS)**: User data is cryptographically protected and private to each authenticated user in Supabase Postgres.
+
+### 🔔 7. Finish Cues & Library Mode
+- **Acknowledgment, Not an Alarm**: Never acts like an alarm clock. Gentle, harmonic tones (Soft Bell, Warm Tone, Gentle Chime) with soft attack ramps and natural decay.
+- **Off by Default**: Clean, distraction-free default state.
+- **Library Mode (Vibration Only)**: Completely silent, subtle double-pulse haptic (`• •`) for quiet study spaces, coffee shops, and libraries.
+- **Live Previews**: Sample each tone directly from the profile settings sheet before selecting.
 
 ---
 

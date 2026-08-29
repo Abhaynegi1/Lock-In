@@ -5,6 +5,7 @@ import '../models/battle_state.dart';
 import '../models/focus_session.dart';
 import '../services/battle_realtime_data_source.dart';
 import '../services/battle_repository.dart';
+import '../services/completion_feedback_service.dart';
 import '../services/notification_service.dart';
 import '../services/screen_wake_service.dart';
 import '../services/storage_service.dart';
@@ -430,6 +431,19 @@ class BattleProvider with ChangeNotifier {
       isForfeit: isForfeit,
       forfeitParticipantId: forfeitParticipantId,
     );
+
+    if (!isForfeit && (winnerId == _localParticipantId || localP.isFinished)) {
+      final mode = await _storageService.getFinishCueMode();
+      final preset = await _storageService.getFinishCuePreset();
+      unawaited(
+        DefaultCompletionFeedbackService().onSessionCompleted(
+          mode: mode,
+          preset: preset,
+        ),
+      );
+    } else if (isForfeit && forfeitParticipantId == _localParticipantId) {
+      unawaited(DefaultCompletionFeedbackService().onSessionForfeited());
+    }
 
     if (_currentBattle != null) {
       final completedBattle = _currentBattle!.copyWith(

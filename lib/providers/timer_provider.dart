@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 import '../models/battle_model.dart';
 import '../models/focus_session.dart';
+import '../services/completion_feedback_service.dart';
 import '../services/notification_service.dart';
 import '../services/screen_wake_service.dart';
 import '../services/storage_service.dart';
@@ -11,7 +12,18 @@ import '../services/supabase_service.dart';
 enum SessionStatus { idle, running, won, lost }
 
 class TimerProvider with ChangeNotifier {
-  final StorageService _storageService = StorageService();
+  final StorageService _storageService;
+  final CompletionFeedbackService _feedbackService;
+
+  TimerProvider({
+    StorageService? storageService,
+    CompletionFeedbackService? feedbackService,
+  })  : _storageService = storageService ?? StorageService(),
+        _feedbackService =
+            feedbackService ?? DefaultCompletionFeedbackService() {
+    _loadInitialData();
+  }
+
   Timer? _timer;
   int _secondsRemaining = 0;
   int _totalSeconds = 0;
@@ -21,6 +33,8 @@ class TimerProvider with ChangeNotifier {
   String _userName = 'Lock In Member';
   String _userAvatar = StorageService.defaultAvatar;
   bool _isStrictAntiDistraction = true;
+  String _finishCueMode = 'silent';
+  String _finishCuePreset = 'soft_bell';
   DateTime? _sessionEndTime;
   SessionStatus _status = SessionStatus.idle;
   SessionType _activeSessionType = SessionType.solo;
@@ -36,6 +50,9 @@ class TimerProvider with ChangeNotifier {
   String get userName => _userName;
   String get userAvatar => _userAvatar;
   bool get isStrictAntiDistraction => _isStrictAntiDistraction;
+  String get finishCueMode => _finishCueMode;
+  String get finishCuePreset => _finishCuePreset;
+  CompletionFeedbackService get feedbackService => _feedbackService;
   SessionStatus get status => _status;
   SessionType get activeSessionType => _activeSessionType;
   BattleModel? get activeBattle => _activeBattle;
@@ -91,10 +108,6 @@ class TimerProvider with ChangeNotifier {
     return (todayFocusMinutes / _dailyGoalMinutes).clamp(0.0, 1.0);
   }
 
-  TimerProvider() {
-    _loadInitialData();
-  }
-
   Future<void> _loadInitialData() async {
     _currentStreak = await _storageService.getStreak();
     _history = await _storageService.getHistory();
@@ -103,6 +116,8 @@ class TimerProvider with ChangeNotifier {
     _userName = await _storageService.getUserName();
     _userAvatar = await _storageService.getUserAvatar();
     _isStrictAntiDistraction = await _storageService.getStrictAntiDistraction();
+    _finishCueMode = await _storageService.getFinishCueMode();
+    _finishCuePreset = await _storageService.getFinishCuePreset();
     notifyListeners();
   }
 
@@ -149,6 +164,18 @@ class TimerProvider with ChangeNotifier {
 
   Future<void> toggleStrictAntiDistraction() async {
     await setStrictAntiDistraction(!_isStrictAntiDistraction);
+  }
+
+  Future<void> setFinishCueMode(String mode) async {
+    _finishCueMode = mode;
+    await _storageService.saveFinishCueMode(mode);
+    notifyListeners();
+  }
+
+  Future<void> setFinishCuePreset(String preset) async {
+    _finishCuePreset = preset;
+    await _storageService.saveFinishCuePreset(preset);
+    notifyListeners();
   }
 
   void selectDuration(int minutes) {
@@ -234,8 +261,18 @@ class TimerProvider with ChangeNotifier {
 
   Future<void> _onSessionComplete(bool isWin) async {
     _timer?.cancel();
-    await ScreenWakeService.disable();
     _status = isWin ? SessionStatus.won : SessionStatus.lost;
+
+    if (isWin) {
+      unawaited(_feedbackService.onSessionCompleted(
+        mode: _finishCueMode,
+        preset: _finishCuePreset,
+      ));
+    } else {
+      unawaited(_feedbackService.onSessionForfeited());
+    }
+
+    await ScreenWakeService.disable();
 
     final targetDuration = _totalSeconds ~/ 60;
     final elapsedSeconds = _totalSeconds - _secondsRemaining;

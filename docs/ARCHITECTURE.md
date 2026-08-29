@@ -926,4 +926,55 @@ create policy "Users can insert own sessions" on public.focus_sessions for inser
 create policy "Users can update own sessions" on public.focus_sessions for update using (auth.uid() = user_id);
 ```
 
+---
+
+## 28. Display Keep-Awake Subsystem (Strict Anti-Distraction)
+
+### 28.1 Architectural Problem & Rationale
+In strict anti-distraction mode, leaving the application or locking the device causes an `AppLifecycleState.paused` transition that forfeits the session after a brief debounce period. However, standard mobile operating systems automatically dim and turn off the display after 30–60 seconds of inactivity. Without active screen management, sitting at a desk and focusing without touching the screen would cause the OS to sleep the display, inadvertently triggering a session forfeit.
+
+### 28.2 Design & Lifecycle Integration
+- **`ScreenWakeService` Wrapper**: Encapsulates `wakelock_plus` using `FLAG_KEEP_SCREEN_ON` on Android and `isIdleTimerDisabled` on iOS.
+- **Window-Level Scope**: Does not require dangerous CPU background `WAKE_LOCK` permissions; applies purely to the active foreground activity window.
+- **Strict Mode Coupled**: Keep-awake is active exclusively during running strict sessions (`isStrictAntiDistraction == true`).
+- **Guaranteed Cleanup**:
+  - Immediately released upon session win, loss, forfeit, timer reset, or screen disposal (`FocusScreen` and `BattleFocusScreen`).
+  - Releases upon `AppLifecycleState.paused` and re-engages upon `AppLifecycleState.resumed` if the session remains valid.
+
+---
+
+## 29. Finish Cue & Sensory Feedback Subsystem
+
+### 29.1 Product Philosophy
+> **LockIn should never behave like an alarm clock. Completion feedback is an acknowledgment, not an alert.**
+
+Standard productivity apps often use harsh, high-frequency alarm tones or celebratory fanfares that startle users out of flow state. LockIn treats completion as a gentle, calming transition back to awareness.
+
+### 29.2 Sensory Architecture
+```text
+Session Outcome (TimerProvider / BattleProvider)
+               │
+               ▼
+   CompletionFeedbackService
+               │
+       ┌───────┴────────┐
+       ▼                ▼
+  AudioPlayer      HapticFeedback
+  (Low Latency)    (Subtle Pulses)
+```
+
+- **`CompletionFeedbackService` Abstraction**: An abstract contract decoupling state providers from platform audio and haptic drivers, enabling frictionless mocking in unit test suites.
+- **Curated Acoustic Tones**:
+  - **`Soft Bell`** (Default tone when sound is on): 523.25 Hz warm harmonic bell with soft cosine attack and 2.4s natural exponential decay.
+  - **`Warm Tone`**: 392 Hz deep acoustic resonance with soft 2.0s decay.
+  - **`Gentle Chime`**: 659.25 Hz delicate acoustic chime with 1.9s decay.
+  - *No Sharp Transients*: Gentle 40–60ms cosine attack ramps eliminate transient pop/click artifacts and avoid startling the user.
+- **Relative Volume Scaling**: Audio volume is set to `0.5` relative to user media volume; it never overrides system volume levels.
+- **Tactile Modes**:
+  1. **Silent (Off — Default)**: Pure visual transition; no audio or haptic trigger.
+  2. **Vibration Only (Library Mode)**: Completely silent; subtle double-pulse (`• •`) haptic designed for quiet study halls, libraries, and open offices.
+  3. **Sound + Haptics**: Soft acoustic tone paired with the subtle double-pulse haptic.
+- **Non-Punitive Forfeits**: Forfeiting triggers a gentle single tactile click (`•`) with zero audio, reinforcing accountability without punitive buzzer sounds.
+- **Single Source of Truth & Deduplication**: Built-in 1.5-second suppression guard ensures multiplayer battle synchronization and local timers never produce duplicate completion audio.
+
 

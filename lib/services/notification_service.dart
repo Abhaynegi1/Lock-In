@@ -67,12 +67,15 @@ class NotificationService {
       iOS: darwinDetails,
     );
 
-    await _notificationsPlugin.show(
-      id: _timerNotificationId,
-      title: '⏳ $timeRemaining · $title',
-      body: isBattle ? 'Focus battle in progress' : 'Focus session in progress',
-      notificationDetails: notificationDetails,
-    );
+    try {
+      await _notificationsPlugin.show(
+        id: _timerNotificationId,
+        title: '⏳ $timeRemaining · $title',
+        body:
+            isBattle ? 'Focus battle in progress' : 'Focus session in progress',
+        notificationDetails: notificationDetails,
+      );
+    } catch (_) {}
   }
 
   Future<void> showSessionCompleteNotification({
@@ -101,15 +104,19 @@ class NotificationService {
       iOS: darwinDetails,
     );
 
-    await _notificationsPlugin.show(
-      id: _completeNotificationId,
-      title: title,
-      body: body,
-      notificationDetails: notificationDetails,
-    );
+    try {
+      await _notificationsPlugin.show(
+        id: _completeNotificationId,
+        title: title,
+        body: body,
+        notificationDetails: notificationDetails,
+      );
+    } catch (_) {}
   }
 
   Future<void> cancelTimerNotification() async {
-    await _notificationsPlugin.cancel(id: _timerNotificationId);
+    try {
+      await _notificationsPlugin.cancel(id: _timerNotificationId);
+    } catch (_) {}
   }
 }

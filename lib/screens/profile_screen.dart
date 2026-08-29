@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../providers/timer_provider.dart';
+import '../services/completion_feedback_service.dart';
 import '../utils/app_theme.dart';
 import '../widgets/avatar_picker_modal.dart';
 import '../widgets/cloud_sync_modal.dart';
@@ -309,10 +310,11 @@ class ProfileScreen extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               _SettingTile(
-                title: 'Tactile sound cues',
-                subtitle: 'Subtle chime on session finish',
+                title: 'Finish cue',
+                subtitle: _getFinishCueSubtitle(provider),
+                onTap: () => _showFinishCueModal(context, provider),
                 trailing: Text(
-                  'On',
+                  _getFinishCueTrailing(provider),
                   style: AppTheme.sansBody(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
@@ -545,6 +547,200 @@ class ProfileScreen extends StatelessWidget {
               ],
             ),
           ),
+        );
+      },
+    );
+  }
+
+  String _getFinishCueSubtitle(TimerProvider provider) {
+    if (provider.finishCueMode == 'haptics_only') {
+      return 'Library Mode (Vibration only)';
+    } else if (provider.finishCueMode == 'silent') {
+      return 'Off · No completion cue';
+    }
+    final presetName = provider.finishCuePreset == 'warm_tone'
+        ? 'Warm Tone'
+        : provider.finishCuePreset == 'gentle_chime'
+            ? 'Gentle Chime'
+            : 'Soft Bell';
+    return '$presetName · Sound + Haptics';
+  }
+
+  String _getFinishCueTrailing(TimerProvider provider) {
+    if (provider.finishCueMode == 'haptics_only') {
+      return 'Library';
+    } else if (provider.finishCueMode == 'silent') {
+      return 'Off';
+    }
+    return 'On';
+  }
+
+  void _showFinishCueModal(BuildContext context, TimerProvider provider) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (sheetCtx) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            final currentMode = provider.finishCueMode;
+            final currentPreset = provider.finishCuePreset;
+
+            return Container(
+              padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
+              decoration: const BoxDecoration(
+                color: AppTheme.background,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+              ),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(
+                      child: Container(
+                        width: 36,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: AppTheme.inkLight,
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 18),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Finish Cue',
+                          style: AppTheme.serifHeading(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () => Navigator.pop(sheetCtx),
+                          child: const Icon(
+                            Icons.close,
+                            size: 20,
+                            color: AppTheme.inkMuted,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      'How should LockIn let you know your session is complete?',
+                      style: AppTheme.sansBody(
+                        fontSize: 13,
+                        color: AppTheme.inkMuted,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+
+                    // Mode 1: Sound + Haptics
+                    _AntiDistractionOptionCard(
+                      title: 'Sound + Haptics',
+                      subtitle:
+                          'Soft acoustic acknowledgment and subtle vibration.',
+                      badgeText: 'CHIME',
+                      badgeColor: AppTheme.sand,
+                      isSelected: currentMode == 'sound_and_haptics',
+                      icon: Icons.volume_up_outlined,
+                      onTap: () {
+                        provider.setFinishCueMode('sound_and_haptics');
+                        setModalState(() {});
+                      },
+                    ),
+                    const SizedBox(height: 12),
+
+                    // Mode 2: Vibration Only (Library Mode)
+                    _AntiDistractionOptionCard(
+                      title: 'Vibration Only',
+                      subtitle:
+                          'Completely silent. Subtle double pulse for study halls and cafes.',
+                      badgeText: 'LIBRARY',
+                      badgeColor: AppTheme.sand,
+                      isSelected: currentMode == 'haptics_only',
+                      icon: Icons.vibration_outlined,
+                      onTap: () {
+                        provider.setFinishCueMode('haptics_only');
+                        setModalState(() {});
+                      },
+                    ),
+                    const SizedBox(height: 12),
+
+                    // Mode 3: Silent (Off)
+                    _AntiDistractionOptionCard(
+                      title: 'Silent (Off)',
+                      subtitle:
+                          'Pure visual transition. No audio or haptic trigger.',
+                      badgeText: 'DEFAULT',
+                      badgeColor: AppTheme.sage,
+                      isSelected: currentMode == 'silent',
+                      icon: Icons.volume_off_outlined,
+                      onTap: () {
+                        provider.setFinishCueMode('silent');
+                        setModalState(() {});
+                      },
+                    ),
+
+                    // Sound Selector (visible when sound is enabled)
+                    if (currentMode == 'sound_and_haptics') ...[
+                      const SizedBox(height: 24),
+                      Text(
+                        'CUE TONE',
+                        style: AppTheme.sansLabel(fontSize: 10),
+                      ),
+                      const SizedBox(height: 12),
+                      _SoundPresetTile(
+                        title: 'Soft Bell',
+                        subtitle: 'Warm harmonic bell with natural decay',
+                        isSelected: currentPreset == 'soft_bell',
+                        onSelect: () {
+                          provider.setFinishCuePreset('soft_bell');
+                          setModalState(() {});
+                        },
+                        onPreview: () {
+                          DefaultCompletionFeedbackService()
+                              .previewPreset('soft_bell');
+                        },
+                      ),
+                      const SizedBox(height: 8),
+                      _SoundPresetTile(
+                        title: 'Warm Tone',
+                        subtitle: 'Deep acoustic wooden resonance',
+                        isSelected: currentPreset == 'warm_tone',
+                        onSelect: () {
+                          provider.setFinishCuePreset('warm_tone');
+                          setModalState(() {});
+                        },
+                        onPreview: () {
+                          DefaultCompletionFeedbackService()
+                              .previewPreset('warm_tone');
+                        },
+                      ),
+                      const SizedBox(height: 8),
+                      _SoundPresetTile(
+                        title: 'Gentle Chime',
+                        subtitle: 'Delicate acoustic chime tone',
+                        isSelected: currentPreset == 'gentle_chime',
+                        onSelect: () {
+                          provider.setFinishCuePreset('gentle_chime');
+                          setModalState(() {});
+                        },
+                        onPreview: () {
+                          DefaultCompletionFeedbackService()
+                              .previewPreset('gentle_chime');
+                        },
+                      ),
+                    ],
+                    const SizedBox(height: 16),
+                  ],
+                ),
+              ),
+            );
+          },
         );
       },
     );
@@ -1013,6 +1209,102 @@ class _SettingTile extends StatelessWidget {
               ),
             ),
             trailing,
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SoundPresetTile extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final bool isSelected;
+  final VoidCallback onSelect;
+  final VoidCallback onPreview;
+
+  const _SoundPresetTile({
+    required this.title,
+    required this.subtitle,
+    required this.isSelected,
+    required this.onSelect,
+    required this.onPreview,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onSelect,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        decoration: BoxDecoration(
+          color: isSelected ? AppTheme.sand : Colors.transparent,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isSelected ? AppTheme.ink : AppTheme.inkLight,
+            width: isSelected ? 1.4 : 1.0,
+          ),
+        ),
+        child: Row(
+          children: [
+            Icon(
+              isSelected
+                  ? Icons.radio_button_checked
+                  : Icons.radio_button_unchecked,
+              size: 18,
+              color: isSelected ? AppTheme.ink : AppTheme.inkMuted,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: AppTheme.sansBody(
+                      fontSize: 14,
+                      fontWeight:
+                          isSelected ? FontWeight.w700 : FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle,
+                    style: AppTheme.sansBody(
+                      fontSize: 11,
+                      color: AppTheme.inkMuted,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            GestureDetector(
+              onTap: onPreview,
+              behavior: HitTestBehavior.opaque,
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                decoration: BoxDecoration(
+                  color: AppTheme.background,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: AppTheme.ink, width: 1),
+                  boxShadow: AppTheme.smallTactileShadow,
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.play_arrow_rounded,
+                        size: 14, color: AppTheme.ink),
+                    const SizedBox(width: 4),
+                    Text(
+                      'Preview',
+                      style: AppTheme.sansLabel(
+                          fontSize: 9, color: AppTheme.ink),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ],
         ),
       ),
