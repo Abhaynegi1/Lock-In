@@ -151,6 +151,7 @@ class SupabaseService {
       }
     } catch (e) {
       debugPrint('Error syncing local data to cloud: $e');
+      rethrow;
     }
   }
 

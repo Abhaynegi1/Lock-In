@@ -5,6 +5,7 @@ import '../models/battle_model.dart';
 import '../models/focus_session.dart';
 import '../services/notification_service.dart';
 import '../services/storage_service.dart';
+import '../services/supabase_service.dart';
 
 enum SessionStatus { idle, running, won, lost }
 
@@ -112,6 +113,7 @@ class TimerProvider with ChangeNotifier {
     _userName = name.trim().isEmpty ? 'Lock In Member' : name.trim();
     await _storageService.saveUserName(_userName);
     notifyListeners();
+    _autoSyncCloud();
   }
 
   Future<void> updateUserAvatar(String avatarPath) async {
@@ -120,12 +122,14 @@ class TimerProvider with ChangeNotifier {
         : avatarPath.trim();
     await _storageService.saveUserAvatar(_userAvatar);
     notifyListeners();
+    _autoSyncCloud();
   }
 
   Future<void> updateDailyGoalMinutes(int minutes) async {
     _dailyGoalMinutes = minutes.clamp(15, 960);
     await _storageService.saveDailyGoalMinutes(_dailyGoalMinutes);
     notifyListeners();
+    _autoSyncCloud();
   }
 
   Future<void> updateDailyGoalHours(int hours) async {
@@ -136,6 +140,7 @@ class TimerProvider with ChangeNotifier {
     _isStrictAntiDistraction = value;
     await _storageService.saveStrictAntiDistraction(value);
     notifyListeners();
+    _autoSyncCloud();
   }
 
   Future<void> toggleStrictAntiDistraction() async {
@@ -272,6 +277,7 @@ class TimerProvider with ChangeNotifier {
     _currentStreak = await _storageService.getStreak();
     _history = await _storageService.getHistory();
     notifyListeners();
+    _autoSyncCloud();
   }
 
   Future<void> createBattle(
@@ -283,7 +289,7 @@ class TimerProvider with ChangeNotifier {
         : 'F';
     final newBattle = BattleModel(
       id: const Uuid().v4(),
-      opponentName: opponentName,
+      opponentName: opponentName.trim(),
       opponentInitials: initials,
       userMinutes: 0,
       opponentMinutes: 0,
@@ -303,5 +309,19 @@ class TimerProvider with ChangeNotifier {
     _totalSeconds = 0;
     _activeBattle = null;
     notifyListeners();
+  }
+
+  void _autoSyncCloud() {
+    final supabase = SupabaseService();
+    if (supabase.isAuthenticated) {
+      supabase.syncLocalDataToCloud(
+        localSessions: _history,
+        userName: _userName,
+        userAvatar: _userAvatar,
+        streak: _currentStreak,
+        dailyGoalMinutes: _dailyGoalMinutes,
+        isStrictAntiDistraction: _isStrictAntiDistraction,
+      );
+    }
   }
 }

@@ -50,6 +50,12 @@ Most productivity and Pomodoro timers fail for two fundamental reasons:
 - Elegant typography pairings with hand-drawn doodle badges, stamps, and underlines.
 - Tactile interactions with micro-animations that feel organic and deliberate.
 
+### ☁️ 6. Local-First Cloud Backup & Cross-Device Sync
+- **100% Offline-Capable**: The app is completely functional with zero accounts required.
+- **Optional Google Sign-In via Supabase**: Seamless OAuth 2.0 PKCE authentication with deep linking (`io.supabase.lockin://login-callback`).
+- **Silent Background Auto-Sync**: Automatically synchronizes focus blocks, streaks, daily goals, and preferences across devices upon session completion, app launch, or settings update without manual effort.
+- **Row Level Security (RLS)**: User data is cryptographically protected and private to each authenticated user in Supabase Postgres.
+
 ---
 
 ## 🏗️ Architecture & Technology Stack
@@ -58,7 +64,8 @@ LockIn is engineered using clean architecture principles and modern Flutter best
 
 - **Framework**: [Flutter](https://flutter.dev) (Dart 3+)
 - **State Management**: [Provider](https://pub.dev/packages/provider) for reactive, decoupled state propagation
-- **Local Persistence**: [shared_preferences](https://pub.dev/packages/shared_preferences) for offline-first data synchronization (streaks, history, settings, battles)
+- **Local Persistence**: [shared_preferences](https://pub.dev/packages/shared_preferences) for offline-first data synchronization
+- **Cloud Backend & Auth**: [Supabase](https://supabase.com) (PostgreSQL, OAuth 2.0 PKCE, Row Level Security)
 - **Notifications**: [flutter_local_notifications](https://pub.dev/packages/flutter_local_notifications) with Java 8+ Core Library Desugaring for scheduled background alerts
 - **Typography & Icons**: Google Fonts ([Outfit](https://fonts.google.com/specimen/Outfit), [Playfair Display](https://fonts.google.com/specimen/Playfair+Display)) and Cupertino / Material Icons
 - **Motion & UI**: [flutter_animate](https://pub.dev/packages/flutter_animate), [percent_indicator](https://pub.dev/packages/percent_indicator), [flutter_svg](https://pub.dev/packages/flutter_svg)

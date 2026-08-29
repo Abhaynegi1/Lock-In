@@ -850,3 +850,80 @@ The following are explicitly **non-goals** of the core architecture:
 - **Lock-In Coordination:** App lifecycle transitions (pause/hide) trigger forfeit after debounce, while network socket drops enter a 30s reconnect grace period before forfeit.
 - **Non-Destructive Local Persistence:** Completed battles are saved locally in guest mode, ready for future non-destructive sync when an optional cloud account is registered.
 
+---
+
+## 27. Cloud Backup & Authentication Subsystem (Supabase)
+
+### 27.1 Architectural Overview
+The cloud backup subsystem adheres strictly to the **Local-First, Cloud-Optional** philosophy. All focus tracking, streaks, and settings operate entirely offline. When a user optionally links a Google account via Supabase:
+- Local data is never overwritten destructively; it merges symmetrically with remote data.
+- Sync operations are non-blocking and happen asynchronously in the background.
+
+```text
+Local Storage (SharedPrefs) 
+       ▲
+       │  (Bi-directional Merge)
+       ▼
+SupabaseService (Client)
+       ▲
+       │  (HTTPS / TLS / PKCE)
+       ▼
+Supabase Cloud (Auth + Postgres RLS)
+  ├── auth.users (Google OAuth 2.0)
+  ├── profiles (Streaks, Goals, Preferences)
+  └── focus_sessions (Permanent Focus Log)
+```
+
+### 27.2 Authentication Flow (Google OAuth with PKCE)
+1. **Flow Initiation**: User taps **Continue with Google** in `CloudSyncModal`.
+2. **PKCE Authorization**: `Supabase.instance.client.auth.signInWithOAuth` requests authorization with redirect URI `io.supabase.lockin://login-callback`.
+3. **Deep Link Callback**: Upon successful browser authentication, Android routes the redirect through `io.supabase.lockin://login-callback` to `MainActivity`.
+4. **Session Exchange**: The Supabase SDK intercepts the PKCE `code` and exchanges it for a secure JWT session token.
+
+### 27.3 Automatic Synchronization Triggers
+Data synchronization occurs automatically across key application lifecycles without requiring manual user intervention:
+- **On Sign-In**: Initial bi-directional sync merges cloud history with local records and uploads local profile data.
+- **On App Startup**: If an active auth session exists, a background sync runs to refresh data silently.
+- **On Session Completion**: Winning or forfeiting any focus block triggers an immediate background push of the new `FocusSession` and updated streak.
+- **On Settings Update**: Modifying nickname, daily target, avatar, or strict anti-distraction mode immediately upserts the changes to the `profiles` table.
+- **Manual "Sync Now"**: Accessible within `CloudSyncModal` for manual verification.
+
+### 27.4 Database Schema & Security
+```sql
+-- Profiles table
+create table public.profiles (
+  id uuid references auth.users not null primary key,
+  display_name text,
+  avatar_path text,
+  streak integer default 0,
+  daily_goal_minutes integer default 240,
+  is_strict_anti_distraction boolean default true,
+  updated_at timestamp with time zone default now()
+);
+
+-- Focus Sessions table
+create table public.focus_sessions (
+  id uuid primary key,
+  user_id uuid references auth.users not null,
+  duration_minutes integer not null,
+  target_duration_minutes integer,
+  date_time timestamp with time zone not null,
+  is_win boolean default true,
+  session_type text default 'solo',
+  opponent_name text,
+  opponent_score text
+);
+
+-- Row Level Security (RLS)
+alter table public.profiles enable row level security;
+create policy "Users can view own profile" on public.profiles for select using (auth.uid() = id);
+create policy "Users can insert own profile" on public.profiles for insert with check (auth.uid() = id);
+create policy "Users can update own profile" on public.profiles for update using (auth.uid() = id);
+
+alter table public.focus_sessions enable row level security;
+create policy "Users can view own sessions" on public.focus_sessions for select using (auth.uid() = user_id);
+create policy "Users can insert own sessions" on public.focus_sessions for insert with check (auth.uid() = user_id);
+create policy "Users can update own sessions" on public.focus_sessions for update using (auth.uid() = user_id);
+```
+
+

@@ -38,9 +38,19 @@ class AuthProvider with ChangeNotifier {
 
   void _init() {
     _currentUser = _supabaseService.currentUser;
+    if (_currentUser != null) {
+      // Auto-sync in background on app start
+      syncData();
+    }
     _authSubscription = _supabaseService.authStateChanges.listen((data) {
+      final wasNull = _currentUser == null;
       _currentUser = data.session?.user;
       notifyListeners();
+
+      if (data.event == AuthChangeEvent.signedIn ||
+          (wasNull && _currentUser != null)) {
+        syncData();
+      }
     });
   }
 
