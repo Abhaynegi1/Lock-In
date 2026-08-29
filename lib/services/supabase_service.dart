@@ -22,8 +22,9 @@ class SupabaseService {
   User? get currentUser => _isInitialized ? client.auth.currentUser : null;
   bool get isAuthenticated => currentUser != null;
 
-  Stream<AuthState> get authStateChanges =>
-      Supabase.instance.client.auth.onAuthStateChange;
+  Stream<AuthState> get authStateChanges => _isInitialized
+      ? Supabase.instance.client.auth.onAuthStateChange
+      : const Stream.empty();
 
   Future<void> init() async {
     if (_isInitialized) return;

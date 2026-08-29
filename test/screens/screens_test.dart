@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:lock_in/providers/auth_provider.dart';
 import 'package:lock_in/providers/battle_provider.dart';
 import 'package:lock_in/providers/timer_provider.dart';
 import 'package:lock_in/screens/home_screen.dart';
@@ -16,6 +17,7 @@ Widget createTestApp(Widget child) {
     providers: [
       ChangeNotifierProvider(create: (_) => TimerProvider()),
       ChangeNotifierProvider(create: (_) => BattleProvider()),
+      ChangeNotifierProvider(create: (_) => AuthProvider()),
     ],
     child: MaterialApp(home: child),
   );
