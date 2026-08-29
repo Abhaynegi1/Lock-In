@@ -272,7 +272,7 @@ class ProfileScreen extends StatelessWidget {
               _SettingTile(
                 title: 'Strict anti-distraction',
                 subtitle: provider.isStrictAntiDistraction
-                    ? 'Session ends if you leave the app'
+                    ? 'Screen kept awake · Ends if you leave app'
                     : 'Session continues when leaving app',
                 onTap: () => _showAntiDistractionModal(context, provider),
                 trailing: Container(
@@ -515,7 +515,7 @@ class ProfileScreen extends StatelessWidget {
                 _AntiDistractionOptionCard(
                   title: 'Active (Strict)',
                   subtitle:
-                      'Session will end immediately if you leave the app. True unbroken presence.',
+                      'Session ends immediately if you leave the app. Screen stays awake while focusing to prevent phone sleep.',
                   badgeText: 'STRICT',
                   badgeColor: AppTheme.sage,
                   isSelected: provider.isStrictAntiDistraction,

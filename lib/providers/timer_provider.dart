@@ -4,6 +4,7 @@ import 'package:uuid/uuid.dart';
 import '../models/battle_model.dart';
 import '../models/focus_session.dart';
 import '../services/notification_service.dart';
+import '../services/screen_wake_service.dart';
 import '../services/storage_service.dart';
 import '../services/supabase_service.dart';
 
@@ -139,6 +140,9 @@ class TimerProvider with ChangeNotifier {
   Future<void> setStrictAntiDistraction(bool value) async {
     _isStrictAntiDistraction = value;
     await _storageService.saveStrictAntiDistraction(value);
+    if (_status == SessionStatus.running) {
+      await ScreenWakeService.setEnabled(value);
+    }
     notifyListeners();
     _autoSyncCloud();
   }
@@ -178,6 +182,9 @@ class TimerProvider with ChangeNotifier {
     _totalSeconds = duration * 60;
     _secondsRemaining = _totalSeconds;
     _sessionEndTime = DateTime.now().add(Duration(seconds: _totalSeconds));
+    if (_isStrictAntiDistraction) {
+      unawaited(ScreenWakeService.enable());
+    }
     notifyListeners();
     _syncNotification();
 
@@ -227,6 +234,7 @@ class TimerProvider with ChangeNotifier {
 
   Future<void> _onSessionComplete(bool isWin) async {
     _timer?.cancel();
+    await ScreenWakeService.disable();
     _status = isWin ? SessionStatus.won : SessionStatus.lost;
 
     final targetDuration = _totalSeconds ~/ 60;
@@ -303,6 +311,7 @@ class TimerProvider with ChangeNotifier {
 
   void reset() {
     _timer?.cancel();
+    unawaited(ScreenWakeService.disable());
     NotificationService().cancelTimerNotification();
     _status = SessionStatus.idle;
     _secondsRemaining = 0;

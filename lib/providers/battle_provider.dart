@@ -6,6 +6,7 @@ import '../models/focus_session.dart';
 import '../services/battle_realtime_data_source.dart';
 import '../services/battle_repository.dart';
 import '../services/notification_service.dart';
+import '../services/screen_wake_service.dart';
 import '../services/storage_service.dart';
 
 class BattleProvider with ChangeNotifier {
@@ -352,7 +353,7 @@ class BattleProvider with ChangeNotifier {
     final opponent = opponentParticipant;
     final winnerId = opponent?.id;
 
-    _finalizeBattleResult(
+    await _finalizeBattleResult(
       winnerId: winnerId,
       isForfeit: true,
       forfeitParticipantId: _localParticipantId,
@@ -381,14 +382,14 @@ class BattleProvider with ChangeNotifier {
     );
 
     // If opponent is also finished or both reached end, determine winner
-    _finalizeBattleResult(
+    await _finalizeBattleResult(
       winnerId: _localParticipantId, // Both focused target duration
       isDraw: opponentParticipant?.isFinished ?? true,
       isForfeit: false,
     );
   }
 
-  void _finalizeBattleResult({
+  Future<void> _finalizeBattleResult({
     String? winnerId,
     bool isDraw = false,
     bool isForfeit = false,
@@ -398,6 +399,7 @@ class BattleProvider with ChangeNotifier {
     _uiTickerTimer?.cancel();
     _graceTimer?.cancel();
     _cancelNotification();
+    unawaited(ScreenWakeService.disable());
 
     final localP =
         localParticipant ??
@@ -650,6 +652,7 @@ class BattleProvider with ChangeNotifier {
     _lobbyCountdownTimer?.cancel();
     _graceTimer?.cancel();
     _cancelNotification();
+    unawaited(ScreenWakeService.disable());
 
     _repository.disconnectRealtime();
     _currentBattle = null;

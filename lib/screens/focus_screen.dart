@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../models/battle_model.dart';
 import '../models/focus_session.dart';
 import '../providers/timer_provider.dart';
+import '../services/screen_wake_service.dart';
 import '../utils/app_theme.dart';
 import '../widgets/doodle_decorations.dart';
 import 'result_screen.dart';
@@ -22,12 +23,22 @@ class _FocusScreenState extends State<FocusScreen> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        final provider = context.read<TimerProvider>();
+        if (provider.isStrictAntiDistraction &&
+            provider.status == SessionStatus.running) {
+          unawaited(ScreenWakeService.enable());
+        }
+      }
+    });
   }
 
   @override
   void dispose() {
     _backgroundForfeitTimer?.cancel();
     WidgetsBinding.instance.removeObserver(this);
+    unawaited(ScreenWakeService.disable());
     super.dispose();
   }
 
@@ -54,6 +65,10 @@ class _FocusScreenState extends State<FocusScreen> with WidgetsBindingObserver {
       // App resumed - cancel pending forfeit timer and sync elapsed timer
       _backgroundForfeitTimer?.cancel();
       _backgroundForfeitTimer = null;
+      if (provider.isStrictAntiDistraction &&
+          provider.status == SessionStatus.running) {
+        unawaited(ScreenWakeService.enable());
+      }
       provider.syncTimer();
     }
   }
@@ -67,6 +82,7 @@ class _FocusScreenState extends State<FocusScreen> with WidgetsBindingObserver {
     // Listen for completion and navigate to result
     if (provider.status == SessionStatus.won ||
         provider.status == SessionStatus.lost) {
+      unawaited(ScreenWakeService.disable());
       Future.microtask(() {
         if (!context.mounted) return;
         Navigator.pushReplacement(
@@ -162,7 +178,7 @@ class _FocusScreenState extends State<FocusScreen> with WidgetsBindingObserver {
               const SizedBox(width: 6),
               Text(
                 provider.isStrictAntiDistraction
-                    ? 'STAY IN APP'
+                    ? 'STRICT · SCREEN AWAKE'
                     : 'FLEXIBLE FOCUS',
                 style: AppTheme.sansLabel(fontSize: 9, color: AppTheme.ink),
               ),

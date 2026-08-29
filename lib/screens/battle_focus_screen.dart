@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../models/battle_state.dart';
 import '../providers/battle_provider.dart';
 import '../providers/timer_provider.dart';
+import '../services/screen_wake_service.dart';
 import '../utils/app_theme.dart';
 import '../widgets/doodle_decorations.dart';
 import 'battle_result_screen.dart';
@@ -24,12 +25,23 @@ class _BattleFocusScreenState extends State<BattleFocusScreen>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        final timerProvider = context.read<TimerProvider>();
+        final battleProvider = context.read<BattleProvider>();
+        if (timerProvider.isStrictAntiDistraction &&
+            battleProvider.status == BattleStatus.active) {
+          unawaited(ScreenWakeService.enable());
+        }
+      }
+    });
   }
 
   @override
   void dispose() {
     _lifecycleForfeitDebounceTimer?.cancel();
     WidgetsBinding.instance.removeObserver(this);
+    unawaited(ScreenWakeService.disable());
     super.dispose();
   }
 
@@ -59,6 +71,10 @@ class _BattleFocusScreenState extends State<BattleFocusScreen>
     } else if (state == AppLifecycleState.resumed) {
       _lifecycleForfeitDebounceTimer?.cancel();
       _lifecycleForfeitDebounceTimer = null;
+      if (timerProvider.isStrictAntiDistraction &&
+          battleProvider.status == BattleStatus.active) {
+        unawaited(ScreenWakeService.enable());
+      }
       battleProvider.syncAuthoritativeTimer();
     }
   }
@@ -75,6 +91,7 @@ class _BattleFocusScreenState extends State<BattleFocusScreen>
     if (battleProvider.status == BattleStatus.completed &&
         !_navigatedToResult) {
       _navigatedToResult = true;
+      unawaited(ScreenWakeService.disable());
       Future.microtask(() {
         if (!context.mounted) return;
         Navigator.pushReplacement(
