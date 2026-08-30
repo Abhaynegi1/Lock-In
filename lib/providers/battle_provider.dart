@@ -296,6 +296,21 @@ class BattleProvider with ChangeNotifier {
       participants: updatedParticipants,
     );
 
+    // If host, broadcast BATTLE_STARTED so opponent synchronizes authoritative timestamp
+    if (isHost) {
+      _repository.sendEvent(
+        BattleEvent(
+          type: BattleEventType.battleStarted,
+          battleId: _currentBattle!.id,
+          timestamp: DateTime.now().toUtc(),
+          payload: {
+            'startedAt': now.toUtc().toIso8601String(),
+            'durationSeconds': totalSeconds,
+          },
+        ),
+      );
+    }
+
     _startUiTimerTicker();
     _syncNotification();
     notifyListeners();
@@ -575,6 +590,29 @@ class BattleProvider with ChangeNotifier {
         }
         break;
 
+      case BattleEventType.playerLeft:
+        final pId = event.payload['participantId']?.toString();
+        if (pId != null && _currentBattle != null) {
+          final remaining =
+              _currentBattle!.participants.where((p) => p.id != pId).toList();
+          _currentBattle = _currentBattle!.copyWith(
+            status: BattleStatus.waitingForPlayer,
+            participants: remaining,
+          );
+          _lobbyCountdownTimer?.cancel();
+          _lobbyCountdown = 0;
+          _status = BattleStatus.waitingForPlayer;
+          notifyListeners();
+        }
+        break;
+
+      case BattleEventType.battleCancelled:
+        if (_status != BattleStatus.completed) {
+          _errorMessage = 'The host has cancelled the battle room.';
+          resetBattle();
+        }
+        break;
+
       case BattleEventType.battleFinished:
         final winnerId = event.payload['winnerId']?.toString();
         final isDraw = event.payload['isDraw'] as bool? ?? false;
@@ -667,6 +705,23 @@ class BattleProvider with ChangeNotifier {
     _graceTimer?.cancel();
     _cancelNotification();
     unawaited(ScreenWakeService.disable());
+
+    if (_currentBattle != null && _localParticipantId != null) {
+      final event = isHost
+          ? BattleEvent(
+              type: BattleEventType.battleCancelled,
+              battleId: _currentBattle!.id,
+              timestamp: DateTime.now(),
+              payload: {'participantId': _localParticipantId!},
+            )
+          : BattleEvent(
+              type: BattleEventType.playerLeft,
+              battleId: _currentBattle!.id,
+              timestamp: DateTime.now(),
+              payload: {'participantId': _localParticipantId!},
+            );
+      unawaited(_repository.sendEvent(event));
+    }
 
     _repository.disconnectRealtime();
     _currentBattle = null;

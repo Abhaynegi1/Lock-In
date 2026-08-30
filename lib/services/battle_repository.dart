@@ -4,6 +4,8 @@ import '../models/battle_state.dart';
 import 'battle_realtime_data_source.dart';
 import 'battle_remote_data_source.dart';
 import 'storage_service.dart';
+import 'supabase_battle_data_source.dart';
+import 'supabase_service.dart';
 
 /// Repository that mediates between UI state and local/remote/realtime data sources
 class BattleRepository {
@@ -16,9 +18,40 @@ class BattleRepository {
     BattleRemoteDataSource? remoteDataSource,
     BattleRealtimeDataSource? realtimeDataSource,
   }) : _storageService = storageService ?? StorageService(),
-       _remoteDataSource = remoteDataSource ?? MockBattleRemoteDataSource(),
+       _remoteDataSource =
+           remoteDataSource ?? _resolveDefaultDataSource(realtimeDataSource),
        _realtimeDataSource =
-           realtimeDataSource ?? MockBattleRealtimeDataSource();
+           realtimeDataSource ?? _resolveDefaultRealtimeSource(remoteDataSource);
+
+  static SupabaseBattleDataSource? _sharedSupabase;
+
+  static SupabaseBattleDataSource _getOrCreateSupabaseSource() {
+    return _sharedSupabase ??= SupabaseBattleDataSource();
+  }
+
+  static BattleRemoteDataSource _resolveDefaultDataSource(
+    BattleRealtimeDataSource? realtime,
+  ) {
+    if (realtime is BattleRemoteDataSource) {
+      return realtime as BattleRemoteDataSource;
+    }
+    if (SupabaseService().isInitialized) {
+      return _getOrCreateSupabaseSource();
+    }
+    return MockBattleRemoteDataSource();
+  }
+
+  static BattleRealtimeDataSource _resolveDefaultRealtimeSource(
+    BattleRemoteDataSource? remote,
+  ) {
+    if (remote is BattleRealtimeDataSource) {
+      return remote as BattleRealtimeDataSource;
+    }
+    if (SupabaseService().isInitialized) {
+      return _getOrCreateSupabaseSource();
+    }
+    return MockBattleRealtimeDataSource();
+  }
 
   Stream<BattleEvent> get eventStream => _realtimeDataSource.eventStream;
   Stream<BattleConnectionState> get connectionStateStream =>
