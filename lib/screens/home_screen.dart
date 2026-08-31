@@ -33,12 +33,10 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: AppTheme.background,
       body: IndexedStack(
         index: _currentTabIndex,
-        children: [
-          _TodayView(
-            onNavigateToTab: _onTabTapped,
-          ),
-          const BattlesScreen(),
-          const HistoryScreen(),
+        children: const [
+          _TodayView(),
+          BattlesScreen(),
+          HistoryScreen(),
         ],
       ),
       bottomNavigationBar: _QuietBottomNav(
@@ -51,14 +49,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
 /// The Main "Today" Screen
 class _TodayView extends StatelessWidget {
-  final ValueChanged<int> onNavigateToTab;
-
-  const _TodayView({required this.onNavigateToTab});
+  const _TodayView();
 
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<TimerProvider>();
-    final featuredBattle = provider.featuredBattle;
     final selectedMinutes = provider.selectedDurationMinutes;
 
     return SafeArea(
@@ -279,109 +274,7 @@ class _TodayView extends StatelessWidget {
               },
             ),
 
-            const SizedBox(height: 26),
-
-            // Thin divider before Current Battle
-            const Divider(color: AppTheme.inkFaint, thickness: 1),
-
-            const SizedBox(height: 18),
-
-            // Current Battle row (compact, calm, discoverable beneath thin divider)
-            if (featuredBattle != null)
-              InkWell(
-                onTap: () => onNavigateToTab(1), // Switch to Battles tab
-                splashColor: Colors.transparent,
-                highlightColor: Colors.transparent,
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Battle with ${featuredBattle.opponentName}',
-                            style: AppTheme.sansBody(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w600,
-                              color: AppTheme.ink,
-                            ),
-                          ),
-                          const SizedBox(height: 3),
-                          Text(
-                            featuredBattle.isUserAhead
-                                ? "You're ahead · ${featuredBattle.endsIn}"
-                                : "Behind by ${(featuredBattle.opponentMinutes - featuredBattle.userMinutes)}m · ${featuredBattle.endsIn}",
-                            style: AppTheme.sansBody(
-                              fontSize: 12,
-                              color: AppTheme.inkMuted,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Text(
-                      featuredBattle.scoreComparison,
-                      style: AppTheme.serifHeading(
-                        fontSize: 22,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ],
-                ),
-              )
-            else
-              InkWell(
-                onTap: () => onNavigateToTab(1),
-                splashColor: Colors.transparent,
-                highlightColor: Colors.transparent,
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Focus Battles',
-                            style: AppTheme.sansBody(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w600,
-                              color: AppTheme.ink,
-                            ),
-                          ),
-                          const SizedBox(height: 3),
-                          Text(
-                            'Challenge a friend for quiet accountability',
-                            style: AppTheme.sansBody(
-                              fontSize: 12,
-                              color: AppTheme.inkMuted,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: AppTheme.sand,
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: AppTheme.ink, width: 1.2),
-                      ),
-                      child: Text(
-                        'Start',
-                        style: AppTheme.sansLabel(
-                          fontSize: 11,
-                          color: AppTheme.ink,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-            const SizedBox(height: 16),
+            const SizedBox(height: 24),
           ],
         ),
       ),
