@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
+import '../config/app_config.dart';
 import '../models/battle_event.dart';
 import '../models/battle_state.dart';
 import 'battle_realtime_data_source.dart';
@@ -11,15 +12,11 @@ import 'battle_remote_data_source.dart';
 /// Connects to the Lock-In Battle server (local or hosted on Render).
 class WebSocketBattleDataSource
     implements BattleRemoteDataSource, BattleRealtimeDataSource {
-  // Configurable server URLs
-  // If hosted on Render: wss://your-service-name.onrender.com
-  // If running locally on PC: ws://192.168.1.5:8080 (or ws://10.0.2.2:8080 on emulator)
-  static String activeServerUrl = _resolveDefaultServerUrl();
+  /// Production live WebSocket endpoint from AppConfig
+  static String get productionServerUrl => AppConfig.battleServerUrl;
 
-  static String _resolveDefaultServerUrl() {
-    // 192.168.1.8 is PC IP, 127.0.0.1 works via adb reverse, 10.0.2.2 works on emulator
-    return 'ws://127.0.0.1:8080';
-  }
+  /// Currently active server URL (defaults to production endpoint)
+  static String activeServerUrl = AppConfig.battleServerUrl;
 
   WebSocket? _socket;
   StreamSubscription? _socketSubscription;
@@ -65,9 +62,7 @@ class WebSocketBattleDataSource
 
     final candidateUrls = <String>{
       activeServerUrl,
-      'ws://127.0.0.1:8080',
-      'ws://192.168.1.8:8080',
-      'ws://10.0.2.2:8080',
+      productionServerUrl,
     }.toList();
 
     Object? lastError;

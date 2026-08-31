@@ -630,17 +630,14 @@ The app clearly distinguishes **Offline Features** from **Online Features** with
 
 ---
 
-## 16. Real-Time Battle Communication
+## 16. Real-Time Battle Communication Subsystem
 
-Focus Battles will eventually require real-time communication.
-
-Possible technologies include:
-
-- WebSockets
-- Server-Sent Events (SSE)
-- Realtime backend services (e.g. Supabase Realtime, Firebase, custom socket server)
-
-The exact technology can be selected when the backend is implemented. The architecture exposes this behind a repository/service interface so that the Flutter UI does not depend directly on the networking implementation.
+Focus Battles are powered by a dedicated, low-latency Node.js WebSocket service:
+- **Server Component**: Located in `server/server.js` using native `ws`.
+- **Cloud Hosting**: Deployed on Render with automated `/health` checks.
+- **Data Source**: `WebSocketBattleDataSource` in `lib/services/websocket_battle_data_source.dart`.
+- **Matchmaking & State**: Completely authoritatively managed in-memory via 6-character room codes. No account or database persistence required for battles.
+- **Heartbeats**: Automatic 30-second ping/pong cycles preventing mobile OS socket sleep.
 
 ---
 

@@ -40,6 +40,7 @@ Most productivity and Pomodoro timers fail for two fundamental reasons:
 - Challenge friends and accountability partners to head-to-head focus duels.
 - Real-time score comparison (`Your Minutes` vs. `Opponent's Minutes`).
 - Live countdown timers showing remaining battle time and dynamic status indicators showing who is currently leading.
+- **Dedicated Real-Time WebSocket Infrastructure**: Low-latency multiplayer room matching powered by a dedicated Node.js WebSocket engine with 100% guest support and zero login required.
 
 ### 📊 4. Daily Goals, Streaks & Session History
 - **Configurable Daily Target**: Set daily focus goals (e.g., 2h, 4h, 6h) with live progress percentage and visual gauges.

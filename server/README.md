@@ -39,8 +39,8 @@ The server starts on port `8080`:
    - **Build Command**: `npm install`
    - **Start Command**: `npm start`
    - **Plan**: `Free`
-6. Render gives you a public URL (e.g. `https://lockin-battle-server.onrender.com`).
-7. In Flutter, your WebSocket endpoint is:
+6. Render gives you a public URL (e.g. `https://<YOUR_SERVICE_NAME>.onrender.com`).
+7. In Flutter, configure your WebSocket endpoint via environment variable or in `app_config.dart`:
    ```dart
-   wss://lockin-battle-server.onrender.com
+   wss://<YOUR_SERVICE_NAME>.onrender.com
    ```

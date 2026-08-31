@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../config/app_config.dart';
 import '../models/focus_session.dart';
 import 'storage_service.dart';
 
@@ -10,9 +11,8 @@ class SupabaseService {
   factory SupabaseService() => _instance;
   SupabaseService._internal();
 
-  static const String supabaseUrl = 'https://xnnoastptbfeleguojzr.supabase.co';
-  static const String supabaseAnonKey =
-      'sb_publishable_eLVXDDrtl2z9kH5duJFIpQ_-pQvaoES';
+  static String get supabaseUrl => AppConfig.supabaseUrl;
+  static String get supabaseAnonKey => AppConfig.supabaseAnonKey;
 
   bool _isInitialized = false;
   bool get isInitialized => _isInitialized;
