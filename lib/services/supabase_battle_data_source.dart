@@ -89,10 +89,10 @@ class SupabaseBattleDataSource
     _currentRoomCode = roomCode;
     _activeBattle = battle;
 
-    // Join room channel and listen for events
+    // Join room channel and set up listeners
     final channel = await _subscribeToRoomChannel(roomCode, isHost: true);
 
-    // Track host presence on the channel so joining guests can discover immediately
+    // Track host presence on the channel
     try {
       await channel.track({
         'isHost': true,
@@ -160,32 +160,20 @@ class SupabaseBattleDataSource
       }
     });
 
-    // 2. Listen for Broadcast ROOM_INFO
-    final sub = _eventController.stream.listen((event) {
-      if (event.type == BattleEventType.battleCreated ||
-          event.type == BattleEventType.playerJoined ||
-          event.payload.containsKey('roomInfo') ||
-          event.payload['isHost'] == true) {
-        if (!roomInfoCompleter.isCompleted) {
-          debugPrint('[BattleRealtime] Host responded via Broadcast event for $code');
-          roomInfoCompleter.complete(event.payload);
-        }
-      }
-    });
-
     try {
-      // Check if presence is already available right now
+      // Check if presence is already available immediately
       final currentPresence = channel.presenceState();
       for (final p in currentPresence) {
         for (final pr in p.presences) {
           if (pr.payload['isHost'] == true && !roomInfoCompleter.isCompleted) {
+            debugPrint('[BattleRealtime] Host immediately discovered in existing presence');
             roomInfoCompleter.complete(Map<String, dynamic>.from(pr.payload));
             break;
           }
         }
       }
 
-      // 3. Broadcast discovery query with retry (every 800ms up to 5 attempts)
+      // 2. Broadcast ROOM_QUERY with retry (every 800ms up to 5 attempts)
       Map<String, dynamic>? roomPayload;
       for (var attempt = 0; attempt < 5; attempt++) {
         if (roomInfoCompleter.isCompleted) {
@@ -193,11 +181,10 @@ class SupabaseBattleDataSource
           break;
         }
 
-        debugPrint('[BattleRealtime] Guest sending query attempt ${attempt + 1} for $code');
+        debugPrint('[BattleRealtime] Guest sending ROOM_QUERY attempt ${attempt + 1} for $code');
         await channel.sendBroadcastMessage(
-          event: 'battle_event',
+          event: 'ROOM_QUERY',
           payload: {
-            'event': 'ROOM_QUERY',
             'roomCode': code,
             'guestName': displayName,
             'timestamp': DateTime.now().toIso8601String(),
@@ -282,7 +269,6 @@ class SupabaseBattleDataSource
       );
     } finally {
       _pendingJoinCompleter = null;
-      await sub.cancel();
     }
   }
 
@@ -298,10 +284,61 @@ class SupabaseBattleDataSource
       opts: const RealtimeChannelConfig(self: false),
     );
 
+    // 1. Host listens for ROOM_QUERY and responds with ROOM_INFO
+    if (isHost) {
+      channel.onBroadcast(
+        event: 'ROOM_QUERY',
+        callback: (payload) {
+          debugPrint('[BattleRealtime] Host received ROOM_QUERY: $payload');
+          if (_activeBattle != null) {
+            final host = _activeBattle!.participants.firstWhere(
+              (p) => p.isHost,
+              orElse: () => _activeBattle!.participants.first,
+            );
+
+            debugPrint('[BattleRealtime] Host replying with ROOM_INFO for ${_activeBattle!.roomCode}');
+            channel.sendBroadcastMessage(
+              event: 'ROOM_INFO',
+              payload: {
+                'roomCode': _activeBattle!.roomCode,
+                'battleId': _activeBattle!.id,
+                'durationMinutes': _activeBattle!.durationMinutes,
+                'host': host.toMap(),
+                'status': _activeBattle!.status.name,
+                'battle': _activeBattle!.toMap(),
+              },
+            );
+          }
+        },
+      );
+    }
+
+    // 2. Guest listens for ROOM_INFO
+    if (!isHost) {
+      channel.onBroadcast(
+        event: 'ROOM_INFO',
+        callback: (payload) {
+          debugPrint('[BattleRealtime] Guest received ROOM_INFO: $payload');
+          if (_pendingJoinCompleter != null && !_pendingJoinCompleter!.isCompleted) {
+            _pendingJoinCompleter!.complete(payload);
+          }
+        },
+      );
+    }
+
+    // 3. Both listen for in-battle events (BATTLE_EVENT)
     channel.onBroadcast(
-      event: 'battle_event',
+      event: 'BATTLE_EVENT',
       callback: (payload) {
-        _handleBroadcastMessage(payload, isHost: isHost);
+        debugPrint('[BattleRealtime] Received BATTLE_EVENT: ${payload['event'] ?? payload['type']}');
+        try {
+          final battleEvent = BattleEvent.fromMap(payload);
+          if (!_eventController.isClosed) {
+            _eventController.add(battleEvent);
+          }
+        } catch (e) {
+          debugPrint('[BattleRealtime] Error parsing BATTLE_EVENT: $e');
+        }
       },
     );
 
@@ -313,77 +350,19 @@ class SupabaseBattleDataSource
         if (!subscribeCompleter.isCompleted) {
           subscribeCompleter.complete();
         }
-      } else if (status == RealtimeSubscribeStatus.closed ||
-          status == RealtimeSubscribeStatus.channelError) {
+      } else if (status == RealtimeSubscribeStatus.channelError) {
         _updateConnectionState(BattleConnectionState.failed);
       }
     });
 
     try {
-      await subscribeCompleter.future.timeout(const Duration(seconds: 12));
+      await subscribeCompleter.future.timeout(const Duration(seconds: 10));
     } catch (e) {
-      debugPrint('[BattleRealtime] Channel subscription timeout/warning for $channelName: $e');
+      debugPrint('[BattleRealtime] Channel subscription warning: $e');
     }
 
     _channel = channel;
     return channel;
-  }
-
-  void _handleBroadcastMessage(
-    Map<String, dynamic> rawEnvelope, {
-    required bool isHost,
-  }) {
-    // Supabase broadcast wraps payload as: {'event': 'battle_event', 'topic': '...', 'payload': { ... }}
-    final Map<String, dynamic> data =
-        rawEnvelope['payload'] is Map<String, dynamic>
-            ? Map<String, dynamic>.from(rawEnvelope['payload'] as Map)
-            : rawEnvelope;
-
-    final eventName = (data['event'] ?? rawEnvelope['event'] ?? '').toString();
-    debugPrint('[BattleRealtime] Received broadcast eventName: "$eventName" (isHost: $isHost)');
-
-    // 1. If host receives a query from a connecting guest, reply with room metadata
-    if (isHost && eventName == 'ROOM_QUERY') {
-      if (_activeBattle != null && _channel != null) {
-        final host = _activeBattle!.participants.firstWhere(
-          (p) => p.isHost,
-          orElse: () => _activeBattle!.participants.first,
-        );
-
-        debugPrint('[BattleRealtime] Host replying with ROOM_INFO for ${_activeBattle!.roomCode}');
-        _channel!.sendBroadcastMessage(
-          event: 'battle_event',
-          payload: {
-            'event': 'ROOM_INFO',
-            'roomInfo': true,
-            'battleId': _activeBattle!.id,
-            'roomCode': _activeBattle!.roomCode,
-            'durationMinutes': _activeBattle!.durationMinutes,
-            'host': host.toMap(),
-            'status': _activeBattle!.status.name,
-            'battle': _activeBattle!.toMap(),
-          },
-        );
-      }
-      return;
-    }
-
-    // 2. If guest receives ROOM_INFO, complete pending join immediately
-    if (!isHost &&
-        (eventName == 'ROOM_INFO' ||
-            data['roomInfo'] == true ||
-            data['isHost'] == true)) {
-      debugPrint('[BattleRealtime] Guest received direct ROOM_INFO reply!');
-      if (_pendingJoinCompleter != null && !_pendingJoinCompleter!.isCompleted) {
-        _pendingJoinCompleter!.complete(data);
-      }
-    }
-
-    // 3. Parse into standard BattleEvent and emit to repository/provider
-    final battleEvent = BattleEvent.fromMap(data);
-    if (!_eventController.isClosed) {
-      _eventController.add(battleEvent);
-    }
   }
 
   @override
@@ -421,9 +400,9 @@ class SupabaseBattleDataSource
   Future<void> sendEvent(BattleEvent event) async {
     if (_channel != null) {
       final payload = event.toMap();
-      debugPrint('[BattleRealtime] Sending broadcast event: ${event.type.toWireString()}');
+      debugPrint('[BattleRealtime] Sending broadcast BATTLE_EVENT: ${event.type.toWireString()}');
       await _channel!.sendBroadcastMessage(
-        event: 'battle_event',
+        event: 'BATTLE_EVENT',
         payload: payload,
       );
     }
@@ -432,16 +411,18 @@ class SupabaseBattleDataSource
   @override
   Future<void> disconnect() async {
     if (_channel != null) {
+      final old = _channel!;
+      _channel = null;
+      _currentRoomCode = null;
+      _pendingJoinCompleter = null;
       try {
-        await _channel!.untrack();
-        await _channel!.unsubscribe();
-        await _client.removeChannel(_channel!);
+        await old.untrack();
+        await old.unsubscribe();
+        await _client.removeChannel(old);
       } catch (e) {
         debugPrint('[BattleRealtime] Error disconnecting channel: $e');
       }
-      _channel = null;
     }
-    _pendingJoinCompleter = null;
     _updateConnectionState(BattleConnectionState.disconnected);
   }
 
