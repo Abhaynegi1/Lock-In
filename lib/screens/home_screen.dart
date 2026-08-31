@@ -20,6 +20,13 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _currentTabIndex = 0;
 
+  void _onTabTapped(int index) {
+    if (index == 0 || index == 2) {
+      context.read<TimerProvider>().refreshFromStorage();
+    }
+    setState(() => _currentTabIndex = index);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -28,8 +35,7 @@ class _HomeScreenState extends State<HomeScreen> {
         index: _currentTabIndex,
         children: [
           _TodayView(
-            onNavigateToTab: (index) =>
-                setState(() => _currentTabIndex = index),
+            onNavigateToTab: _onTabTapped,
           ),
           const BattlesScreen(),
           const HistoryScreen(),
@@ -37,7 +43,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       bottomNavigationBar: _QuietBottomNav(
         currentIndex: _currentTabIndex,
-        onTap: (index) => setState(() => _currentTabIndex = index),
+        onTap: _onTabTapped,
       ),
     );
   }

@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/battle_provider.dart';
+import '../providers/timer_provider.dart';
 import '../utils/app_theme.dart';
 import '../widgets/doodle_decorations.dart';
 
 class BattleResultScreen extends StatelessWidget {
   const BattleResultScreen({super.key});
+
+  void _returnToHome(BuildContext context, BattleProvider battleProvider) {
+    context.read<TimerProvider>().refreshFromStorage();
+    battleProvider.resetBattle();
+    Navigator.popUntil(context, (route) => route.isFirst);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,20 +46,23 @@ class BattleResultScreen extends StatelessWidget {
       badgeColor = const Color(0xFFFBEBE8);
     }
 
-    return Scaffold(
-      backgroundColor: AppTheme.background,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Dismiss/Close logo button
-              GestureDetector(
-                onTap: () {
-                  battleProvider.resetBattle();
-                  Navigator.popUntil(context, (route) => route.isFirst);
-                },
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop) return;
+        _returnToHome(context, battleProvider);
+      },
+      child: Scaffold(
+        backgroundColor: AppTheme.background,
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Dismiss/Close logo button
+                GestureDetector(
+                  onTap: () => _returnToHome(context, battleProvider),
                 child: Container(
                   width: 48,
                   height: 48,
@@ -196,18 +206,16 @@ class BattleResultScreen extends StatelessWidget {
                 textColor: AppTheme.background,
                 height: 52,
                 fontSize: 15,
-                onTap: () {
-                  battleProvider.resetBattle();
-                  Navigator.popUntil(context, (route) => route.isFirst);
-                },
+                onTap: () => _returnToHome(context, battleProvider),
               ),
               const SizedBox(height: 12),
             ],
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 }
 
 class _PlayerSummaryColumn extends StatelessWidget {

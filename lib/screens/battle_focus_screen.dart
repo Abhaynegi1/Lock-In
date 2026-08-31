@@ -94,6 +94,7 @@ class _BattleFocusScreenState extends State<BattleFocusScreen>
       unawaited(ScreenWakeService.disable());
       Future.microtask(() {
         if (!context.mounted) return;
+        context.read<TimerProvider>().refreshFromStorage();
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (_) => const BattleResultScreen()),
