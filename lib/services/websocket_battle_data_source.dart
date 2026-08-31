@@ -70,6 +70,7 @@ class WebSocketBattleDataSource
     for (final url in candidateUrls) {
       try {
         debugPrint('[BattleWS] Attempting connection to $url ...');
+        // ignore: close_sinks
         final socket = await WebSocket.connect(url).timeout(
           const Duration(seconds: 3),
         );

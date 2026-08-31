@@ -397,6 +397,7 @@ function handleDisconnect(ws) {
       });
     }
   }
+  meta.roomCode = null;
 }
 
 // 30s Keep-Alive Heartbeat
@@ -412,14 +413,33 @@ const interval = setInterval(() => {
   });
 }, 30000);
 
+// Allow test runners and background processes to exit cleanly
+if (interval.unref) {
+  interval.unref();
+}
+
 wss.on('close', () => {
   clearInterval(interval);
 });
 
-server.listen(PORT, '0.0.0.0', () => {
-  console.log(`========================================`);
-  console.log(` Lock-In Battle Server running on port ${PORT}`);
-  console.log(` Health check: http://localhost:${PORT}/health`);
-  console.log(` WebSocket URL: ws://localhost:${PORT}`);
-  console.log(`========================================`);
-});
+if (require.main === module) {
+  server.listen(PORT, '0.0.0.0', () => {
+    console.log(`========================================`);
+    console.log(` Lock-In Battle Server running on port ${PORT}`);
+    console.log(` Health check: http://localhost:${PORT}/health`);
+    console.log(` WebSocket URL: ws://localhost:${PORT}`);
+    console.log(`========================================`);
+  });
+}
+
+module.exports = {
+  server,
+  wss,
+  rooms,
+  connectionMeta,
+  interval,
+  generateRoomCode,
+  serializeBattle,
+  handleMessage,
+  handleDisconnect,
+};

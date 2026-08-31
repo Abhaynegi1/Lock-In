@@ -4,7 +4,9 @@
   "description": "Real-time WebSocket server for Lock-In 1v1 Focus Battles",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "test": "node --test",
+    "check": "node --check server.js"
   },
   "dependencies": {
     "ws": "^8.18.0"
