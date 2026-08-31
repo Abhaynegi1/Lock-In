@@ -1,0 +1,458 @@
+import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
+import 'package:flutter/foundation.dart';
+import '../models/battle_event.dart';
+import '../models/battle_state.dart';
+import 'battle_realtime_data_source.dart';
+import 'battle_remote_data_source.dart';
+
+/// Dedicated Node.js WebSocket Data Source for 1v1 Focus Battles
+/// Connects to the Lock-In Battle server (local or hosted on Render).
+class WebSocketBattleDataSource
+    implements BattleRemoteDataSource, BattleRealtimeDataSource {
+  // Configurable server URLs
+  // If hosted on Render: wss://your-service-name.onrender.com
+  // If running locally on PC: ws://192.168.1.5:8080 (or ws://10.0.2.2:8080 on emulator)
+  static String activeServerUrl = _resolveDefaultServerUrl();
+
+  static String _resolveDefaultServerUrl() {
+    // Default to local Wi-Fi IP for direct zero-latency LAN multiplayer,
+    // or set to your Render deployment URL.
+    return 'ws://192.168.1.5:8080';
+  }
+
+  WebSocket? _socket;
+  StreamSubscription? _socketSubscription;
+
+  BattleSessionModel? _activeBattle;
+  String? _localParticipantId;
+
+  final StreamController<BattleEvent> _eventController =
+      StreamController<BattleEvent>.broadcast();
+  final StreamController<BattleConnectionState> _connectionStateController =
+      StreamController<BattleConnectionState>.broadcast();
+
+  BattleConnectionState _connectionState = BattleConnectionState.disconnected;
+
+  Completer<Map<String, dynamic>>? _pendingCreationCompleter;
+  Completer<Map<String, dynamic>>? _pendingJoinCompleter;
+
+  @override
+  Stream<BattleEvent> get eventStream => _eventController.stream;
+
+  @override
+  Stream<BattleConnectionState> get connectionStateStream =>
+      _connectionStateController.stream;
+
+  @override
+  BattleConnectionState get connectionState => _connectionState;
+
+  void _updateConnectionState(BattleConnectionState newState) {
+    if (_connectionState != newState) {
+      _connectionState = newState;
+      if (!_connectionStateController.isClosed) {
+        _connectionStateController.add(newState);
+      }
+    }
+  }
+
+  Future<void> _ensureConnected() async {
+    if (_socket != null && _socket!.readyState == WebSocket.open) {
+      return;
+    }
+
+    _updateConnectionState(BattleConnectionState.connecting);
+
+    try {
+      // If emulator, auto-rewrite 192.168.1.5 to 10.0.2.2 if connection fails
+      final uri = Uri.parse(activeServerUrl);
+      debugPrint('[BattleWS] Connecting to $uri ...');
+
+      try {
+        _socket = await WebSocket.connect(uri.toString()).timeout(
+          const Duration(seconds: 5),
+        );
+      } catch (firstErr) {
+        // Fallback for Android Emulator to host loopback if local IP fails
+        if (uri.host != '10.0.2.2' && !uri.host.contains('onrender.com')) {
+          final fallbackUri = uri.replace(host: '10.0.2.2');
+          debugPrint('[BattleWS] Attempting emulator fallback: $fallbackUri ...');
+          _socket = await WebSocket.connect(fallbackUri.toString()).timeout(
+            const Duration(seconds: 5),
+          );
+        } else {
+          rethrow;
+        }
+      }
+
+      _updateConnectionState(BattleConnectionState.connected);
+      debugPrint('[BattleWS] Connected successfully!');
+
+      _socketSubscription = _socket!.listen(
+        _handleIncomingRawMessage,
+        onError: (err) {
+          debugPrint('[BattleWS] Socket error: $err');
+          _updateConnectionState(BattleConnectionState.failed);
+        },
+        onDone: () {
+          debugPrint('[BattleWS] Socket closed by server');
+          _updateConnectionState(BattleConnectionState.disconnected);
+        },
+      );
+    } catch (e) {
+      debugPrint('[BattleWS] Failed to connect: $e');
+      _updateConnectionState(BattleConnectionState.failed);
+      throw Exception(
+        'Could not connect to Battle Server at $activeServerUrl. Ensure the server is running or verify your network.',
+      );
+    }
+  }
+
+  void _sendJson(Map<String, dynamic> data) {
+    if (_socket != null && _socket!.readyState == WebSocket.open) {
+      _socket!.add(jsonEncode(data));
+    } else {
+      debugPrint('[BattleWS] Cannot send message: socket not open');
+    }
+  }
+
+  void _handleIncomingRawMessage(dynamic raw) {
+    try {
+      final text = raw.toString();
+      final Map<String, dynamic> data = jsonDecode(text);
+      final type = (data['type'] ?? '').toString();
+
+      debugPrint('[BattleWS] Incoming message: $type');
+
+      switch (type) {
+        case 'ROOM_CREATED':
+          if (_pendingCreationCompleter != null &&
+              !_pendingCreationCompleter!.isCompleted) {
+            _pendingCreationCompleter!.complete(data);
+          }
+          break;
+
+        case 'ROOM_JOINED':
+          if (_pendingJoinCompleter != null &&
+              !_pendingJoinCompleter!.isCompleted) {
+            _pendingJoinCompleter!.complete(data);
+          }
+          break;
+
+        case 'ERROR':
+          final msg = data['message'] ?? 'An error occurred on battle server';
+          if (_pendingJoinCompleter != null &&
+              !_pendingJoinCompleter!.isCompleted) {
+            _pendingJoinCompleter!.completeError(Exception(msg));
+          }
+          if (_pendingCreationCompleter != null &&
+              !_pendingCreationCompleter!.isCompleted) {
+            _pendingCreationCompleter!.completeError(Exception(msg));
+          }
+          break;
+
+        case 'PLAYER_JOINED':
+          _eventController.add(
+            BattleEvent(
+              type: BattleEventType.playerJoined,
+              battleId: _activeBattle?.id ?? '',
+              timestamp: DateTime.now(),
+              payload: data,
+            ),
+          );
+          break;
+
+        case 'PLAYER_READY':
+          _eventController.add(
+            BattleEvent(
+              type: BattleEventType.playerReady,
+              battleId: _activeBattle?.id ?? '',
+              timestamp: DateTime.now(),
+              payload: data,
+            ),
+          );
+          break;
+
+        case 'PLAYER_UNREADY':
+          _eventController.add(
+            BattleEvent(
+              type: BattleEventType.playerUnready,
+              battleId: _activeBattle?.id ?? '',
+              timestamp: DateTime.now(),
+              payload: data,
+            ),
+          );
+          break;
+
+        case 'BATTLE_STARTED':
+          _eventController.add(
+            BattleEvent(
+              type: BattleEventType.battleStarted,
+              battleId: _activeBattle?.id ?? '',
+              timestamp: DateTime.now().toUtc(),
+              payload: data,
+            ),
+          );
+          break;
+
+        case 'PROGRESS_UPDATE':
+          _eventController.add(
+            BattleEvent(
+              type: BattleEventType.heartbeat,
+              battleId: _activeBattle?.id ?? '',
+              timestamp: DateTime.now(),
+              payload: data,
+            ),
+          );
+          break;
+
+        case 'PLAYER_FORFEITED':
+          _eventController.add(
+            BattleEvent(
+              type: BattleEventType.playerForfeited,
+              battleId: _activeBattle?.id ?? '',
+              timestamp: DateTime.now(),
+              payload: data,
+            ),
+          );
+          break;
+
+        case 'PLAYER_FINISHED':
+          _eventController.add(
+            BattleEvent(
+              type: BattleEventType.battleFinished,
+              battleId: _activeBattle?.id ?? '',
+              timestamp: DateTime.now(),
+              payload: data,
+            ),
+          );
+          break;
+
+        case 'PLAYER_LEFT':
+          _eventController.add(
+            BattleEvent(
+              type: BattleEventType.playerLeft,
+              battleId: _activeBattle?.id ?? '',
+              timestamp: DateTime.now(),
+              payload: data,
+            ),
+          );
+          break;
+
+        case 'BATTLE_CANCELLED':
+          _eventController.add(
+            BattleEvent(
+              type: BattleEventType.battleCancelled,
+              battleId: _activeBattle?.id ?? '',
+              timestamp: DateTime.now(),
+              payload: data,
+            ),
+          );
+          break;
+      }
+    } catch (e) {
+      debugPrint('[BattleWS] Error handling message: $e');
+    }
+  }
+
+  @override
+  Future<BattleCreationResponse> createBattle({
+    required int durationMinutes,
+    required String displayName,
+    required String anonymousId,
+    String? avatar,
+  }) async {
+    await disconnect();
+    await _ensureConnected();
+
+    _pendingCreationCompleter = Completer<Map<String, dynamic>>();
+
+    _sendJson({
+      'type': 'CREATE_ROOM',
+      'durationMinutes': durationMinutes,
+      'displayName': displayName,
+      'avatar': avatar ?? 'assets/default_pfp/avatar-spark.svg',
+    });
+
+    try {
+      final res = await _pendingCreationCompleter!.future.timeout(
+        const Duration(seconds: 8),
+      );
+
+      final battleMap = Map<String, dynamic>.from(res['battle'] as Map);
+      final battle = BattleSessionModel.fromMap(battleMap);
+
+      _activeBattle = battle;
+      _localParticipantId = res['participantId'].toString();
+
+      return BattleCreationResponse(
+        battleId: res['battleId'].toString(),
+        roomCode: res['roomCode'].toString(),
+        participantId: res['participantId'].toString(),
+        participantToken: res['participantToken'].toString(),
+        battle: battle,
+      );
+    } finally {
+      _pendingCreationCompleter = null;
+    }
+  }
+
+  @override
+  Future<BattleJoinResponse> joinBattle({
+    required String roomCode,
+    required String displayName,
+    required String anonymousId,
+    String? avatar,
+  }) async {
+    final code = roomCode.trim().toUpperCase();
+    if (code.length != 6) {
+      throw Exception('Invalid room code. Room code must be 6 characters.');
+    }
+
+    await disconnect();
+    await _ensureConnected();
+
+    _pendingJoinCompleter = Completer<Map<String, dynamic>>();
+
+    _sendJson({
+      'type': 'JOIN_ROOM',
+      'roomCode': code,
+      'displayName': displayName,
+      'avatar': avatar ?? 'assets/default_pfp/avatar-spark.svg',
+    });
+
+    try {
+      final res = await _pendingJoinCompleter!.future.timeout(
+        const Duration(seconds: 8),
+      );
+
+      final battleMap = Map<String, dynamic>.from(res['battle'] as Map);
+      final battle = BattleSessionModel.fromMap(battleMap);
+
+      _activeBattle = battle;
+      _localParticipantId = res['participantId'].toString();
+
+      return BattleJoinResponse(
+        battleId: res['battleId'].toString(),
+        participantId: res['participantId'].toString(),
+        participantToken: res['participantToken'].toString(),
+        battle: battle,
+      );
+    } finally {
+      _pendingJoinCompleter = null;
+    }
+  }
+
+  @override
+  Future<BattleSessionModel> getBattleStatus({
+    required String battleId,
+    required String participantToken,
+  }) async {
+    if (_activeBattle != null) return _activeBattle!;
+    return BattleSessionModel(
+      id: battleId,
+      roomCode: '------',
+      durationMinutes: 25,
+      status: BattleStatus.active,
+      createdAt: DateTime.now(),
+    );
+  }
+
+  @override
+  Future<void> connect({
+    required String battleId,
+    required String participantToken,
+    required Uri serverUri,
+  }) async {
+    await _ensureConnected();
+  }
+
+  @override
+  Future<void> sendEvent(BattleEvent event) async {
+    switch (event.type) {
+      case BattleEventType.playerReady:
+        _sendJson({
+          'type': 'PLAYER_READY',
+          'participantId': _localParticipantId,
+        });
+        break;
+
+      case BattleEventType.playerUnready:
+        _sendJson({
+          'type': 'PLAYER_UNREADY',
+          'participantId': _localParticipantId,
+        });
+        break;
+
+      case BattleEventType.battleStarted:
+        _sendJson({
+          'type': 'START_BATTLE',
+        });
+        break;
+
+      case BattleEventType.heartbeat:
+        _sendJson({
+          'type': 'PROGRESS_UPDATE',
+          'participantId': _localParticipantId,
+          ...event.payload,
+        });
+        break;
+
+      case BattleEventType.playerForfeited:
+        _sendJson({
+          'type': 'PLAYER_FORFEIT',
+          'participantId': _localParticipantId,
+        });
+        break;
+
+      case BattleEventType.battleFinished:
+        _sendJson({
+          'type': 'PLAYER_FINISH',
+          'participantId': _localParticipantId,
+        });
+        break;
+
+      case BattleEventType.playerLeft:
+      case BattleEventType.battleCancelled:
+        _sendJson({
+          'type': 'LEAVE_ROOM',
+          'participantId': _localParticipantId,
+        });
+        break;
+
+      default:
+        break;
+    }
+  }
+
+  @override
+  Future<void> disconnect() async {
+    if (_socket != null) {
+      try {
+        if (_localParticipantId != null) {
+          _sendJson({
+            'type': 'LEAVE_ROOM',
+            'participantId': _localParticipantId,
+          });
+        }
+        await _socketSubscription?.cancel();
+        await _socket!.close();
+      } catch (e) {
+        debugPrint('[BattleWS] Error during disconnect: $e');
+      }
+      _socket = null;
+      _socketSubscription = null;
+    }
+    _pendingCreationCompleter = null;
+    _pendingJoinCompleter = null;
+    _updateConnectionState(BattleConnectionState.disconnected);
+  }
+
+  @override
+  void dispose() {
+    disconnect();
+    _eventController.close();
+    _connectionStateController.close();
+  }
+}
