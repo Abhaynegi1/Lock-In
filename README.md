@@ -3,6 +3,7 @@
 > **The competitive, anti-distraction focus timer designed to cultivate unbreakable deep work.**
 
 [![CI & Production Quality Checks](https://github.com/Abhaynegi1/Lock-In/actions/workflows/ci.yml/badge.svg)](https://github.com/Abhaynegi1/Lock-In/actions/workflows/ci.yml)
+[![Docker Ready](https://img.shields.io/badge/Docker-Compose%20Ready-2496ED?logo=docker&logoColor=white)](DOCKER.md)
 [![Flutter](https://img.shields.io/badge/Flutter-3.10%2B-02569B?logo=flutter&logoColor=white)](https://flutter.dev)
 [![Dart](https://img.shields.io/badge/Dart-3.0%2B-0175C2?logo=dart&logoColor=white)](https://dart.dev)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
@@ -101,7 +102,25 @@ lib/
 
 ## 🚀 Getting Started
 
-### Prerequisites
+### 🐳 Instant Docker Quickstart (Recommended)
+
+Run the entire system (Flutter Web frontend + WebSocket Battle Server) in one command without installing Flutter, Dart, or Java:
+
+```bash
+docker compose up --build
+```
+
+- **Web App**: [http://localhost:3000](http://localhost:3000)
+- **Battle Server WebSocket**: `ws://localhost:8080`
+- **Battle Server Health**: [http://localhost:8080/health](http://localhost:8080/health)
+
+> 📖 **Full Docker Guide**: For instructions on testing, DevContainers, and cloud deployment, see [DOCKER.md](DOCKER.md).
+
+---
+
+### 💻 Local Machine Setup (Optional)
+
+#### Prerequisites
 - [Flutter SDK](https://flutter.dev/docs/get-started/install) `^3.10.8` or higher
 - [Dart SDK](https://dart.dev/get-dart) `^3.0.0`
 - [Android Studio](https://developer.android.com/studio) / [Xcode](https://developer.apple.com/xcode/) with configured emulators

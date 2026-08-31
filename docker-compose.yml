@@ -1,0 +1,61 @@
+# ==============================================================================
+# Lock-In Docker Compose Orchestration
+# Spins up the Flutter Web App and WebSocket Battle Server seamlessly
+# ==============================================================================
+
+version: '3.8'
+
+services:
+  # ----------------------------------------------------------------------------
+  # 1. Real-time WebSocket Battle Server
+  # ----------------------------------------------------------------------------
+  battle-server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: lockin-battle-server
+    restart: unless-stopped
+    ports:
+      - "${BATTLE_SERVER_PORT:-8080}:8080"
+    environment:
+      - PORT=8080
+      - NODE_ENV=production
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    networks:
+      - lockin-net
+
+  # ----------------------------------------------------------------------------
+  # 2. Flutter Web Production Client (Nginx)
+  # ----------------------------------------------------------------------------
+  web-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        BATTLE_SERVER_URL: ${BATTLE_SERVER_URL:-ws://localhost:8080}
+        SUPABASE_URL: ${SUPABASE_URL:-https://xnnoastptbfeleguojzr.supabase.co}
+        SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY:-sb_publishable_eLVXDDrtl2z9kH5duJFIpQ_-pQvaoES}
+    container_name: lockin-web-app
+    restart: unless-stopped
+    ports:
+      - "${WEB_PORT:-3000}:80"
+    depends_on:
+      battle-server:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/index.html"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    networks:
+      - lockin-net
+
+networks:
+  lockin-net:
+    driver: bridge

@@ -1,0 +1,32 @@
+# Flutter build artifacts and caches
+.dart_tool/
+build/
+coverage/
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# Git and IDE configurations
+.git/
+.github/
+.idea/
+.vscode/
+*.iml
+
+# Native platform targets (not used in web container build)
+android/
+ios/
+windows/
+macos/
+linux/
+
+# Server has its own isolated Docker context
+server/
+
+# Documentation and project notes
+docs/
+*.md
+*.log
+
+# Environment overrides
+.env
+.env.local

@@ -1,0 +1,25 @@
+{
+  "name": "Lock-In Developer Environment",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "dart.flutterSdkPath": "/sdks/flutter",
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+          "source.fixAll": "explicit"
+        }
+      },
+      "extensions": [
+        "Dart-Code.flutter",
+        "Dart-Code.dart-code",
+        "dbaeumer.vscode-eslint"
+      ]
+    }
+  },
+  "forwardPorts": [3000, 8080],
+  "postCreateCommand": "flutter pub get && cd server && npm install",
+  "remoteUser": "cirrus"
+}
