@@ -17,9 +17,8 @@ class WebSocketBattleDataSource
   static String activeServerUrl = _resolveDefaultServerUrl();
 
   static String _resolveDefaultServerUrl() {
-    // Default to local Wi-Fi IP for direct zero-latency LAN multiplayer,
-    // or set to your Render deployment URL.
-    return 'ws://192.168.1.5:8080';
+    // 192.168.1.8 is PC IP, 127.0.0.1 works via adb reverse, 10.0.2.2 works on emulator
+    return 'ws://127.0.0.1:8080';
   }
 
   WebSocket? _socket;
@@ -64,49 +63,52 @@ class WebSocketBattleDataSource
 
     _updateConnectionState(BattleConnectionState.connecting);
 
-    try {
-      // If emulator, auto-rewrite 192.168.1.5 to 10.0.2.2 if connection fails
-      final uri = Uri.parse(activeServerUrl);
-      debugPrint('[BattleWS] Connecting to $uri ...');
+    final candidateUrls = <String>{
+      activeServerUrl,
+      'ws://127.0.0.1:8080',
+      'ws://192.168.1.8:8080',
+      'ws://10.0.2.2:8080',
+    }.toList();
 
+    Object? lastError;
+
+    for (final url in candidateUrls) {
       try {
-        _socket = await WebSocket.connect(uri.toString()).timeout(
-          const Duration(seconds: 5),
+        debugPrint('[BattleWS] Attempting connection to $url ...');
+        final socket = await WebSocket.connect(url).timeout(
+          const Duration(seconds: 3),
         );
-      } catch (firstErr) {
-        // Fallback for Android Emulator to host loopback if local IP fails
-        if (uri.host != '10.0.2.2' && !uri.host.contains('onrender.com')) {
-          final fallbackUri = uri.replace(host: '10.0.2.2');
-          debugPrint('[BattleWS] Attempting emulator fallback: $fallbackUri ...');
-          _socket = await WebSocket.connect(fallbackUri.toString()).timeout(
-            const Duration(seconds: 5),
-          );
-        } else {
-          rethrow;
-        }
+        _socket = socket;
+        activeServerUrl = url;
+        debugPrint('[BattleWS] Connected successfully to $url!');
+        break;
+      } catch (err) {
+        lastError = err;
+        debugPrint('[BattleWS] Connection to $url failed: $err');
       }
+    }
 
-      _updateConnectionState(BattleConnectionState.connected);
-      debugPrint('[BattleWS] Connected successfully!');
-
-      _socketSubscription = _socket!.listen(
-        _handleIncomingRawMessage,
-        onError: (err) {
-          debugPrint('[BattleWS] Socket error: $err');
-          _updateConnectionState(BattleConnectionState.failed);
-        },
-        onDone: () {
-          debugPrint('[BattleWS] Socket closed by server');
-          _updateConnectionState(BattleConnectionState.disconnected);
-        },
-      );
-    } catch (e) {
-      debugPrint('[BattleWS] Failed to connect: $e');
+    if (_socket == null || _socket!.readyState != WebSocket.open) {
       _updateConnectionState(BattleConnectionState.failed);
       throw Exception(
-        'Could not connect to Battle Server at $activeServerUrl. Ensure the server is running or verify your network.',
+        'Could not connect to Battle Server. Please verify the server is running. (Last error: $lastError)',
       );
     }
+
+    _updateConnectionState(BattleConnectionState.connected);
+    debugPrint('[BattleWS] Connected successfully!');
+
+    _socketSubscription = _socket!.listen(
+      _handleIncomingRawMessage,
+      onError: (err) {
+        debugPrint('[BattleWS] Socket error: $err');
+        _updateConnectionState(BattleConnectionState.failed);
+      },
+      onDone: () {
+        debugPrint('[BattleWS] Socket closed by server');
+        _updateConnectionState(BattleConnectionState.disconnected);
+      },
+    );
   }
 
   void _sendJson(Map<String, dynamic> data) {
