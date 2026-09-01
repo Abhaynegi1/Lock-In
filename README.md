@@ -1,9 +1,17 @@
-# 🔒 LockIn
+<p align="center">
+  <img src="assets/lock-in-logo.svg" width="110" height="110" alt="Lock In Logo" />
+</p>
 
-> **The competitive, anti-distraction focus timer designed to cultivate unbreakable deep work.**
+<h1 align="center">LockIn</h1>
 
-[![Download APK](https://img.shields.io/badge/Download-Android%20APK-2ea44f?style=for-the-badge&logo=android&logoColor=white)](https://github.com/Abhaynegi1/Lock-In/releases/latest/download/LockIn-Android.apk)
-[![Release](https://img.shields.io/github/v/release/Abhaynegi1/Lock-In?color=blue&style=for-the-badge&label=Latest%20Version)](https://github.com/Abhaynegi1/Lock-In/releases/latest)
+<p align="center">
+  <strong>The competitive, anti-distraction focus timer designed to cultivate unbreakable deep work.</strong>
+</p>
+
+<p align="center">
+  <a href="https://github.com/Abhaynegi1/Lock-In/releases/latest/download/LockIn-Android.apk"><img src="https://img.shields.io/badge/Download-Android%20APK-2ea44f?style=for-the-badge&logo=android&logoColor=white" alt="Download APK" /></a>
+  <a href="https://github.com/Abhaynegi1/Lock-In/releases/latest"><img src="https://img.shields.io/github/v/release/Abhaynegi1/Lock-In?color=blue&style=for-the-badge&label=Latest%20Version" alt="Release" /></a>
+</p>
 
 ---
 
