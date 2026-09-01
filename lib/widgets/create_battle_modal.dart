@@ -278,7 +278,7 @@ class _CreateBattleModalState extends State<CreateBattleModal> {
             // Create Room Action
             TactileButton(
               label: battleProvider.isLoading
-                  ? 'Creating Room...'
+                  ? 'Connecting & Creating Room...'
                   : 'Create Room Code',
               fillColor: AppTheme.peach,
               height: 52,

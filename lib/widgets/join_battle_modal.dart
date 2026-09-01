@@ -305,7 +305,7 @@ class _JoinBattleModalState extends State<JoinBattleModal> {
             // Join Button
             TactileButton(
               label: battleProvider.isLoading
-                  ? 'Joining Room...'
+                  ? 'Connecting & Joining Room...'
                   : 'Join Battle Room',
               fillColor: AppTheme.sage,
               height: 52,

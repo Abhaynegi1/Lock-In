@@ -11,8 +11,23 @@ import '../widgets/doodle_decorations.dart';
 import '../widgets/join_battle_modal.dart';
 import 'focus_screen.dart';
 
-class BattlesScreen extends StatelessWidget {
+class BattlesScreen extends StatefulWidget {
   const BattlesScreen({super.key});
+
+  @override
+  State<BattlesScreen> createState() => _BattlesScreenState();
+}
+
+class _BattlesScreenState extends State<BattlesScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        context.read<BattleProvider>().warmUpServer();
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

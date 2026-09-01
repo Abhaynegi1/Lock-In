@@ -52,6 +52,11 @@ class BattleRepository {
   BattleConnectionState get connectionState =>
       _realtimeDataSource.connectionState;
 
+  /// Pre-warms the battle server instance in the background
+  void warmUp() {
+    WebSocketBattleDataSource.warmUpServer();
+  }
+
   /// Retrieves or generates the anonymous installation ID
   Future<String> getAnonymousId() async {
     return _storageService.getOrCreateAnonymousId();

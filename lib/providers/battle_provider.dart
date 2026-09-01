@@ -145,7 +145,11 @@ class BattleProvider with ChangeNotifier {
         RegExp(r'^(Exception|HttpException):\s*'),
         '',
       );
-      if (msg.contains('SocketException') ||
+      if (msg.contains('TimeoutException') ||
+          msg.contains('Future not completed') ||
+          msg.contains('waking up')) {
+        msg = 'Server is waking up. Please tap again in a moment.';
+      } else if (msg.contains('SocketException') ||
           msg.contains('Failed host lookup') ||
           msg.contains('Network is unreachable') ||
           msg.contains('Connection refused') ||
@@ -159,6 +163,11 @@ class BattleProvider with ChangeNotifier {
       notifyListeners();
       return false;
     }
+  }
+
+  /// Pre-warms the battle server instance in the background
+  void warmUpServer() {
+    _repository.warmUp();
   }
 
   /// Join an existing room via 6-character room code
@@ -206,7 +215,11 @@ class BattleProvider with ChangeNotifier {
         RegExp(r'^(Exception|HttpException):\s*'),
         '',
       );
-      if (msg.contains('SocketException') ||
+      if (msg.contains('TimeoutException') ||
+          msg.contains('Future not completed') ||
+          msg.contains('waking up')) {
+        msg = 'Server is waking up. Please tap again in a moment.';
+      } else if (msg.contains('SocketException') ||
           msg.contains('Failed host lookup') ||
           msg.contains('Network is unreachable') ||
           msg.contains('Connection refused') ||

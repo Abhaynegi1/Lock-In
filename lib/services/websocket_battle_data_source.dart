@@ -53,6 +53,30 @@ class WebSocketBattleDataSource
     }
   }
 
+  /// Pre-warm the battle server in the background (e.g. when opening BattlesScreen)
+  static Future<void> warmUpServer() async {
+    try {
+      final wsUri = Uri.parse(activeServerUrl);
+      final scheme = wsUri.scheme == 'wss' ? 'https' : 'http';
+      final httpUri = wsUri.replace(
+        scheme: scheme,
+        path: '/health',
+      );
+      debugPrint('[BattleWS] Pre-warming battle server at $httpUri ...');
+      final client = HttpClient()..connectionTimeout = const Duration(seconds: 15);
+      final request = await client.getUrl(httpUri);
+      request.headers.set(HttpHeaders.hostHeader, httpUri.host);
+      request.headers.set(HttpHeaders.acceptHeader, 'application/json, */*');
+      request.headers.set(HttpHeaders.userAgentHeader, 'LockIn-Client/1.0');
+      final response = await request.close();
+      await response.drain();
+      client.close();
+      debugPrint('[BattleWS] Pre-warm response code: ${response.statusCode}');
+    } catch (e) {
+      debugPrint('[BattleWS] Pre-warm ping ignored: $e');
+    }
+  }
+
   Future<void> _ensureConnected() async {
     if (_socket != null && _socket!.readyState == WebSocket.open) {
       return;
@@ -72,7 +96,7 @@ class WebSocketBattleDataSource
         debugPrint('[BattleWS] Attempting connection to $url ...');
         // ignore: close_sinks
         final socket = await WebSocket.connect(url).timeout(
-          const Duration(seconds: 3),
+          const Duration(seconds: 20),
         );
         _socket = socket;
         activeServerUrl = url;
@@ -86,8 +110,17 @@ class WebSocketBattleDataSource
 
     if (_socket == null || _socket!.readyState != WebSocket.open) {
       _updateConnectionState(BattleConnectionState.failed);
+      final isTimeout = lastError is TimeoutException ||
+          (lastError != null &&
+              (lastError.toString().contains('TimeoutException') ||
+                  lastError.toString().contains('Future not completed')));
+      if (isTimeout) {
+        throw Exception(
+          'Server is waking up. Please tap again in a moment.',
+        );
+      }
       throw Exception(
-        'Could not connect to Battle Server. Please verify the server is running. (Last error: $lastError)',
+        'Could not connect to Battle Server. Please check your internet connection.',
       );
     }
 
