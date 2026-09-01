@@ -2,11 +2,14 @@
 
 > **The competitive, anti-distraction focus timer designed to cultivate unbreakable deep work.**
 
+[![Release](https://img.shields.io/github/v/release/Abhaynegi1/Lock-In?color=success&label=Download%20APK)](https://github.com/Abhaynegi1/Lock-In/releases/latest)
 [![CI & Production Quality Checks](https://github.com/Abhaynegi1/Lock-In/actions/workflows/ci.yml/badge.svg)](https://github.com/Abhaynegi1/Lock-In/actions/workflows/ci.yml)
 [![Docker Ready](https://img.shields.io/badge/Docker-Compose%20Ready-2496ED?logo=docker&logoColor=white)](DOCKER.md)
 [![Flutter](https://img.shields.io/badge/Flutter-3.10%2B-02569B?logo=flutter&logoColor=white)](https://flutter.dev)
 [![Dart](https://img.shields.io/badge/Dart-3.0%2B-0175C2?logo=dart&logoColor=white)](https://dart.dev)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
+> 📲 **Want to try the app on your phone?** Download the latest Android build directly from **[GitHub Releases](https://github.com/Abhaynegi1/Lock-In/releases/latest)**.
 
 ---
 
