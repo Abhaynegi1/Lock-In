@@ -2,14 +2,24 @@
 
 > **The competitive, anti-distraction focus timer designed to cultivate unbreakable deep work.**
 
-[![Release](https://img.shields.io/github/v/release/Abhaynegi1/Lock-In?color=success&label=Download%20APK)](https://github.com/Abhaynegi1/Lock-In/releases/latest)
-[![CI & Production Quality Checks](https://github.com/Abhaynegi1/Lock-In/actions/workflows/ci.yml/badge.svg)](https://github.com/Abhaynegi1/Lock-In/actions/workflows/ci.yml)
-[![Docker Ready](https://img.shields.io/badge/Docker-Compose%20Ready-2496ED?logo=docker&logoColor=white)](DOCKER.md)
-[![Flutter](https://img.shields.io/badge/Flutter-3.10%2B-02569B?logo=flutter&logoColor=white)](https://flutter.dev)
-[![Dart](https://img.shields.io/badge/Dart-3.0%2B-0175C2?logo=dart&logoColor=white)](https://dart.dev)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Download APK](https://img.shields.io/badge/Download-Android%20APK-2ea44f?style=for-the-badge&logo=android&logoColor=white)](https://github.com/Abhaynegi1/Lock-In/releases/latest/download/LockIn-Android.apk)
+[![Release](https://img.shields.io/github/v/release/Abhaynegi1/Lock-In?color=blue&style=for-the-badge&label=Latest%20Version)](https://github.com/Abhaynegi1/Lock-In/releases/latest)
 
-> 📲 **Want to try the app on your phone?** Download the latest Android build directly from **[GitHub Releases](https://github.com/Abhaynegi1/Lock-In/releases/latest)**.
+---
+
+## 📲 Direct Android Download
+
+Get the app directly on your Android phone without visiting app stores:
+
+| 1-Click Direct Download | Scan with Phone Camera |
+| :---: | :---: |
+| [![Download APK](https://img.shields.io/badge/Download_APK-LockIn--Android.apk-success?style=for-the-badge&logo=android&logoColor=white)](https://github.com/Abhaynegi1/Lock-In/releases/latest/download/LockIn-Android.apk)<br><br>👉 **[Direct Link to Latest APK](https://github.com/Abhaynegi1/Lock-In/releases/latest/download/LockIn-Android.apk)** 👈 | <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://github.com/Abhaynegi1/Lock-In/releases/latest/download/LockIn-Android.apk" alt="Scan to Download APK" width="140" height="140"/> |
+
+> **How to install on Android:**
+> 1. Tap the download link or scan the QR code with your phone.
+> 2. Open the downloaded `LockIn-Android.apk` file.
+> 3. If prompted with *"Install unknown apps"*, tap **Settings** and enable **"Allow from this source"**.
+> 4. Tap **Install** and enjoy!
 
 ---
 
