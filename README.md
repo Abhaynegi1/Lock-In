@@ -23,6 +23,18 @@ Get the app directly on your Android phone without visiting app stores:
 
 ---
 
+## 📸 App Preview
+
+| Solo Focus | Active Session | Session Complete & Extend |
+| :---: | :---: | :---: |
+| <img src="assets/Screenshots/Home%20Screen.png" width="250" alt="Solo Focus" /> | <img src="assets/Screenshots/Session%20Running.png" width="250" alt="Active Session" /> | <img src="assets/Screenshots/Session%20Completion.png" width="250" alt="Session Completion" /> |
+
+| 1v1 Battle Lobby | Battle Results | Focus Logs & Streaks | Profile & Settings |
+| :---: | :---: | :---: | :---: |
+| <img src="assets/Screenshots/Battle%20Room.png" width="200" alt="Battle Lobby" /> | <img src="assets/Screenshots/Battle%20Finish.png" width="200" alt="Battle Results" /> | <img src="assets/Screenshots/Logs.png" width="200" alt="Focus Log" /> | <img src="assets/Screenshots/Profile.png" width="200" alt="Profile and Preferences" /> |
+
+---
+
 ## 🎯 Why We Built LockIn
 
 Most productivity and Pomodoro timers fail for two fundamental reasons:
@@ -86,30 +98,7 @@ Most productivity and Pomodoro timers fail for two fundamental reasons:
 
 ---
 
-
-## 🏗️ Architecture & Technology Stack
-
-LockIn is engineered using clean architecture principles and modern Flutter best practices:
-
-- **Framework**: [Flutter](https://flutter.dev) (Dart 3+)
-- **State Management**: [Provider](https://pub.dev/packages/provider) for reactive, decoupled state propagation
-- **Local Persistence**: [shared_preferences](https://pub.dev/packages/shared_preferences) for offline-first data synchronization
-- **Cloud Backend & Auth**: [Supabase](https://supabase.com) (PostgreSQL, OAuth 2.0 PKCE, Row Level Security)
-- **Notifications**: [flutter_local_notifications](https://pub.dev/packages/flutter_local_notifications) with Java 8+ Core Library Desugaring for scheduled background alerts
-- **Typography & Icons**: Google Fonts ([Outfit](https://fonts.google.com/specimen/Outfit), [Playfair Display](https://fonts.google.com/specimen/Playfair+Display)) and Cupertino / Material Icons
-- **Motion & UI**: [flutter_animate](https://pub.dev/packages/flutter_animate), [percent_indicator](https://pub.dev/packages/percent_indicator), [flutter_svg](https://pub.dev/packages/flutter_svg)
-
-```
-lib/
-├── models/         # Domain models (FocusSession, BattleModel)
-├── providers/      # Application state (TimerProvider, lifecycle sync)
-├── screens/        # UI Views (Home, Focus, Battles, History, Profile, Result)
-├── services/       # Persistent storage & system notification handlers
-├── utils/          # AppTheme tokens, typography, and color palette
-└── widgets/        # Reusable tactile components, buttons & hand-drawn doodles
-```
-
-> 📖 **Deep Dive**: For full details on the local-first design, anonymous-to-authenticated migration, sync queues, and the multi-phase technology roadmap, see the [Architecture Guide](docs/ARCHITECTURE.md).
+> 📖 **Architecture Documentation**: For deep architectural design, offline sync details, and technical roadmaps, refer to the [Architecture Guide](docs/ARCHITECTURE.md).
 
 ---
 
