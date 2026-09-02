@@ -21,7 +21,7 @@ class _HomeScreenState extends State<HomeScreen> {
   int _currentTabIndex = 0;
 
   void _onTabTapped(int index) {
-    if (index == 0 || index == 2) {
+    if (index == 0 || index == 2 || index == 3) {
       context.read<TimerProvider>().refreshFromStorage();
     }
     setState(() => _currentTabIndex = index);
@@ -37,6 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
           _TodayView(),
           BattlesScreen(),
           HistoryScreen(),
+          ProfileScreen(),
         ],
       ),
       bottomNavigationBar: _QuietBottomNav(
@@ -94,21 +95,8 @@ class _TodayView extends StatelessWidget {
                   ],
                 ),
 
-                // Right Profile Icon
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const ProfileScreen()),
-                    );
-                  },
-                  child: UserAvatar(
-                    avatarPath: provider.userAvatar,
-                    size: 38,
-                    borderWidth: 1.5,
-                    showShadow: false,
-                  ),
-                ),
+                // Spacer to keep centered header balanced
+                const SizedBox(width: 38),
               ],
             ),
 
@@ -493,6 +481,7 @@ class _QuietBottomNav extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final timerProvider = context.watch<TimerProvider>();
     const items = ['Today', 'Battles', 'Log'];
 
     return Container(
@@ -505,44 +494,84 @@ class _QuietBottomNav extends StatelessWidget {
         top: false,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: List.generate(items.length, (index) {
-            final isSelected = currentIndex == index;
-            return GestureDetector(
-              onTap: () => onTap(index),
-              behavior: HitTestBehavior.opaque,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12.0,
-                  vertical: 4.0,
+          children: [
+            ...List.generate(items.length, (index) {
+              final isSelected = currentIndex == index;
+              return GestureDetector(
+                onTap: () => onTap(index),
+                behavior: HitTestBehavior.opaque,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12.0,
+                    vertical: 4.0,
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        items[index],
+                        style: AppTheme.sansBody(
+                          fontSize: 13,
+                          fontWeight: isSelected
+                              ? FontWeight.w700
+                              : FontWeight.w500,
+                          color: isSelected ? AppTheme.ink : AppTheme.inkLight,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      // Active underline/ink indicator
+                      Container(
+                        width: isSelected ? 18 : 0,
+                        height: 2,
+                        decoration: BoxDecoration(
+                          color: isSelected ? AppTheme.ink : Colors.transparent,
+                          borderRadius: BorderRadius.circular(1),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      items[index],
-                      style: AppTheme.sansBody(
-                        fontSize: 13,
-                        fontWeight: isSelected
-                            ? FontWeight.w700
-                            : FontWeight.w500,
-                        color: isSelected ? AppTheme.ink : AppTheme.inkLight,
+              );
+            }),
+            // Profile tab button next to Log (Instagram-style PFP with active ring)
+            Builder(
+              builder: (context) {
+                final isSelected = currentIndex == 3;
+                return Tooltip(
+                  message: 'Profile',
+                  child: GestureDetector(
+                    onTap: () => onTap(3),
+                    behavior: HitTestBehavior.opaque,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8.0,
+                        vertical: 2.0,
+                      ),
+                      child: Container(
+                        padding: const EdgeInsets.all(2.5),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: isSelected
+                                ? AppTheme.ink
+                                : Colors.transparent,
+                            width: 2.0,
+                          ),
+                        ),
+                        child: UserAvatar(
+                          avatarPath: timerProvider.userAvatar,
+                          size: 30,
+                          borderWidth: 1.5,
+                          borderColor: AppTheme.ink,
+                          showShadow: false,
+                        ),
                       ),
                     ),
-                    const SizedBox(height: 4),
-                    // Active underline/ink indicator
-                    Container(
-                      width: isSelected ? 18 : 0,
-                      height: 2,
-                      decoration: BoxDecoration(
-                        color: isSelected ? AppTheme.ink : Colors.transparent,
-                        borderRadius: BorderRadius.circular(1),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          }),
+                  ),
+                );
+              },
+            ),
+          ],
         ),
       ),
     );
