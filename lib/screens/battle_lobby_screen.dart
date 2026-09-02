@@ -25,9 +25,8 @@ class _BattleLobbyScreenState extends State<BattleLobbyScreen> {
     final isActive = battleProvider.status == BattleStatus.active;
 
     // Navigate to focus screen once battle starts or countdown finishes
-    if ((isActive || isCountdown) &&
-        !_navigatedToFocus &&
-        battleProvider.lobbyCountdown == 1) {
+    if ((isActive || (isCountdown && battleProvider.lobbyCountdown <= 1)) &&
+        !_navigatedToFocus) {
       _navigatedToFocus = true;
       Future.microtask(() {
         if (!context.mounted) return;

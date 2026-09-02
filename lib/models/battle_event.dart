@@ -15,6 +15,7 @@ enum BattleEventType {
   playerReconnected,
   battleFinished,
   battleCancelled,
+  battleExtended,
   heartbeat,
   error;
 
@@ -55,6 +56,8 @@ enum BattleEventType {
         return 'BATTLE_FINISHED';
       case BattleEventType.battleCancelled:
         return 'BATTLE_CANCELLED';
+      case BattleEventType.battleExtended:
+        return 'BATTLE_EXTENDED';
       case BattleEventType.heartbeat:
         return 'HEARTBEAT';
       case BattleEventType.error:
@@ -174,6 +177,18 @@ class BattleEvent {
       battleId: battleId,
       timestamp: DateTime.now(),
       payload: {'participantId': participantId},
+    );
+  }
+
+  factory BattleEvent.battleExtended({
+    required String battleId,
+    required int extensionMinutes,
+  }) {
+    return BattleEvent(
+      type: BattleEventType.battleExtended,
+      battleId: battleId,
+      timestamp: DateTime.now(),
+      payload: {'extensionMinutes': extensionMinutes},
     );
   }
 }

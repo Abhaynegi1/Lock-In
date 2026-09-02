@@ -60,7 +60,8 @@ Most productivity and Pomodoro timers fail for two fundamental reasons:
 ## ✨ Key Features
 
 ### ⏱️ 1. Solo Deep Work & Custom Sessions
-- Choose from standard focus intervals (**15m sprint**, **25m classic Pomodoro**, **45m deep focus**, **60m endurance**) or configure custom durations.
+- Choose from standard focus intervals (**15m sprint**, **25m classic Pomodoro**, **45m deep focus**, **60m endurance**) or configure custom durations (1 - 180 min).
+- **Session Overtime & Extensions**: When a session completes and you're in the zone, extend your session (+5m, +10m, +15m, +25m, or fine-tuned stepper) without breaking flow.
 - Clean circular progress visualization with real-time countdown.
 - Full support for **Portrait** and **Landscape / Desk Stand** modes for zero-distraction desk setups.
 
@@ -72,6 +73,8 @@ Most productivity and Pomodoro timers fail for two fundamental reasons:
 
 ### ⚔️ 3. Live 1-on-1 Focus Battles
 - Challenge friends and accountability partners to head-to-head focus duels.
+- **Custom Battle Durations**: Host rooms with preset intervals or any custom duration from 1 to 180 minutes.
+- **Battle Overtime**: When a duel finishes, the host can extend the session in real-time, automatically syncing both players back into active focus.
 - Real-time score comparison (`Your Minutes` vs. `Opponent's Minutes`).
 - Live countdown timers showing remaining battle time and dynamic status indicators showing who is currently leading.
 - **Dedicated Real-Time WebSocket Infrastructure**: Low-latency multiplayer room matching powered by a dedicated Node.js WebSocket engine with 100% guest support and zero login required.

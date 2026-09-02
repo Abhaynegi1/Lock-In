@@ -296,6 +296,37 @@ function handleMessage(ws, msg) {
       break;
     }
 
+    case 'EXTEND_BATTLE': {
+      const meta = connectionMeta.get(ws);
+      if (!meta || !meta.roomCode) return;
+      const room = rooms.get(meta.roomCode);
+      if (!room) return;
+
+      const pId = msg.participantId || meta.participantId;
+      if (room.host && room.host.id === pId) {
+        room.status = 'active';
+        const extensionMinutes = msg.extensionMinutes || 5;
+        const extensionSeconds = extensionMinutes * 60;
+        const now = new Date().toISOString();
+        room.durationMinutes = (room.durationMinutes || 0) + extensionMinutes;
+
+        console.log(`[Server] Battle extended by ${extensionMinutes}m in room ${room.roomCode}`);
+
+        const payload = {
+          type: 'BATTLE_EXTENDED',
+          extensionMinutes,
+          extensionSeconds,
+          startedAt: now,
+        };
+
+        sendJson(room.host.ws, payload);
+        if (room.guest) {
+          sendJson(room.guest.ws, payload);
+        }
+      }
+      break;
+    }
+
     case 'PROGRESS_UPDATE': {
       const meta = connectionMeta.get(ws);
       if (!meta || !meta.roomCode) return;

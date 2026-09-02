@@ -227,6 +227,17 @@ class WebSocketBattleDataSource
           );
           break;
 
+        case 'BATTLE_EXTENDED':
+          _eventController.add(
+            BattleEvent(
+              type: BattleEventType.battleExtended,
+              battleId: _activeBattle?.id ?? '',
+              timestamp: DateTime.now(),
+              payload: data,
+            ),
+          );
+          break;
+
         case 'PROGRESS_UPDATE':
           _eventController.add(
             BattleEvent(
@@ -419,6 +430,14 @@ class WebSocketBattleDataSource
       case BattleEventType.battleStarted:
         _sendJson({
           'type': 'START_BATTLE',
+        });
+        break;
+
+      case BattleEventType.battleExtended:
+        _sendJson({
+          'type': 'EXTEND_BATTLE',
+          'participantId': _localParticipantId,
+          ...event.payload,
         });
         break;
 

@@ -221,6 +221,33 @@ When a WebSocket TCP disconnects without a forfeit event:
 }
 ```
 
+#### Battle Overtime / Session Extension
+When a duel concludes and participants wish to sustain their flow state, the room Host can trigger an overtime extension directly from the match result screen:
+
+**Host → Server (`EXTEND_BATTLE`):**
+```json
+{
+  "type": "EXTEND_BATTLE",
+  "participantId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "extensionMinutes": 10
+}
+```
+
+**Server → Clients (`BATTLE_EXTENDED`):**
+```json
+{
+  "type": "BATTLE_EXTENDED",
+  "extensionMinutes": 10,
+  "extensionSeconds": 600,
+  "startedAt": "2026-08-26T10:30:05.000Z"
+}
+```
+
+Upon receiving `BATTLE_EXTENDED`, both host and guest clients:
+1. Set the duel state back to `active`.
+2. Accumulate previous focused minutes into base completed stats.
+3. Automatically transition back to `BattleFocusScreen` with the overtime countdown.
+
 ---
 
 ## 5. Room Expiration & Cleanup

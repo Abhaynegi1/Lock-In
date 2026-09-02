@@ -23,12 +23,13 @@ class BattleProvider with ChangeNotifier {
   BattleConnectionState _connectionState = BattleConnectionState.disconnected;
   BattleStatus _status = BattleStatus.created;
 
-  // Authoritative server timestamps
-  DateTime? _serverStartTime;
-  DateTime? _serverEndTime;
+  // Battle timing state
+  DateTime? _localBattleStartTime;
   int _totalDurationSeconds = 0;
   int _secondsRemaining = 0;
   Timer? _uiTickerTimer;
+  bool _isExtending = false;
+  int _baseCompletedMinutes = 0;
 
   // Lobby countdown (3, 2, 1...)
   int _lobbyCountdown = 0;
@@ -57,6 +58,8 @@ class BattleProvider with ChangeNotifier {
   List<BattleSessionModel> get localBattleHistory => _localBattleHistory;
   String? get errorMessage => _errorMessage;
   bool get isLoading => _isLoading;
+  bool get isExtending => _isExtending;
+  int get baseCompletedMinutes => _baseCompletedMinutes;
 
   BattleParticipant? get localParticipant =>
       _currentBattle?.findParticipant(_localParticipantId ?? '');
@@ -291,8 +294,7 @@ class BattleProvider with ChangeNotifier {
 
     final now = DateTime.now();
     final totalSeconds = _currentBattle!.durationMinutes * 60;
-    _serverStartTime = now;
-    _serverEndTime = now.add(Duration(seconds: totalSeconds));
+    _localBattleStartTime = now;
     _totalDurationSeconds = totalSeconds;
     _secondsRemaining = totalSeconds;
     _status = BattleStatus.active;
@@ -304,8 +306,8 @@ class BattleProvider with ChangeNotifier {
 
     _currentBattle = _currentBattle!.copyWith(
       status: BattleStatus.active,
-      startedAt: _serverStartTime,
-      endsAt: _serverEndTime,
+      startedAt: _localBattleStartTime,
+      endsAt: _localBattleStartTime!.add(Duration(seconds: totalSeconds)),
       participants: updatedParticipants,
     );
 
@@ -317,7 +319,6 @@ class BattleProvider with ChangeNotifier {
           battleId: _currentBattle!.id,
           timestamp: DateTime.now().toUtc(),
           payload: {
-            'startedAt': now.toUtc().toIso8601String(),
             'durationSeconds': totalSeconds,
           },
         ),
@@ -332,32 +333,62 @@ class BattleProvider with ChangeNotifier {
   void _startUiTimerTicker() {
     _uiTickerTimer?.cancel();
     _uiTickerTimer = Timer.periodic(const Duration(seconds: 1), (_) {
-      if (_serverEndTime != null) {
-        final diff = _serverEndTime!.difference(DateTime.now()).inSeconds;
-        if (diff > 0) {
-          _secondsRemaining = diff;
-          notifyListeners();
-          _syncNotification();
-        } else {
-          _secondsRemaining = 0;
-          _completeBattleSuccessfully();
-        }
+      if (_status != BattleStatus.active || _localBattleStartTime == null) return;
+      final elapsed = DateTime.now().difference(_localBattleStartTime!).inSeconds;
+      final remaining = _totalDurationSeconds - elapsed;
+      if (remaining > 0) {
+        _secondsRemaining = remaining;
+        notifyListeners();
+        _syncNotification();
+      } else {
+        _secondsRemaining = 0;
+        notifyListeners();
+        _completeBattleSuccessfully();
       }
     });
   }
 
-  /// Synchronize clock with server timestamps after lifecycle resume
+  /// Synchronize clock with local elapsed time after lifecycle resume
   void syncAuthoritativeTimer() {
-    if (_status != BattleStatus.active || _serverEndTime == null) return;
-    final diff = _serverEndTime!.difference(DateTime.now()).inSeconds;
-    if (diff > 0) {
-      _secondsRemaining = diff;
+    if (_status != BattleStatus.active || _localBattleStartTime == null) return;
+    final elapsed = DateTime.now().difference(_localBattleStartTime!).inSeconds;
+    final remaining = _totalDurationSeconds - elapsed;
+    if (remaining > 0) {
+      _secondsRemaining = remaining;
       notifyListeners();
       _syncNotification();
     } else {
       _secondsRemaining = 0;
+      notifyListeners();
       _completeBattleSuccessfully();
     }
+  }
+
+  /// Extend the active battle session (triggered by host)
+  Future<void> extendBattle(int extensionMinutes) async {
+    if (_currentBattle == null) return;
+
+    _baseCompletedMinutes = _totalDurationSeconds ~/ 60;
+    _isExtending = true;
+    final extensionSeconds = extensionMinutes * 60;
+    _totalDurationSeconds += extensionSeconds;
+    _localBattleStartTime = DateTime.now();
+    _secondsRemaining = extensionSeconds;
+    _status = BattleStatus.active;
+    _lastResult = null;
+
+    if (isHost) {
+      await _repository.sendEvent(
+        BattleEvent.battleExtended(
+          battleId: _currentBattle!.id,
+          extensionMinutes: extensionMinutes,
+        ),
+      );
+    }
+
+    _startUiTimerTicker();
+    _syncNotification();
+    notifyListeners();
   }
 
   /// Lock-In violation or intentional forfeit
@@ -550,18 +581,34 @@ class BattleProvider with ChangeNotifier {
         break;
 
       case BattleEventType.battleStarted:
-        final startedAtStr = event.payload['startedAt']?.toString();
         final duration =
             event.payload['durationSeconds'] as int? ??
             (_currentBattle!.durationMinutes * 60);
 
-        _serverStartTime = startedAtStr != null
-            ? DateTime.tryParse(startedAtStr) ?? DateTime.now()
-            : DateTime.now();
-        _serverEndTime = _serverStartTime!.add(Duration(seconds: duration));
         _totalDurationSeconds = duration;
-        _secondsRemaining = duration;
+
+        if (_status != BattleStatus.active) {
+          _lobbyCountdownTimer?.cancel();
+          _lobbyCountdown = 0;
+          _localBattleStartTime = DateTime.now();
+          _secondsRemaining = duration;
+          _status = BattleStatus.active;
+          _startUiTimerTicker();
+          _syncNotification();
+          notifyListeners();
+        }
+        break;
+
+      case BattleEventType.battleExtended:
+        final extensionMinutes = event.payload['extensionMinutes'] as int? ?? 5;
+        final extensionSeconds = extensionMinutes * 60;
+        _baseCompletedMinutes = _totalDurationSeconds ~/ 60;
+        _isExtending = true;
+        _totalDurationSeconds += extensionSeconds;
+        _localBattleStartTime = DateTime.now();
+        _secondsRemaining = extensionSeconds;
         _status = BattleStatus.active;
+        _lastResult = null;
         _startUiTimerTicker();
         _syncNotification();
         notifyListeners();
@@ -743,6 +790,9 @@ class BattleProvider with ChangeNotifier {
     _status = BattleStatus.created;
     _secondsRemaining = 0;
     _totalDurationSeconds = 0;
+    _localBattleStartTime = null;
+    _isExtending = false;
+    _baseCompletedMinutes = 0;
     _lobbyCountdown = 0;
     _gracePeriodSecondsRemaining = 0;
     _errorMessage = null;

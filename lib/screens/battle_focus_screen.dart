@@ -204,7 +204,9 @@ class _BattleFocusScreenState extends State<BattleFocusScreen>
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            'focusing with ${opponent?.displayName ?? "Opponent"}',
+                            battleProvider.isExtending
+                                ? 'extension · ${battleProvider.baseCompletedMinutes}m locked in'
+                                : 'focusing with ${opponent?.displayName ?? "Opponent"}',
                             style: AppTheme.sansBody(
                               fontSize: 12,
                               color: AppTheme.inkMuted,
@@ -233,7 +235,9 @@ class _BattleFocusScreenState extends State<BattleFocusScreen>
 
               // Calm accountability prompt
               Text(
-                'Hold each other accountable.\nUnbroken focus wins the duel.',
+                battleProvider.isExtending
+                    ? 'Pushing boundaries.\nKeep momentum rolling.'
+                    : 'Hold each other accountable.\nUnbroken focus wins the duel.',
                 textAlign: TextAlign.center,
                 style: AppTheme.serifHeading(
                   fontSize: 18,
@@ -249,7 +253,9 @@ class _BattleFocusScreenState extends State<BattleFocusScreen>
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: TactileButton(
-                  label: 'Forfeit battle early',
+                  label: battleProvider.isExtending
+                      ? 'End extension early'
+                      : 'Forfeit battle early',
                   leading: const Icon(
                     Icons.flag_outlined,
                     size: 18,
