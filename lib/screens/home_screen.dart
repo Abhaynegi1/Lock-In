@@ -64,42 +64,32 @@ class _TodayView extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Top Bar
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                // Left Logo Icon
-                const LockInLogo(size: 38, hasBorder: true),
-
-                // Centered "LOCK IN" / "FOCUS CLUB"
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'LOCK IN',
-                      style: AppTheme.sansBody(
-                        context: context,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: 1.8,
-                        color: AppTheme.text(context),
-                      ),
+            Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'LOCK IN',
+                    style: AppTheme.sansBody(
+                      context: context,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 1.8,
+                      color: AppTheme.text(context),
                     ),
-                    const SizedBox(height: 1),
-                    Text(
-                      'FOCUS CLUB',
-                      style: AppTheme.sansLabel(
-                        context: context,
-                        fontSize: 9,
-                        letterSpacing: 1.2,
-                        color: AppTheme.muted(context),
-                      ),
+                  ),
+                  const SizedBox(height: 1),
+                  Text(
+                    'FOCUS CLUB',
+                    style: AppTheme.sansLabel(
+                      context: context,
+                      fontSize: 9,
+                      letterSpacing: 1.2,
+                      color: AppTheme.muted(context),
                     ),
-                  ],
-                ),
-
-                // Spacer to keep centered header balanced
-                const SizedBox(width: 38),
-              ],
+                  ),
+                ],
+              ),
             ),
 
             const SizedBox(height: 28),
