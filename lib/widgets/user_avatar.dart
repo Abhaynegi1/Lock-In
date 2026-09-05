@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import '../services/storage_service.dart';
 import '../utils/app_theme.dart';
 
 class DefaultAvatarItem {
