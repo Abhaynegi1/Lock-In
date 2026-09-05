@@ -37,20 +37,21 @@ class LockInLogo extends StatelessWidget {
 /// Custom painter that draws an organic, slightly imperfect hand-drawn circle
 /// providing the doodle/sketch tactile feel without excessive roughness.
 class OrganicCirclePainter extends CustomPainter {
-  final Color color;
+  final Color? color;
   final double strokeWidth;
   final double progress; // 0.0 to 1.0 for timer progress if desired
 
   const OrganicCirclePainter({
-    this.color = AppTheme.ink,
+    this.color,
     this.strokeWidth = 1.5,
     this.progress = 1.0,
   });
 
   @override
   void paint(Canvas canvas, Size size) {
+    final effectiveColor = color ?? AppTheme.ink;
     final paint = Paint()
-      ..color = color
+      ..color = effectiveColor
       ..style = PaintingStyle.stroke
       ..strokeWidth = strokeWidth
       ..strokeCap = StrokeCap.round
@@ -147,15 +148,15 @@ class OrganicCirclePainter extends CustomPainter {
 /// Tiny decorative 4-point doodle sparkle icon
 class SparkleDoodle extends StatelessWidget {
   final double size;
-  final Color color;
+  final Color? color;
 
-  const SparkleDoodle({super.key, this.size = 20, this.color = AppTheme.ink});
+  const SparkleDoodle({super.key, this.size = 20, this.color});
 
   @override
   Widget build(BuildContext context) {
     return CustomPaint(
       size: Size(size, size),
-      painter: _SparklePainter(color: color),
+      painter: _SparklePainter(color: color ?? AppTheme.ink),
     );
   }
 }
@@ -195,9 +196,9 @@ class _SparklePainter extends CustomPainter {
 class TactileButton extends StatefulWidget {
   final String label;
   final VoidCallback? onTap;
-  final Color fillColor;
-  final Color textColor;
-  final Color borderColor;
+  final Color? fillColor;
+  final Color? textColor;
+  final Color? borderColor;
   final double height;
   final double borderRadius;
   final Widget? leading;
@@ -208,9 +209,9 @@ class TactileButton extends StatefulWidget {
     super.key,
     required this.label,
     required this.onTap,
-    this.fillColor = AppTheme.peach,
-    this.textColor = AppTheme.ink,
-    this.borderColor = AppTheme.ink,
+    this.fillColor,
+    this.textColor,
+    this.borderColor,
     this.height = 54,
     this.borderRadius = 16,
     this.leading,
@@ -227,6 +228,10 @@ class _TactileButtonState extends State<TactileButton> {
 
   @override
   Widget build(BuildContext context) {
+    final effectiveFill = widget.fillColor ?? AppTheme.peach;
+    final effectiveText = widget.textColor ?? AppTheme.ink;
+    final effectiveBorder = widget.borderColor ?? AppTheme.ink;
+
     final content = AnimatedContainer(
       duration: const Duration(milliseconds: 70),
       height: widget.height,
@@ -236,20 +241,20 @@ class _TactileButtonState extends State<TactileButton> {
           ? Matrix4.translationValues(2, 2, 0)
           : Matrix4.identity(),
       decoration: BoxDecoration(
-        color: widget.fillColor,
+        color: effectiveFill,
         borderRadius: BorderRadius.circular(widget.borderRadius),
-        border: Border.all(color: widget.borderColor, width: 1.5),
+        border: Border.all(color: effectiveBorder, width: 1.5),
         boxShadow: _isPressed
             ? [
                 BoxShadow(
-                  color: widget.borderColor,
+                  color: effectiveBorder,
                   offset: const Offset(1, 1),
                   blurRadius: 0,
                 ),
               ]
             : [
                 BoxShadow(
-                  color: widget.borderColor,
+                  color: effectiveBorder,
                   offset: const Offset(3, 3),
                   blurRadius: 0,
                 ),
@@ -268,7 +273,7 @@ class _TactileButtonState extends State<TactileButton> {
             style: AppTheme.sansBody(
               fontSize: widget.fontSize,
               fontWeight: FontWeight.w600,
-              color: widget.textColor,
+              color: effectiveText,
             ),
           ),
         ],
@@ -291,21 +296,23 @@ class _TactileButtonState extends State<TactileButton> {
 class InkProgressBar extends StatelessWidget {
   final double progress; // 0.0 to 1.0
   final double height;
-  final Color fillColor;
-  final Color borderColor;
+  final Color? fillColor;
+  final Color? borderColor;
   final Color trackColor;
 
   const InkProgressBar({
     super.key,
     required this.progress,
     this.height = 7,
-    this.fillColor = AppTheme.ink,
-    this.borderColor = AppTheme.ink,
+    this.fillColor,
+    this.borderColor,
     this.trackColor = Colors.transparent,
   });
 
   @override
   Widget build(BuildContext context) {
+    final effectiveFill = fillColor ?? AppTheme.ink;
+    final effectiveBorder = borderColor ?? AppTheme.ink;
     final clampedProgress = progress.clamp(0.0, 1.0);
     return Container(
       height: height,
@@ -313,7 +320,7 @@ class InkProgressBar extends StatelessWidget {
       decoration: BoxDecoration(
         color: trackColor,
         borderRadius: BorderRadius.circular(height / 2),
-        border: Border.all(color: borderColor, width: 1.2),
+        border: Border.all(color: effectiveBorder, width: 1.2),
       ),
       child: LayoutBuilder(
         builder: (context, constraints) {
@@ -322,7 +329,7 @@ class InkProgressBar extends StatelessWidget {
             child: Container(
               width: constraints.maxWidth * clampedProgress,
               decoration: BoxDecoration(
-                color: fillColor,
+                color: effectiveFill,
                 borderRadius: BorderRadius.circular(height / 2),
               ),
             ),

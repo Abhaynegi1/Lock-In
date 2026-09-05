@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'providers/auth_provider.dart';
 import 'providers/battle_provider.dart';
+import 'providers/theme_provider.dart';
 import 'providers/timer_provider.dart';
 import 'screens/home_screen.dart';
 import 'services/notification_service.dart';
@@ -15,6 +16,7 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => TimerProvider()),
         ChangeNotifierProvider(create: (_) => BattleProvider()),
         ChangeNotifierProvider(create: (_) => AuthProvider()),
@@ -29,10 +31,14 @@ class LockInApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = context.watch<ThemeProvider>();
+
     return MaterialApp(
       title: 'LockIn',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: themeProvider.themeMode,
       home: const HomeScreen(),
     );
   }

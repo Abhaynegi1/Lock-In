@@ -134,7 +134,7 @@ class ResultScreen extends StatelessWidget {
                         ),
                       ],
 
-                      const Divider(color: AppTheme.inkFaint, thickness: 1),
+                      Divider(color: AppTheme.inkFaint, thickness: 1),
                       const SizedBox(height: 20),
 
                       // Stats Cards
@@ -297,7 +297,7 @@ class _ExtendSessionCardState extends State<_ExtendSessionCard> {
             children: [
               Row(
                 children: [
-                  const SparkleDoodle(size: 14, color: AppTheme.ink),
+                  const SparkleDoodle(size: 14),
                   const SizedBox(width: 8),
                   Text(
                     'EXTEND SESSION',

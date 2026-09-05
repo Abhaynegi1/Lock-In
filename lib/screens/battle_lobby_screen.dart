@@ -293,7 +293,7 @@ class _BattleLobbyScreenState extends State<BattleLobbyScreen> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const SparkleDoodle(size: 32, color: AppTheme.sand),
+                      SparkleDoodle(size: 32, color: AppTheme.sand),
                       const SizedBox(height: 16),
                       Text(
                         'STARTING IN',
@@ -337,7 +337,7 @@ class _BattleLobbyScreenState extends State<BattleLobbyScreen> {
         backgroundColor: AppTheme.background,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
-          side: const BorderSide(color: AppTheme.ink, width: 1.5),
+          side: BorderSide(color: AppTheme.ink, width: 1.5),
         ),
         title: Text('Leave Lobby?', style: AppTheme.serifHeading(fontSize: 20)),
         content: Text(

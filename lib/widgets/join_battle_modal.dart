@@ -123,7 +123,7 @@ class _JoinBattleModalState extends State<JoinBattleModal> {
             backgroundColor: AppTheme.ink,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
-              side: const BorderSide(color: AppTheme.ink, width: 1),
+              side: BorderSide(color: AppTheme.ink, width: 1),
             ),
             duration: const Duration(seconds: 3),
           ),
@@ -169,7 +169,7 @@ class _JoinBattleModalState extends State<JoinBattleModal> {
 
             Row(
               children: [
-                const SparkleDoodle(size: 20, color: AppTheme.ink),
+                const SparkleDoodle(size: 20),
                 const SizedBox(width: 8),
                 Text(
                   'Join Focus Battle',
@@ -251,11 +251,11 @@ class _JoinBattleModalState extends State<JoinBattleModal> {
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: AppTheme.ink, width: 1.2),
+                  borderSide: BorderSide(color: AppTheme.ink, width: 1.2),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: AppTheme.ink, width: 1.8),
+                  borderSide: BorderSide(color: AppTheme.ink, width: 1.8),
                 ),
               ),
             ),

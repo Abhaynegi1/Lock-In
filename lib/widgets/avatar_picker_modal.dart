@@ -463,7 +463,7 @@ class _AvatarPickerModalState extends State<AvatarPickerModal> {
                           ],
                         ),
                       ),
-                      const Icon(Icons.chevron_right, color: AppTheme.ink),
+                      Icon(Icons.chevron_right, color: AppTheme.ink),
                     ],
                   ),
                 ),

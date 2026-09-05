@@ -85,7 +85,7 @@ class _CreateBattleModalState extends State<CreateBattleModal> {
           SnackBar(
             content: Row(
               children: [
-                const Icon(Icons.error_outline_rounded, color: AppTheme.background, size: 18),
+                Icon(Icons.error_outline_rounded, color: AppTheme.background, size: 18),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
@@ -99,7 +99,7 @@ class _CreateBattleModalState extends State<CreateBattleModal> {
             backgroundColor: AppTheme.ink,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
-              side: const BorderSide(color: AppTheme.ink, width: 1),
+              side: BorderSide(color: AppTheme.ink, width: 1),
             ),
             duration: const Duration(seconds: 3),
           ),
@@ -146,7 +146,7 @@ class _CreateBattleModalState extends State<CreateBattleModal> {
 
             Row(
               children: [
-                const SparkleDoodle(size: 20, color: AppTheme.ink),
+                const SparkleDoodle(size: 20),
                 const SizedBox(width: 8),
                 Text(
                   'Create Focus Battle',

@@ -16,6 +16,7 @@ class StorageService {
       'focus_strict_anti_distraction';
   static const String _finishCueModeKey = 'focus_finish_cue_mode';
   static const String _finishCuePresetKey = 'focus_finish_cue_preset';
+  static const String _themeModeKey = 'focus_theme_mode';
 
   Future<String> getUserAvatar() async {
     final prefs = await SharedPreferences.getInstance();
@@ -65,6 +66,16 @@ class StorageService {
   Future<void> saveFinishCuePreset(String preset) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_finishCuePresetKey, preset);
+  }
+
+  Future<String> getThemeMode() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_themeModeKey) ?? 'light';
+  }
+
+  Future<void> saveThemeMode(String mode) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_themeModeKey, mode);
   }
 
   Future<void> saveSession(FocusSession session) async {

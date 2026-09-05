@@ -12,13 +12,24 @@ import 'package:lock_in/screens/profile_screen.dart';
 import 'package:lock_in/screens/history_screen.dart';
 import 'package:lock_in/screens/result_screen.dart';
 
-Widget createTestApp(Widget child, {TimerProvider? timerProvider}) {
+import 'package:lock_in/providers/theme_provider.dart';
+import 'package:lock_in/services/storage_service.dart';
+
+Widget createTestApp(
+  Widget child, {
+  TimerProvider? timerProvider,
+  ThemeProvider? themeProvider,
+}) {
   return MultiProvider(
     providers: [
       if (timerProvider != null)
         ChangeNotifierProvider<TimerProvider>.value(value: timerProvider)
       else
         ChangeNotifierProvider(create: (_) => TimerProvider()),
+      if (themeProvider != null)
+        ChangeNotifierProvider<ThemeProvider>.value(value: themeProvider)
+      else
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
       ChangeNotifierProvider(create: (_) => BattleProvider()),
       ChangeNotifierProvider(create: (_) => AuthProvider()),
     ],
@@ -71,15 +82,39 @@ void main() {
       expect(find.text('Friendly accountability.'), findsOneWidget);
     });
 
-    testWidgets('ProfileScreen renders user profile settings', (
+    testWidgets('ProfileScreen renders user profile settings and opens Appearance modal', (
       WidgetTester tester,
     ) async {
-      await tester.pumpWidget(createTestApp(const ProfileScreen()));
+      final themeProvider = ThemeProvider(storageService: StorageService());
+      await pumpEventQueue();
+
+      await tester.pumpWidget(
+        createTestApp(const ProfileScreen(), themeProvider: themeProvider),
+      );
       await tester.pumpAndSettle();
 
       expect(find.text('Dev User'), findsOneWidget);
       expect(find.text('PERSONAL STATS'), findsOneWidget);
       expect(find.text('PREFERENCES'), findsOneWidget);
+      expect(find.text('Appearance'), findsOneWidget);
+      expect(find.text('Light Mode · Warm paper'), findsOneWidget);
+
+      // Tap Appearance setting tile to open modal
+      await tester.tap(find.text('Appearance'));
+      await tester.pumpAndSettle();
+
+      // Verify modal options are displayed
+      expect(find.text('Choose your preferred theme or match your device settings:'), findsOneWidget);
+      expect(find.text('Light Mode'), findsOneWidget);
+      expect(find.text('Dark Mode'), findsOneWidget);
+      expect(find.text('Follow System Settings'), findsOneWidget);
+
+      // Tap Dark Mode option
+      await tester.tap(find.text('Dark Mode'));
+      await tester.pumpAndSettle();
+
+      expect(themeProvider.themeMode, equals(ThemeMode.dark));
+      expect(find.text('Dark Mode · Deep slate'), findsOneWidget);
     });
 
     testWidgets('HistoryScreen renders history log header', (

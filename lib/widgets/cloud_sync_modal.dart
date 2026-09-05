@@ -103,7 +103,7 @@ class CloudSyncModal extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 16),
-              const Divider(color: AppTheme.inkFaint, thickness: 1),
+              Divider(color: AppTheme.inkFaint, thickness: 1),
               const SizedBox(height: 16),
 
               if (auth.errorMessage != null && auth.errorMessage!.isNotEmpty) ...[
@@ -116,7 +116,7 @@ class CloudSyncModal extends StatelessWidget {
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.info_outline, size: 16, color: AppTheme.errorMuted),
+                      Icon(Icons.info_outline, size: 16, color: AppTheme.errorMuted),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(

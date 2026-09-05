@@ -123,7 +123,7 @@ class _FocusScreenState extends State<FocusScreen> with WidgetsBindingObserver {
           children: [
             Row(
               children: [
-                const SparkleDoodle(size: 14, color: AppTheme.ink),
+                const SparkleDoodle(size: 14),
                 const SizedBox(width: 8),
                 Text(
                   'Battle with ${activeBattle.opponentName}',

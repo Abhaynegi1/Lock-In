@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
+import '../providers/theme_provider.dart';
 import '../providers/timer_provider.dart';
 import '../services/completion_feedback_service.dart';
 import '../utils/app_theme.dart';
@@ -16,6 +17,7 @@ class ProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final provider = context.watch<TimerProvider>();
     final auth = context.watch<AuthProvider>();
+    final themeProvider = context.watch<ThemeProvider>();
 
     return Scaffold(
       backgroundColor: AppTheme.background,
@@ -197,7 +199,7 @@ class ProfileScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 24),
-              const Divider(color: AppTheme.inkFaint, thickness: 1),
+              Divider(color: AppTheme.inkFaint, thickness: 1),
               const SizedBox(height: 24),
 
               // Overview Section
@@ -242,7 +244,7 @@ class ProfileScreen extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        const SparkleDoodle(size: 16, color: AppTheme.ink),
+                        const SparkleDoodle(size: 16),
                         const SizedBox(width: 8),
                         Text(
                           'The Lock In Rule',
@@ -270,6 +272,42 @@ class ProfileScreen extends StatelessWidget {
               // Accountability Rules
               Text('PREFERENCES', style: AppTheme.sansLabel()),
               const SizedBox(height: 12),
+              _SettingTile(
+                title: 'Appearance',
+                subtitle: themeProvider.themeMode == ThemeMode.light
+                    ? 'Light Mode · Warm paper'
+                    : themeProvider.themeMode == ThemeMode.dark
+                        ? 'Dark Mode · Deep slate'
+                        : 'Follow System Settings · Auto',
+                onTap: () => _showThemeModal(context, themeProvider),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      themeProvider.themeMode == ThemeMode.light
+                          ? Icons.wb_sunny_outlined
+                          : themeProvider.themeMode == ThemeMode.dark
+                              ? Icons.dark_mode_outlined
+                              : Icons.brightness_auto_outlined,
+                      size: 15,
+                      color: AppTheme.ink,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      themeProvider.themeMode == ThemeMode.light
+                          ? 'Light'
+                          : themeProvider.themeMode == ThemeMode.dark
+                              ? 'Dark'
+                              : 'System',
+                      style: AppTheme.sansBody(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 8),
               _SettingTile(
                 title: 'Strict anti-distraction',
                 subtitle: provider.isStrictAntiDistraction
@@ -444,6 +482,122 @@ class ProfileScreen extends StatelessWidget {
                     ),
                   ],
                 ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _showThemeModal(BuildContext context, ThemeProvider themeProvider) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (sheetCtx) {
+        return Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: AppTheme.background,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+            border: Border.all(color: AppTheme.ink, width: 1.5),
+            boxShadow: AppTheme.tactileShadow,
+          ),
+          child: SafeArea(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Top drag handle
+                Center(
+                  child: Container(
+                    width: 36,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: AppTheme.inkLight,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 18),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Appearance',
+                      style: AppTheme.serifHeading(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () => Navigator.pop(sheetCtx),
+                      child: const Icon(
+                        Icons.close,
+                        size: 20,
+                        color: AppTheme.inkMuted,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  'Choose your preferred theme or match your device settings:',
+                  style: AppTheme.sansBody(
+                    fontSize: 13,
+                    color: AppTheme.inkMuted,
+                  ),
+                ),
+                const SizedBox(height: 20),
+
+                // Option 1: Light Mode (Default)
+                _AntiDistractionOptionCard(
+                  title: 'Light Mode',
+                  subtitle:
+                      'Warm paper off-white with crisp black ink and tactile shadows.',
+                  badgeText: 'DEFAULT',
+                  badgeColor: AppTheme.peach,
+                  isSelected: themeProvider.themeMode == ThemeMode.light,
+                  icon: Icons.wb_sunny_outlined,
+                  onTap: () {
+                    themeProvider.setThemeMode(ThemeMode.light);
+                    Navigator.pop(sheetCtx);
+                  },
+                ),
+                const SizedBox(height: 12),
+
+                // Option 2: Dark Mode
+                _AntiDistractionOptionCard(
+                  title: 'Dark Mode',
+                  subtitle:
+                      'Deep charcoal slate paper tone designed for low-light night focus.',
+                  badgeText: 'NIGHT',
+                  badgeColor: AppTheme.sand,
+                  isSelected: themeProvider.themeMode == ThemeMode.dark,
+                  icon: Icons.dark_mode_outlined,
+                  onTap: () {
+                    themeProvider.setThemeMode(ThemeMode.dark);
+                    Navigator.pop(sheetCtx);
+                  },
+                ),
+                const SizedBox(height: 12),
+
+                // Option 3: Follow System Settings
+                _AntiDistractionOptionCard(
+                  title: 'Follow System Settings',
+                  subtitle:
+                      'Automatically switch theme based on your device system appearance.',
+                  badgeText: 'AUTO',
+                  badgeColor: AppTheme.sage,
+                  isSelected: themeProvider.themeMode == ThemeMode.system,
+                  icon: Icons.brightness_auto_outlined,
+                  onTap: () {
+                    themeProvider.setThemeMode(ThemeMode.system);
+                    Navigator.pop(sheetCtx);
+                  },
+                ),
+                const SizedBox(height: 16),
               ],
             ),
           ),
@@ -1079,7 +1233,7 @@ class _AntiDistractionOptionCard extends StatelessWidget {
                 border: Border.all(color: AppTheme.ink, width: 1.5),
               ),
               child: isSelected
-                  ? const Icon(Icons.check, size: 14, color: AppTheme.ink)
+                  ? Icon(Icons.check, size: 14, color: AppTheme.ink)
                   : null,
             ),
           ],

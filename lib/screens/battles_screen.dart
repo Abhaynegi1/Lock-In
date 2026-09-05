@@ -61,7 +61,7 @@ class _BattlesScreenState extends State<BattlesScreen> {
                       ),
                     ],
                   ),
-                  const SparkleDoodle(size: 24, color: AppTheme.ink),
+                  const SparkleDoodle(size: 24),
                 ],
               ),
               const SizedBox(height: 8),
@@ -185,7 +185,7 @@ class _BattlesScreenState extends State<BattlesScreen> {
               ),
 
               const SizedBox(height: 24),
-              const Divider(color: AppTheme.inkFaint, thickness: 1),
+              Divider(color: AppTheme.inkFaint, thickness: 1),
               const SizedBox(height: 16),
 
               Text('BATTLE HISTORY', style: AppTheme.sansLabel(fontSize: 11)),

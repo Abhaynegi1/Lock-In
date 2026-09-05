@@ -97,7 +97,7 @@ class HistoryScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 24),
-              const Divider(color: AppTheme.inkFaint, thickness: 1),
+              Divider(color: AppTheme.inkFaint, thickness: 1),
               const SizedBox(height: 10),
 
               if (history.isEmpty)

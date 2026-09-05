@@ -5,11 +5,14 @@ import 'package:lock_in/providers/auth_provider.dart';
 import 'package:lock_in/providers/battle_provider.dart';
 import 'package:lock_in/providers/timer_provider.dart';
 
+import 'package:lock_in/providers/theme_provider.dart';
+
 void main() {
   testWidgets('App smoke test', (WidgetTester tester) async {
     await tester.pumpWidget(
       MultiProvider(
         providers: [
+          ChangeNotifierProvider(create: (_) => ThemeProvider()),
           ChangeNotifierProvider(create: (_) => TimerProvider()),
           ChangeNotifierProvider(create: (_) => BattleProvider()),
           ChangeNotifierProvider(create: (_) => AuthProvider()),
