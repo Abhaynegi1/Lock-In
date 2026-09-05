@@ -56,9 +56,7 @@ class BattleResultScreen extends StatelessWidget {
       subtext = isForfeit
           ? 'You left the session early.'
           : '$opponentName held focus longer this round.';
-      badgeColor = AppTheme.isDark(context)
-          ? const Color(0xFF381E1C)
-          : const Color(0xFFFBEBE8);
+      badgeColor = AppTheme.alertSurfaceColor(context);
     }
 
     return PopScope(
@@ -314,9 +312,7 @@ class _PlayerSummaryColumn extends StatelessWidget {
             color: isWinner
                 ? AppTheme.sageColor(context)
                 : (isForfeited
-                    ? (AppTheme.isDark(context)
-                        ? const Color(0xFF381E1C)
-                        : const Color(0xFFFBEBE8))
+                    ? AppTheme.alertSurfaceColor(context)
                     : AppTheme.bg(context)),
             borderRadius: BorderRadius.circular(8),
             border: Border.all(color: AppTheme.inkColor(context), width: 1),

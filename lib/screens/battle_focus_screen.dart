@@ -128,9 +128,7 @@ class _BattleFocusScreenState extends State<BattleFocusScreen>
                     vertical: 12,
                   ),
                   decoration: BoxDecoration(
-                    color: AppTheme.isDark(context)
-                        ? const Color(0xFF381E1C)
-                        : const Color(0xFFFBEBE8),
+                    color: AppTheme.alertSurfaceColor(context),
                     borderRadius: BorderRadius.circular(14),
                     border: Border.all(color: AppTheme.error(context), width: 1.2),
                   ),
@@ -311,9 +309,7 @@ class _BattleFocusScreenState extends State<BattleFocusScreen>
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: isOpponentDisconnected
-                      ? (AppTheme.isDark(context)
-                          ? const Color(0xFF381E1C)
-                          : const Color(0xFFFBEBE8))
+                      ? AppTheme.alertSurfaceColor(context)
                       : AppTheme.sageColor(context),
                   border: Border.all(color: AppTheme.inkColor(context), width: 1),
                 ),
@@ -345,9 +341,7 @@ class _BattleFocusScreenState extends State<BattleFocusScreen>
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
               color: isOpponentDisconnected
-                  ? (AppTheme.isDark(context)
-                      ? const Color(0xFF381E1C)
-                      : const Color(0xFFFBEBE8))
+                  ? AppTheme.alertSurfaceColor(context)
                   : AppTheme.bg(context),
               borderRadius: BorderRadius.circular(8),
               border: Border.all(color: AppTheme.faint(context), width: 1),
@@ -421,9 +415,7 @@ class _BattleFocusScreenState extends State<BattleFocusScreen>
                   Expanded(
                     child: TactileButton(
                       label: 'Concede',
-                      fillColor: AppTheme.isDark(context)
-                          ? const Color(0xFF381E1C)
-                          : const Color(0xFFFBEBE8),
+                      fillColor: AppTheme.alertSurfaceColor(context),
                       textColor: AppTheme.error(context),
                       height: 46,
                       borderRadius: 14,

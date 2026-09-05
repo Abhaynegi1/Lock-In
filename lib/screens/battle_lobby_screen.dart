@@ -358,7 +358,7 @@ class _BattleLobbyScreenState extends State<BattleLobbyScreen> {
           ),
           TactileButton(
             label: 'Leave',
-            fillColor: AppTheme.isDark(context) ? const Color(0xFF381E1C) : const Color(0xFFFBEBE8),
+            fillColor: AppTheme.alertSurfaceColor(context),
             textColor: AppTheme.error(context),
             isFullWidth: false,
             height: 42,

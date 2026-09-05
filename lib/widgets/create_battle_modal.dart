@@ -297,9 +297,7 @@ class _CreateBattleModalState extends State<CreateBattleModal> {
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                 decoration: BoxDecoration(
-                  color: AppTheme.isDark(context)
-                      ? const Color(0xFF381E1C)
-                      : const Color(0xFFFBEBE8),
+                  color: AppTheme.alertSurfaceColor(context),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(color: AppTheme.error(context).withValues(alpha: 0.6), width: 1.2),
                 ),

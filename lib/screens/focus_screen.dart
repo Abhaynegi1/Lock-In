@@ -550,7 +550,7 @@ class _FocusScreenState extends State<FocusScreen> with WidgetsBindingObserver {
                   Expanded(
                     child: TactileButton(
                       label: isExtending ? 'End extension' : 'End session',
-                      fillColor: AppTheme.isDark(context) ? const Color(0xFF381E1C) : const Color(0xFFFBEBE8),
+                      fillColor: AppTheme.alertSurfaceColor(context),
                       textColor: AppTheme.error(context),
                       height: 46,
                       borderRadius: 14,

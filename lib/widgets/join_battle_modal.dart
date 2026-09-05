@@ -273,9 +273,7 @@ class _JoinBattleModalState extends State<JoinBattleModal> {
                   vertical: 10,
                 ),
                 decoration: BoxDecoration(
-                  color: AppTheme.isDark(context)
-                      ? const Color(0xFF381E1C)
-                      : const Color(0xFFFBEBE8),
+                  color: AppTheme.alertSurfaceColor(context),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
                     color: AppTheme.error(context).withValues(alpha: 0.6),

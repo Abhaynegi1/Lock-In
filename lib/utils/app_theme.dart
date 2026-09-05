@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
-  // Light Palette (Warm paper off-white)
+  // Light Palette (Warm paper off-white) — DO NOT CHANGE
   static const Color background = Color(0xFFFFFDFA);
   static const Color ink = Color(0xFF171514);
   static const Color inkMuted = Color(0xFF6B6661);
@@ -12,17 +12,22 @@ class AppTheme {
   static const Color sage = Color(0xFFD9E7CC);
   static const Color sand = Color(0xFFF6F2EB);
   static const Color errorMuted = Color(0xFFC84B31);
+  static const Color alertSurface = Color(0xFFFBEBE8);
 
-  // Dark Palette (Tactile slate paper)
-  static const Color darkBackground = Color(0xFF141312);
-  static const Color darkInk = Color(0xFFF5F2EC);
-  static const Color darkInkMuted = Color(0xFFA8A29A);
-  static const Color darkInkLight = Color(0xFF6E6962);
-  static const Color darkInkFaint = Color(0xFF2C2926);
-  static const Color darkPeach = Color(0xFFE09F85);
-  static const Color darkSage = Color(0xFF8DAF7B);
-  static const Color darkSand = Color(0xFF22201E);
-  static const Color darkErrorMuted = Color(0xFFE05D43);
+  // Dark Palette (Warm dark paper & cream chalk)
+  static const Color darkBackground = Color(0xFF171514);
+  static const Color darkInk = Color(0xFFF7F2EA);
+  static const Color darkInkMuted = Color(0xFFB8B0A8);
+  static const Color darkInkLight = Color(0xFF817A73);
+  static const Color darkInkFaint = Color(0xFF302C29);
+  static const Color darkSand = Color(0xFF211E1B);
+  static const Color darkSecondarySurface = Color(0xFF27231F);
+  static const Color darkBorder = Color(0xFF36312D);
+  static const Color darkPeach = Color(0xFFE2A083);
+  static const Color darkSage = Color(0xFFBFD0B0);
+  static const Color darkErrorMuted = Color(0xFFD06A54);
+  static const Color darkAlertSurface = Color(0xFF2B201D);
+  static const Color darkShadow = Color(0xFF0D0C0B);
 
   // Dynamic Theme Helpers
   static bool isDark(BuildContext context) =>
@@ -48,6 +53,12 @@ class AppTheme {
   static Color sandColor(BuildContext context) =>
       isDark(context) ? darkSand : sand;
 
+  static Color secondarySurfaceColor(BuildContext context) =>
+      isDark(context) ? darkSecondarySurface : sand;
+
+  static Color borderColor(BuildContext context) =>
+      isDark(context) ? darkBorder : ink;
+
   static Color peachColor(BuildContext context) =>
       isDark(context) ? darkPeach : peach;
 
@@ -56,6 +67,9 @@ class AppTheme {
 
   static Color error(BuildContext context) =>
       isDark(context) ? darkErrorMuted : errorMuted;
+
+  static Color alertSurfaceColor(BuildContext context) =>
+      isDark(context) ? darkAlertSurface : alertSurface;
 
   // Hard offset shadow for tactile buttons
   static const List<BoxShadow> tactileShadow = [
@@ -69,7 +83,7 @@ class AppTheme {
   static List<BoxShadow> shadow(BuildContext context) {
     return [
       BoxShadow(
-        color: isDark(context) ? const Color(0xFF000000).withValues(alpha: 0.7) : ink,
+        color: isDark(context) ? darkShadow : ink,
         offset: const Offset(3, 3),
         blurRadius: 0,
         spreadRadius: 0,
@@ -80,7 +94,7 @@ class AppTheme {
   static List<BoxShadow> smallShadow(BuildContext context) {
     return [
       BoxShadow(
-        color: isDark(context) ? const Color(0xFF000000).withValues(alpha: 0.7) : ink,
+        color: isDark(context) ? darkShadow : ink,
         offset: const Offset(2, 2),
         blurRadius: 0,
         spreadRadius: 0,
