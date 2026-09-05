@@ -1175,6 +1175,9 @@ class _AntiDistractionOptionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkBadge = badgeColor.computeLuminance() < 0.35;
+    final badgeTextColor = isDarkBadge ? AppTheme.darkInk : AppTheme.ink;
+
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
@@ -1184,7 +1187,7 @@ class _AntiDistractionOptionCard extends StatelessWidget {
           color: isSelected ? AppTheme.sandColor(context) : AppTheme.bg(context),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: AppTheme.inkColor(context),
+            color: isSelected ? AppTheme.inkColor(context) : AppTheme.borderColor(context),
             width: isSelected ? 2.0 : 1.2,
           ),
           boxShadow: isSelected ? AppTheme.smallShadow(context) : null,
@@ -1235,7 +1238,7 @@ class _AntiDistractionOptionCard extends StatelessWidget {
                             context: context,
                             fontSize: 9,
                             fontWeight: FontWeight.w700,
-                            color: AppTheme.ink,
+                            color: badgeTextColor,
                           ),
                         ),
                       ),
@@ -1254,17 +1257,23 @@ class _AntiDistractionOptionCard extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: 10),
+            // Tactile radio button
             Container(
               width: 22,
               height: 22,
+              margin: const EdgeInsets.only(top: 2),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: isSelected ? AppTheme.peachColor(context) : Colors.transparent,
-                border: Border.all(color: AppTheme.inkColor(context), width: 1.5),
+                border: Border.all(color: AppTheme.inkColor(context), width: 1.8),
               ),
               child: isSelected
-                  ? const Icon(Icons.check, size: 14, color: AppTheme.ink)
+                  ? const Icon(
+                      Icons.check,
+                      size: 14,
+                      color: AppTheme.ink,
+                    )
                   : null,
             ),
           ],
