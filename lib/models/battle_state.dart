@@ -49,7 +49,7 @@ class BattleParticipant {
   const BattleParticipant({
     required this.id,
     required this.displayName,
-    this.avatar = 'assets/default_pfp/avatar-spark.svg',
+    this.avatar = '',
     this.status = ParticipantStatus.joined,
     this.focusedSeconds = 0,
     this.isHost = false,
@@ -98,7 +98,7 @@ class BattleParticipant {
     return BattleParticipant(
       id: map['id'] ?? '',
       displayName: map['displayName'] ?? 'Guest',
-      avatar: map['avatar'] ?? 'assets/default_pfp/avatar-spark.svg',
+      avatar: map['avatar'] ?? '',
       status: ParticipantStatus.fromString(map['status'] ?? 'joined'),
       focusedSeconds: map['focusedSeconds']?.toInt() ?? 0,
       isHost: map['isHost'] ?? false,
