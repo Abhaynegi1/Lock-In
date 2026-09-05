@@ -103,7 +103,7 @@ class _BattleFocusScreenState extends State<BattleFocusScreen>
     }
 
     return Scaffold(
-      backgroundColor: AppTheme.background,
+      backgroundColor: AppTheme.bg(context),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
@@ -111,6 +111,7 @@ class _BattleFocusScreenState extends State<BattleFocusScreen>
             children: [
               // Top Header
               _buildHeader(
+                context,
                 battleProvider,
                 timerProvider,
                 opponent,
@@ -127,16 +128,18 @@ class _BattleFocusScreenState extends State<BattleFocusScreen>
                     vertical: 12,
                   ),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFFBEBE8),
+                    color: AppTheme.isDark(context)
+                        ? const Color(0xFF381E1C)
+                        : const Color(0xFFFBEBE8),
                     borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: AppTheme.errorMuted, width: 1.2),
+                    border: Border.all(color: AppTheme.error(context), width: 1.2),
                   ),
                   child: Row(
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.wifi_off,
                         size: 20,
-                        color: AppTheme.errorMuted,
+                        color: AppTheme.error(context),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
@@ -146,16 +149,18 @@ class _BattleFocusScreenState extends State<BattleFocusScreen>
                             Text(
                               '${opponent?.displayName ?? "Opponent"} disconnected',
                               style: AppTheme.sansBody(
+                                context: context,
                                 fontSize: 13,
                                 fontWeight: FontWeight.w600,
-                                color: AppTheme.errorMuted,
+                                color: AppTheme.error(context),
                               ),
                             ),
                             Text(
                               'Reconnecting in ${battleProvider.gracePeriodSecondsRemaining}s before forfeit',
                               style: AppTheme.sansBody(
+                                context: context,
                                 fontSize: 11,
-                                color: AppTheme.inkMuted,
+                                color: AppTheme.muted(context),
                               ),
                             ),
                           ],
@@ -175,22 +180,22 @@ class _BattleFocusScreenState extends State<BattleFocusScreen>
                   child: Stack(
                     alignment: Alignment.center,
                     children: [
-                      const CustomPaint(
-                        size: Size(240, 240),
+                      CustomPaint(
+                        size: const Size(240, 240),
                         painter: OrganicCirclePainter(
-                          color: AppTheme.ink,
+                          color: AppTheme.inkColor(context),
                           strokeWidth: 1.8,
                         ),
                       ),
-                      const Positioned(
+                      Positioned(
                         top: 18,
                         right: 22,
-                        child: SparkleDoodle(size: 18, color: AppTheme.ink),
+                        child: SparkleDoodle(size: 18, color: AppTheme.inkColor(context)),
                       ),
-                      const Positioned(
+                      Positioned(
                         bottom: 24,
                         left: 20,
-                        child: SparkleDoodle(size: 14, color: AppTheme.ink),
+                        child: SparkleDoodle(size: 14, color: AppTheme.inkColor(context)),
                       ),
                       Column(
                         mainAxisSize: MainAxisSize.min,
@@ -198,6 +203,7 @@ class _BattleFocusScreenState extends State<BattleFocusScreen>
                           Text(
                             battleProvider.timerString,
                             style: AppTheme.serifTimer(
+                              context: context,
                               fontSize: 54,
                               fontWeight: FontWeight.w800,
                             ),
@@ -208,8 +214,9 @@ class _BattleFocusScreenState extends State<BattleFocusScreen>
                                 ? 'extension · ${battleProvider.baseCompletedMinutes}m locked in'
                                 : 'focusing with ${opponent?.displayName ?? "Opponent"}',
                             style: AppTheme.sansBody(
+                              context: context,
                               fontSize: 12,
-                              color: AppTheme.inkMuted,
+                              color: AppTheme.muted(context),
                               fontWeight: FontWeight.w500,
                             ),
                           ),
@@ -240,9 +247,10 @@ class _BattleFocusScreenState extends State<BattleFocusScreen>
                     : 'Hold each other accountable.\nUnbroken focus wins the duel.',
                 textAlign: TextAlign.center,
                 style: AppTheme.serifHeading(
+                  context: context,
                   fontSize: 18,
                   fontWeight: FontWeight.w500,
-                  color: AppTheme.inkMuted,
+                  color: AppTheme.muted(context),
                   height: 1.3,
                 ),
               ),
@@ -256,14 +264,14 @@ class _BattleFocusScreenState extends State<BattleFocusScreen>
                   label: battleProvider.isExtending
                       ? 'End extension early'
                       : 'Forfeit battle early',
-                  leading: const Icon(
+                  leading: Icon(
                     Icons.flag_outlined,
                     size: 18,
-                    color: AppTheme.ink,
+                    color: AppTheme.text(context),
                   ),
-                  fillColor: AppTheme.sand,
-                  textColor: AppTheme.ink,
-                  borderColor: AppTheme.ink,
+                  fillColor: AppTheme.sandColor(context),
+                  textColor: AppTheme.text(context),
+                  borderColor: AppTheme.inkColor(context),
                   height: 48,
                   borderRadius: 14,
                   fontSize: 14,
@@ -279,6 +287,7 @@ class _BattleFocusScreenState extends State<BattleFocusScreen>
   }
 
   Widget _buildHeader(
+    BuildContext context,
     BattleProvider battleProvider,
     TimerProvider timerProvider,
     BattleParticipant? opponent,
@@ -287,9 +296,9 @@ class _BattleFocusScreenState extends State<BattleFocusScreen>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       decoration: BoxDecoration(
-        color: AppTheme.sand,
+        color: AppTheme.sandColor(context),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppTheme.ink, width: 1.2),
+        border: Border.all(color: AppTheme.inkColor(context), width: 1.2),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -302,9 +311,11 @@ class _BattleFocusScreenState extends State<BattleFocusScreen>
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: isOpponentDisconnected
-                      ? const Color(0xFFFBEBE8)
-                      : AppTheme.sage,
-                  border: Border.all(color: AppTheme.ink, width: 1),
+                      ? (AppTheme.isDark(context)
+                          ? const Color(0xFF381E1C)
+                          : const Color(0xFFFBEBE8))
+                      : AppTheme.sageColor(context),
+                  border: Border.all(color: AppTheme.inkColor(context), width: 1),
                 ),
                 child: Center(
                   child: Text(
@@ -312,6 +323,7 @@ class _BattleFocusScreenState extends State<BattleFocusScreen>
                         ? opponent!.displayName[0].toUpperCase()
                         : 'O',
                     style: AppTheme.sansBody(
+                      context: context,
                       fontSize: 12,
                       fontWeight: FontWeight.w700,
                     ),
@@ -322,6 +334,7 @@ class _BattleFocusScreenState extends State<BattleFocusScreen>
               Text(
                 'Duel with ${opponent?.displayName ?? "Opponent"}',
                 style: AppTheme.sansBody(
+                  context: context,
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
                 ),
@@ -332,18 +345,21 @@ class _BattleFocusScreenState extends State<BattleFocusScreen>
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
               color: isOpponentDisconnected
-                  ? const Color(0xFFFBEBE8)
-                  : AppTheme.background,
+                  ? (AppTheme.isDark(context)
+                      ? const Color(0xFF381E1C)
+                      : const Color(0xFFFBEBE8))
+                  : AppTheme.bg(context),
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: AppTheme.inkFaint, width: 1),
+              border: Border.all(color: AppTheme.faint(context), width: 1),
             ),
             child: Text(
               isOpponentDisconnected ? 'OFFLINE' : 'LIVE 1V1',
               style: AppTheme.sansLabel(
+                context: context,
                 fontSize: 9,
                 color: isOpponentDisconnected
-                    ? AppTheme.errorMuted
-                    : AppTheme.ink,
+                    ? AppTheme.error(context)
+                    : AppTheme.text(context),
               ),
             ),
           ),
@@ -361,10 +377,10 @@ class _BattleFocusScreenState extends State<BattleFocusScreen>
         child: Container(
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
-            color: AppTheme.background,
+            color: AppTheme.bg(context),
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: AppTheme.ink, width: 1.5),
-            boxShadow: AppTheme.tactileShadow,
+            border: Border.all(color: AppTheme.inkColor(context), width: 1.5),
+            boxShadow: AppTheme.shadow(context),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -373,6 +389,7 @@ class _BattleFocusScreenState extends State<BattleFocusScreen>
               Text(
                 'Forfeit battle?',
                 style: AppTheme.serifHeading(
+                  context: context,
                   fontSize: 20,
                   fontWeight: FontWeight.w700,
                 ),
@@ -381,8 +398,9 @@ class _BattleFocusScreenState extends State<BattleFocusScreen>
               Text(
                 'Forfeiting will immediately concede the match to your opponent and end the focus session.',
                 style: AppTheme.sansBody(
+                  context: context,
                   fontSize: 14,
-                  color: AppTheme.inkMuted,
+                  color: AppTheme.muted(context),
                   height: 1.4,
                 ),
               ),
@@ -392,7 +410,7 @@ class _BattleFocusScreenState extends State<BattleFocusScreen>
                   Expanded(
                     child: TactileButton(
                       label: 'Stay focused',
-                      fillColor: AppTheme.sage,
+                      fillColor: AppTheme.sageColor(context),
                       height: 46,
                       borderRadius: 14,
                       fontSize: 13,
@@ -403,8 +421,10 @@ class _BattleFocusScreenState extends State<BattleFocusScreen>
                   Expanded(
                     child: TactileButton(
                       label: 'Concede',
-                      fillColor: const Color(0xFFFBEBE8),
-                      textColor: AppTheme.errorMuted,
+                      fillColor: AppTheme.isDark(context)
+                          ? const Color(0xFF381E1C)
+                          : const Color(0xFFFBEBE8),
+                      textColor: AppTheme.error(context),
                       height: 46,
                       borderRadius: 14,
                       fontSize: 13,

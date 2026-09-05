@@ -49,7 +49,7 @@ class UserAvatar extends StatelessWidget {
   final String? avatarPath;
   final double size;
   final double borderWidth;
-  final Color borderColor;
+  final Color? borderColor;
   final Color? backgroundColor;
   final bool showShadow;
   final List<BoxShadow>? customShadow;
@@ -59,7 +59,7 @@ class UserAvatar extends StatelessWidget {
     required this.avatarPath,
     this.size = 44.0,
     this.borderWidth = 1.5,
-    this.borderColor = AppTheme.ink,
+    this.borderColor,
     this.backgroundColor,
     this.showShadow = false,
     this.customShadow,
@@ -70,30 +70,31 @@ class UserAvatar extends StatelessWidget {
     final effectivePath = (avatarPath == null || avatarPath!.trim().isEmpty)
         ? StorageService.defaultAvatar
         : avatarPath!.trim();
+    final effectiveBorderColor = borderColor ?? AppTheme.inkColor(context);
 
     return Container(
       width: size,
       height: size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: backgroundColor ?? AppTheme.sand,
+        color: backgroundColor ?? AppTheme.sandColor(context),
         border: borderWidth > 0
-            ? Border.all(color: borderColor, width: borderWidth)
+            ? Border.all(color: effectiveBorderColor, width: borderWidth)
             : null,
-        boxShadow: customShadow ?? (showShadow ? AppTheme.tactileShadow : null),
+        boxShadow: customShadow ?? (showShadow ? AppTheme.shadow(context) : null),
       ),
-      child: ClipOval(child: _buildAvatarContent(effectivePath)),
+      child: ClipOval(child: _buildAvatarContent(context, effectivePath)),
     );
   }
 
-  Widget _buildAvatarContent(String path) {
+  Widget _buildAvatarContent(BuildContext context, String path) {
     if (path.startsWith('assets/') || path.endsWith('.svg')) {
       return SvgPicture.asset(
         path,
         width: size,
         height: size,
         fit: BoxFit.cover,
-        placeholderBuilder: (_) => _fallbackIcon(),
+        placeholderBuilder: (_) => _fallbackIcon(context),
       );
     }
 
@@ -105,29 +106,29 @@ class UserAvatar extends StatelessWidget {
           width: size,
           height: size,
           fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) => _fallbackSvg(),
+          errorBuilder: (context, error, stackTrace) => _fallbackSvg(context),
         );
       }
     } catch (_) {
       // Fallback
     }
 
-    return _fallbackSvg();
+    return _fallbackSvg(context);
   }
 
-  Widget _fallbackSvg() {
+  Widget _fallbackSvg(BuildContext context) {
     return SvgPicture.asset(
       StorageService.defaultAvatar,
       width: size,
       height: size,
       fit: BoxFit.cover,
-      placeholderBuilder: (_) => _fallbackIcon(),
+      placeholderBuilder: (_) => _fallbackIcon(context),
     );
   }
 
-  Widget _fallbackIcon() {
+  Widget _fallbackIcon(BuildContext context) {
     return Center(
-      child: Icon(Icons.person_rounded, size: size * 0.55, color: AppTheme.ink),
+      child: Icon(Icons.person_rounded, size: size * 0.55, color: AppTheme.inkColor(context)),
     );
   }
 }

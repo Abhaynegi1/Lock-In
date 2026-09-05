@@ -20,7 +20,7 @@ class ProfileScreen extends StatelessWidget {
     final themeProvider = context.watch<ThemeProvider>();
 
     return Scaffold(
-      backgroundColor: AppTheme.background,
+      backgroundColor: AppTheme.bg(context),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
@@ -40,25 +40,26 @@ class ProfileScreen extends StatelessWidget {
                           vertical: 6,
                         ),
                         decoration: BoxDecoration(
-                          color: AppTheme.sand,
+                          color: AppTheme.sandColor(context),
                           borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: AppTheme.ink, width: 1.2),
+                          border: Border.all(color: AppTheme.inkColor(context), width: 1.2),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(
+                            Icon(
                               Icons.arrow_back,
                               size: 16,
-                              color: AppTheme.ink,
+                              color: AppTheme.text(context),
                             ),
                             const SizedBox(width: 6),
                             Text(
                               'Back',
                               style: AppTheme.sansBody(
+                                context: context,
                                 fontSize: 12,
                                 fontWeight: FontWeight.w600,
-                                color: AppTheme.ink,
+                                color: AppTheme.text(context),
                               ),
                             ),
                           ],
@@ -77,10 +78,10 @@ class ProfileScreen extends StatelessWidget {
                         vertical: 6,
                       ),
                       decoration: BoxDecoration(
-                        color: auth.isAuthenticated ? AppTheme.sage : AppTheme.sand,
+                        color: auth.isAuthenticated ? AppTheme.sageColor(context) : AppTheme.sandColor(context),
                         borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: AppTheme.ink, width: 1.2),
-                        boxShadow: AppTheme.smallTactileShadow,
+                        border: Border.all(color: AppTheme.inkColor(context), width: 1.2),
+                        boxShadow: AppTheme.smallShadow(context),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
@@ -90,25 +91,26 @@ class ProfileScreen extends StatelessWidget {
                                 ? Icons.cloud_done_outlined
                                 : Icons.cloud_outlined,
                             size: 16,
-                            color: AppTheme.ink,
+                            color: AppTheme.text(context),
                           ),
                           const SizedBox(width: 6),
                           Text(
                             auth.isAuthenticated ? 'Synced' : 'Cloud',
                             style: AppTheme.sansBody(
+                              context: context,
                               fontSize: 12,
                               fontWeight: FontWeight.w700,
-                              color: AppTheme.ink,
+                              color: AppTheme.text(context),
                             ),
                           ),
                           if (auth.isSyncing) ...[
                             const SizedBox(width: 6),
-                            const SizedBox(
+                            SizedBox(
                               width: 10,
                               height: 10,
                               child: CircularProgressIndicator(
                                 strokeWidth: 1.5,
-                                color: AppTheme.ink,
+                                color: AppTheme.text(context),
                               ),
                             ),
                           ],
@@ -144,13 +146,13 @@ class ProfileScreen extends StatelessWidget {
                               width: 28,
                               height: 28,
                               decoration: BoxDecoration(
-                                color: AppTheme.peach,
+                                color: AppTheme.peachColor(context),
                                 shape: BoxShape.circle,
                                 border: Border.all(
-                                  color: AppTheme.ink,
+                                  color: AppTheme.inkColor(context),
                                   width: 1.5,
                                 ),
-                                boxShadow: AppTheme.smallTactileShadow,
+                                boxShadow: AppTheme.smallShadow(context),
                               ),
                               child: const Center(
                                 child: Icon(
@@ -174,15 +176,16 @@ class ProfileScreen extends StatelessWidget {
                           Text(
                             provider.userName,
                             style: AppTheme.serifHeading(
+                              context: context,
                               fontSize: 22,
                               fontWeight: FontWeight.w700,
                             ),
                           ),
                           const SizedBox(width: 6),
-                          const Icon(
+                          Icon(
                             Icons.edit_outlined,
                             size: 16,
-                            color: AppTheme.inkMuted,
+                            color: AppTheme.muted(context),
                           ),
                         ],
                       ),
@@ -191,19 +194,20 @@ class ProfileScreen extends StatelessWidget {
                     Text(
                       'Quiet deep work club · Member',
                       style: AppTheme.sansBody(
+                        context: context,
                         fontSize: 13,
-                        color: AppTheme.inkMuted,
+                        color: AppTheme.muted(context),
                       ),
                     ),
                   ],
                 ),
               ),
               const SizedBox(height: 24),
-              Divider(color: AppTheme.inkFaint, thickness: 1),
+              Divider(color: AppTheme.faint(context), thickness: 1),
               const SizedBox(height: 24),
 
               // Overview Section
-              Text('PERSONAL STATS', style: AppTheme.sansLabel()),
+              Text('PERSONAL STATS', style: AppTheme.sansLabel(context: context)),
               const SizedBox(height: 12),
               Row(
                 children: [
@@ -235,20 +239,21 @@ class ProfileScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(18),
                 decoration: BoxDecoration(
-                  color: AppTheme.sand,
+                  color: AppTheme.sandColor(context),
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AppTheme.ink, width: 1.2),
+                  border: Border.all(color: AppTheme.inkColor(context), width: 1.2),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
                       children: [
-                        const SparkleDoodle(size: 16),
+                        SparkleDoodle(size: 16, color: AppTheme.inkColor(context)),
                         const SizedBox(width: 8),
                         Text(
                           'The Lock In Rule',
                           style: AppTheme.sansBody(
+                            context: context,
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
                           ),
@@ -259,8 +264,9 @@ class ProfileScreen extends StatelessWidget {
                     Text(
                       'One thing at a time. When a session begins, leaving the app forfeits your timer. True focus is unbroken presence.',
                       style: AppTheme.sansBody(
+                        context: context,
                         fontSize: 13,
-                        color: AppTheme.inkMuted,
+                        color: AppTheme.muted(context),
                         height: 1.4,
                       ),
                     ),
@@ -270,7 +276,7 @@ class ProfileScreen extends StatelessWidget {
               const SizedBox(height: 24),
 
               // Accountability Rules
-              Text('PREFERENCES', style: AppTheme.sansLabel()),
+              Text('PREFERENCES', style: AppTheme.sansLabel(context: context)),
               const SizedBox(height: 12),
               _SettingTile(
                 title: 'Appearance',
@@ -290,7 +296,7 @@ class ProfileScreen extends StatelessWidget {
                               ? Icons.dark_mode_outlined
                               : Icons.brightness_auto_outlined,
                       size: 15,
-                      color: AppTheme.ink,
+                      color: AppTheme.text(context),
                     ),
                     const SizedBox(width: 6),
                     Text(
@@ -300,6 +306,7 @@ class ProfileScreen extends StatelessWidget {
                               ? 'Dark'
                               : 'System',
                       style: AppTheme.sansBody(
+                        context: context,
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
                       ),
@@ -321,27 +328,28 @@ class ProfileScreen extends StatelessWidget {
                   ),
                   decoration: BoxDecoration(
                     color: provider.isStrictAntiDistraction
-                        ? AppTheme.sage
-                        : AppTheme.sand,
+                        ? AppTheme.sageColor(context)
+                        : AppTheme.sandColor(context),
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(
                       color: provider.isStrictAntiDistraction
-                          ? AppTheme.ink
-                          : AppTheme.inkLight,
+                          ? AppTheme.inkColor(context)
+                          : AppTheme.lightColor(context),
                       width: 1.2,
                     ),
                     boxShadow: provider.isStrictAntiDistraction
-                        ? AppTheme.smallTactileShadow
+                        ? AppTheme.smallShadow(context)
                         : null,
                   ),
                   child: Text(
                     provider.isStrictAntiDistraction ? 'ACTIVE' : 'INACTIVE',
                     style: AppTheme.sansLabel(
+                      context: context,
                       fontSize: 10,
                       fontWeight: FontWeight.w700,
                       color: provider.isStrictAntiDistraction
-                          ? AppTheme.ink
-                          : AppTheme.inkMuted,
+                          ? AppTheme.text(context)
+                          : AppTheme.muted(context),
                     ),
                   ),
                 ),
@@ -354,6 +362,7 @@ class ProfileScreen extends StatelessWidget {
                 trailing: Text(
                   _getFinishCueTrailing(provider),
                   style: AppTheme.sansBody(
+                    context: context,
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
                   ),
@@ -383,10 +392,10 @@ class ProfileScreen extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: AppTheme.background,
+              color: AppTheme.bg(context),
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: AppTheme.ink, width: 1.5),
-              boxShadow: AppTheme.tactileShadow,
+              border: Border.all(color: AppTheme.inkColor(context), width: 1.5),
+              boxShadow: AppTheme.shadow(context),
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -398,16 +407,17 @@ class ProfileScreen extends StatelessWidget {
                     Text(
                       'Edit Nickname',
                       style: AppTheme.serifHeading(
+                        context: context,
                         fontSize: 20,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
                     GestureDetector(
                       onTap: () => Navigator.pop(dialogCtx),
-                      child: const Icon(
+                      child: Icon(
                         Icons.close,
                         size: 20,
-                        color: AppTheme.inkMuted,
+                        color: AppTheme.muted(context),
                       ),
                     ),
                   ],
@@ -416,8 +426,9 @@ class ProfileScreen extends StatelessWidget {
                 Text(
                   'Choose how you appear in Focus Battles and club logs:',
                   style: AppTheme.sansBody(
+                    context: context,
                     fontSize: 13,
-                    color: AppTheme.inkMuted,
+                    color: AppTheme.muted(context),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -425,29 +436,30 @@ class ProfileScreen extends StatelessWidget {
                   controller: controller,
                   autofocus: true,
                   style: AppTheme.sansBody(
+                    context: context,
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
-                    color: AppTheme.ink,
+                    color: AppTheme.text(context),
                   ),
                   decoration: InputDecoration(
                     hintText: 'e.g. Focus Monk, Neo...',
                     filled: true,
-                    fillColor: AppTheme.sand,
+                    fillColor: AppTheme.sandColor(context),
                     contentPadding: const EdgeInsets.symmetric(
                       horizontal: 16,
                       vertical: 14,
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(14),
-                      borderSide: const BorderSide(
-                        color: AppTheme.ink,
+                      borderSide: BorderSide(
+                        color: AppTheme.inkColor(context),
                         width: 1.5,
                       ),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(14),
-                      borderSide: const BorderSide(
-                        color: AppTheme.ink,
+                      borderSide: BorderSide(
+                        color: AppTheme.inkColor(context),
                         width: 2.0,
                       ),
                     ),
@@ -459,7 +471,8 @@ class ProfileScreen extends StatelessWidget {
                     Expanded(
                       child: TactileButton(
                         label: 'Cancel',
-                        fillColor: AppTheme.sand,
+                        fillColor: AppTheme.sandColor(context),
+                        textColor: AppTheme.text(context),
                         height: 46,
                         borderRadius: 12,
                         fontSize: 14,
@@ -470,7 +483,8 @@ class ProfileScreen extends StatelessWidget {
                     Expanded(
                       child: TactileButton(
                         label: 'Save',
-                        fillColor: AppTheme.peach,
+                        fillColor: AppTheme.peachColor(context),
+                        textColor: AppTheme.ink,
                         height: 46,
                         borderRadius: 12,
                         fontSize: 14,
@@ -499,10 +513,10 @@ class ProfileScreen extends StatelessWidget {
         return Container(
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
-            color: AppTheme.background,
+            color: AppTheme.bg(context),
             borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-            border: Border.all(color: AppTheme.ink, width: 1.5),
-            boxShadow: AppTheme.tactileShadow,
+            border: Border.all(color: AppTheme.inkColor(context), width: 1.5),
+            boxShadow: AppTheme.shadow(context),
           ),
           child: SafeArea(
             child: Column(
@@ -515,7 +529,7 @@ class ProfileScreen extends StatelessWidget {
                     width: 36,
                     height: 4,
                     decoration: BoxDecoration(
-                      color: AppTheme.inkLight,
+                      color: AppTheme.lightColor(context),
                       borderRadius: BorderRadius.circular(2),
                     ),
                   ),
@@ -527,16 +541,17 @@ class ProfileScreen extends StatelessWidget {
                     Text(
                       'Appearance',
                       style: AppTheme.serifHeading(
+                        context: context,
                         fontSize: 20,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
                     GestureDetector(
                       onTap: () => Navigator.pop(sheetCtx),
-                      child: const Icon(
+                      child: Icon(
                         Icons.close,
                         size: 20,
-                        color: AppTheme.inkMuted,
+                        color: AppTheme.muted(context),
                       ),
                     ),
                   ],
@@ -545,8 +560,9 @@ class ProfileScreen extends StatelessWidget {
                 Text(
                   'Choose your preferred theme or match your device settings:',
                   style: AppTheme.sansBody(
+                    context: context,
                     fontSize: 13,
-                    color: AppTheme.inkMuted,
+                    color: AppTheme.muted(context),
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -557,7 +573,7 @@ class ProfileScreen extends StatelessWidget {
                   subtitle:
                       'Warm paper off-white with crisp black ink and tactile shadows.',
                   badgeText: 'DEFAULT',
-                  badgeColor: AppTheme.peach,
+                  badgeColor: AppTheme.peachColor(context),
                   isSelected: themeProvider.themeMode == ThemeMode.light,
                   icon: Icons.wb_sunny_outlined,
                   onTap: () {
@@ -573,7 +589,7 @@ class ProfileScreen extends StatelessWidget {
                   subtitle:
                       'Deep charcoal slate paper tone designed for low-light night focus.',
                   badgeText: 'NIGHT',
-                  badgeColor: AppTheme.sand,
+                  badgeColor: AppTheme.sandColor(context),
                   isSelected: themeProvider.themeMode == ThemeMode.dark,
                   icon: Icons.dark_mode_outlined,
                   onTap: () {
@@ -589,7 +605,7 @@ class ProfileScreen extends StatelessWidget {
                   subtitle:
                       'Automatically switch theme based on your device system appearance.',
                   badgeText: 'AUTO',
-                  badgeColor: AppTheme.sage,
+                  badgeColor: AppTheme.sageColor(context),
                   isSelected: themeProvider.themeMode == ThemeMode.system,
                   icon: Icons.brightness_auto_outlined,
                   onTap: () {
@@ -615,10 +631,10 @@ class ProfileScreen extends StatelessWidget {
         return Container(
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
-            color: AppTheme.background,
+            color: AppTheme.bg(context),
             borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-            border: Border.all(color: AppTheme.ink, width: 1.5),
-            boxShadow: AppTheme.tactileShadow,
+            border: Border.all(color: AppTheme.inkColor(context), width: 1.5),
+            boxShadow: AppTheme.shadow(context),
           ),
           child: SafeArea(
             child: Column(
@@ -631,7 +647,7 @@ class ProfileScreen extends StatelessWidget {
                     width: 36,
                     height: 4,
                     decoration: BoxDecoration(
-                      color: AppTheme.inkLight,
+                      color: AppTheme.lightColor(context),
                       borderRadius: BorderRadius.circular(2),
                     ),
                   ),
@@ -643,16 +659,17 @@ class ProfileScreen extends StatelessWidget {
                     Text(
                       'Anti-Distraction Mode',
                       style: AppTheme.serifHeading(
+                        context: context,
                         fontSize: 20,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
                     GestureDetector(
                       onTap: () => Navigator.pop(sheetCtx),
-                      child: const Icon(
+                      child: Icon(
                         Icons.close,
                         size: 20,
-                        color: AppTheme.inkMuted,
+                        color: AppTheme.muted(context),
                       ),
                     ),
                   ],
@@ -661,8 +678,9 @@ class ProfileScreen extends StatelessWidget {
                 Text(
                   'Choose what happens when you leave Lock In during a session:',
                   style: AppTheme.sansBody(
+                    context: context,
                     fontSize: 13,
-                    color: AppTheme.inkMuted,
+                    color: AppTheme.muted(context),
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -673,7 +691,7 @@ class ProfileScreen extends StatelessWidget {
                   subtitle:
                       'Session ends immediately if you leave the app. Screen stays awake while focusing to prevent phone sleep.',
                   badgeText: 'STRICT',
-                  badgeColor: AppTheme.sage,
+                  badgeColor: AppTheme.sageColor(context),
                   isSelected: provider.isStrictAntiDistraction,
                   icon: Icons.shield_outlined,
                   onTap: () {
@@ -689,7 +707,7 @@ class ProfileScreen extends StatelessWidget {
                   subtitle:
                       'You can leave the app to take notes or check messages; the session continues running quietly.',
                   badgeText: 'FLEXIBLE',
-                  badgeColor: AppTheme.sand,
+                  badgeColor: AppTheme.sandColor(context),
                   isSelected: !provider.isStrictAntiDistraction,
                   icon: Icons.timer_outlined,
                   onTap: () {
@@ -742,9 +760,11 @@ class ProfileScreen extends StatelessWidget {
 
             return Container(
               padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
-              decoration: const BoxDecoration(
-                color: AppTheme.background,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+              decoration: BoxDecoration(
+                color: AppTheme.bg(context),
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+                border: Border.all(color: AppTheme.inkColor(context), width: 1.5),
+                boxShadow: AppTheme.shadow(context),
               ),
               child: SingleChildScrollView(
                 child: Column(
@@ -756,7 +776,7 @@ class ProfileScreen extends StatelessWidget {
                         width: 36,
                         height: 4,
                         decoration: BoxDecoration(
-                          color: AppTheme.inkLight,
+                          color: AppTheme.lightColor(context),
                           borderRadius: BorderRadius.circular(2),
                         ),
                       ),
@@ -768,16 +788,17 @@ class ProfileScreen extends StatelessWidget {
                         Text(
                           'Finish Cue',
                           style: AppTheme.serifHeading(
+                            context: context,
                             fontSize: 20,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
                         GestureDetector(
                           onTap: () => Navigator.pop(sheetCtx),
-                          child: const Icon(
+                          child: Icon(
                             Icons.close,
                             size: 20,
-                            color: AppTheme.inkMuted,
+                            color: AppTheme.muted(context),
                           ),
                         ),
                       ],
@@ -786,8 +807,9 @@ class ProfileScreen extends StatelessWidget {
                     Text(
                       'How should LockIn let you know your session is complete?',
                       style: AppTheme.sansBody(
+                        context: context,
                         fontSize: 13,
-                        color: AppTheme.inkMuted,
+                        color: AppTheme.muted(context),
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -798,7 +820,7 @@ class ProfileScreen extends StatelessWidget {
                       subtitle:
                           'Soft acoustic acknowledgment and subtle vibration.',
                       badgeText: 'CHIME',
-                      badgeColor: AppTheme.sand,
+                      badgeColor: AppTheme.sandColor(context),
                       isSelected: currentMode == 'sound_and_haptics',
                       icon: Icons.volume_up_outlined,
                       onTap: () {
@@ -814,7 +836,7 @@ class ProfileScreen extends StatelessWidget {
                       subtitle:
                           'Completely silent. Subtle double pulse for study halls and cafes.',
                       badgeText: 'LIBRARY',
-                      badgeColor: AppTheme.sand,
+                      badgeColor: AppTheme.sandColor(context),
                       isSelected: currentMode == 'haptics_only',
                       icon: Icons.vibration_outlined,
                       onTap: () {
@@ -830,7 +852,7 @@ class ProfileScreen extends StatelessWidget {
                       subtitle:
                           'Pure visual transition. No audio or haptic trigger.',
                       badgeText: 'DEFAULT',
-                      badgeColor: AppTheme.sage,
+                      badgeColor: AppTheme.sageColor(context),
                       isSelected: currentMode == 'silent',
                       icon: Icons.volume_off_outlined,
                       onTap: () {
@@ -844,7 +866,7 @@ class ProfileScreen extends StatelessWidget {
                       const SizedBox(height: 24),
                       Text(
                         'CUE TONE',
-                        style: AppTheme.sansLabel(fontSize: 10),
+                        style: AppTheme.sansLabel(context: context, fontSize: 10),
                       ),
                       const SizedBox(height: 12),
                       _SoundPresetTile(
@@ -923,10 +945,10 @@ class ProfileScreen extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
-                  color: AppTheme.background,
+                  color: AppTheme.bg(context),
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: AppTheme.ink, width: 1.5),
-                  boxShadow: AppTheme.tactileShadow,
+                  border: Border.all(color: AppTheme.inkColor(context), width: 1.5),
+                  boxShadow: AppTheme.shadow(context),
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -938,16 +960,17 @@ class ProfileScreen extends StatelessWidget {
                         Text(
                           'Daily Focus Goal',
                           style: AppTheme.serifHeading(
+                            context: context,
                             fontSize: 20,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
                         GestureDetector(
                           onTap: () => Navigator.pop(dialogCtx),
-                          child: const Icon(
+                          child: Icon(
                             Icons.close,
                             size: 20,
-                            color: AppTheme.inkMuted,
+                            color: AppTheme.muted(context),
                           ),
                         ),
                       ],
@@ -956,8 +979,9 @@ class ProfileScreen extends StatelessWidget {
                     Text(
                       'How many hours of deep work would you like to target each day?',
                       style: AppTheme.sansBody(
+                        context: context,
                         fontSize: 13,
-                        color: AppTheme.inkMuted,
+                        color: AppTheme.muted(context),
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -981,25 +1005,26 @@ class ProfileScreen extends StatelessWidget {
                             ),
                             decoration: BoxDecoration(
                               color: isSelected
-                                  ? AppTheme.peach
-                                  : AppTheme.sand,
+                                  ? AppTheme.peachColor(context)
+                                  : AppTheme.sandColor(context),
                               borderRadius: BorderRadius.circular(10),
                               border: Border.all(
-                                color: AppTheme.ink,
+                                color: AppTheme.inkColor(context),
                                 width: isSelected ? 1.5 : 1.0,
                               ),
                               boxShadow: isSelected
-                                  ? AppTheme.smallTactileShadow
+                                  ? AppTheme.smallShadow(context)
                                   : null,
                             ),
                             child: Text(
                               '${h}h',
                               style: AppTheme.sansBody(
+                                context: context,
                                 fontSize: 13,
                                 fontWeight: isSelected
                                     ? FontWeight.w700
                                     : FontWeight.w500,
-                                color: AppTheme.ink,
+                                color: isSelected ? AppTheme.ink : AppTheme.text(context),
                               ),
                             ),
                           ),
@@ -1015,9 +1040,9 @@ class ProfileScreen extends StatelessWidget {
                         vertical: 12,
                       ),
                       decoration: BoxDecoration(
-                        color: AppTheme.sand,
+                        color: AppTheme.sandColor(context),
                         borderRadius: BorderRadius.circular(14),
-                        border: Border.all(color: AppTheme.ink, width: 1.2),
+                        border: Border.all(color: AppTheme.inkColor(context), width: 1.2),
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1034,23 +1059,24 @@ class ProfileScreen extends StatelessWidget {
                               width: 36,
                               height: 36,
                               decoration: BoxDecoration(
-                                color: AppTheme.background,
+                                color: AppTheme.bg(context),
                                 shape: BoxShape.circle,
                                 border: Border.all(
-                                  color: AppTheme.ink,
+                                  color: AppTheme.inkColor(context),
                                   width: 1.2,
                                 ),
                               ),
-                              child: const Icon(
+                              child: Icon(
                                 Icons.remove,
                                 size: 18,
-                                color: AppTheme.ink,
+                                color: AppTheme.text(context),
                               ),
                             ),
                           ),
                           Text(
                             displayText,
                             style: AppTheme.serifHeading(
+                              context: context,
                               fontSize: 22,
                               fontWeight: FontWeight.w700,
                             ),
@@ -1067,17 +1093,17 @@ class ProfileScreen extends StatelessWidget {
                               width: 36,
                               height: 36,
                               decoration: BoxDecoration(
-                                color: AppTheme.background,
+                                color: AppTheme.bg(context),
                                 shape: BoxShape.circle,
                                 border: Border.all(
-                                  color: AppTheme.ink,
+                                  color: AppTheme.inkColor(context),
                                   width: 1.2,
                                 ),
                               ),
-                              child: const Icon(
+                              child: Icon(
                                 Icons.add,
                                 size: 18,
-                                color: AppTheme.ink,
+                                color: AppTheme.text(context),
                               ),
                             ),
                           ),
@@ -1092,7 +1118,8 @@ class ProfileScreen extends StatelessWidget {
                         Expanded(
                           child: TactileButton(
                             label: 'Cancel',
-                            fillColor: AppTheme.sand,
+                            fillColor: AppTheme.sandColor(context),
+                            textColor: AppTheme.text(context),
                             height: 46,
                             borderRadius: 12,
                             fontSize: 14,
@@ -1103,7 +1130,8 @@ class ProfileScreen extends StatelessWidget {
                         Expanded(
                           child: TactileButton(
                             label: 'Save Target',
-                            fillColor: AppTheme.peach,
+                            fillColor: AppTheme.peachColor(context),
+                            textColor: AppTheme.ink,
                             height: 46,
                             borderRadius: 12,
                             fontSize: 14,
@@ -1153,13 +1181,13 @@ class _AntiDistractionOptionCard extends StatelessWidget {
         duration: const Duration(milliseconds: 150),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: isSelected ? AppTheme.sand : AppTheme.background,
+          color: isSelected ? AppTheme.sandColor(context) : AppTheme.bg(context),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: AppTheme.ink,
+            color: AppTheme.inkColor(context),
             width: isSelected ? 2.0 : 1.2,
           ),
-          boxShadow: isSelected ? AppTheme.smallTactileShadow : null,
+          boxShadow: isSelected ? AppTheme.smallShadow(context) : null,
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -1168,11 +1196,11 @@ class _AntiDistractionOptionCard extends StatelessWidget {
               width: 38,
               height: 38,
               decoration: BoxDecoration(
-                color: isSelected ? AppTheme.background : AppTheme.sand,
+                color: isSelected ? AppTheme.bg(context) : AppTheme.sandColor(context),
                 shape: BoxShape.circle,
-                border: Border.all(color: AppTheme.ink, width: 1.2),
+                border: Border.all(color: AppTheme.inkColor(context), width: 1.2),
               ),
-              child: Icon(icon, size: 20, color: AppTheme.ink),
+              child: Icon(icon, size: 20, color: AppTheme.text(context)),
             ),
             const SizedBox(width: 14),
             Expanded(
@@ -1184,9 +1212,10 @@ class _AntiDistractionOptionCard extends StatelessWidget {
                       Text(
                         title,
                         style: AppTheme.sansBody(
+                          context: context,
                           fontSize: 15,
                           fontWeight: FontWeight.w700,
-                          color: AppTheme.ink,
+                          color: AppTheme.text(context),
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -1198,11 +1227,12 @@ class _AntiDistractionOptionCard extends StatelessWidget {
                         decoration: BoxDecoration(
                           color: badgeColor,
                           borderRadius: BorderRadius.circular(6),
-                          border: Border.all(color: AppTheme.ink, width: 1),
+                          border: Border.all(color: AppTheme.inkColor(context), width: 1),
                         ),
                         child: Text(
                           badgeText,
                           style: AppTheme.sansLabel(
+                            context: context,
                             fontSize: 9,
                             fontWeight: FontWeight.w700,
                             color: AppTheme.ink,
@@ -1215,8 +1245,9 @@ class _AntiDistractionOptionCard extends StatelessWidget {
                   Text(
                     subtitle,
                     style: AppTheme.sansBody(
+                      context: context,
                       fontSize: 12,
-                      color: AppTheme.inkMuted,
+                      color: AppTheme.muted(context),
                       height: 1.35,
                     ),
                   ),
@@ -1229,11 +1260,11 @@ class _AntiDistractionOptionCard extends StatelessWidget {
               height: 22,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: isSelected ? AppTheme.peach : Colors.transparent,
-                border: Border.all(color: AppTheme.ink, width: 1.5),
+                color: isSelected ? AppTheme.peachColor(context) : Colors.transparent,
+                border: Border.all(color: AppTheme.inkColor(context), width: 1.5),
               ),
               child: isSelected
-                  ? Icon(Icons.check, size: 14, color: AppTheme.ink)
+                  ? const Icon(Icons.check, size: 14, color: AppTheme.ink)
                   : null,
             ),
           ],
@@ -1266,10 +1297,10 @@ class _ProfileMetricBox extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: AppTheme.background,
+          color: AppTheme.bg(context),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppTheme.ink, width: 1.2),
-          boxShadow: isEditable ? AppTheme.smallTactileShadow : null,
+          border: Border.all(color: AppTheme.inkColor(context), width: 1.2),
+          boxShadow: isEditable ? AppTheme.smallShadow(context) : null,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -1280,15 +1311,16 @@ class _ProfileMetricBox extends StatelessWidget {
                 Text(
                   title,
                   style: AppTheme.sansLabel(
+                    context: context,
                     fontSize: 10,
-                    color: AppTheme.inkMuted,
+                    color: AppTheme.muted(context),
                   ),
                 ),
                 if (isEditable)
-                  const Icon(
+                  Icon(
                     Icons.edit_outlined,
                     size: 13,
-                    color: AppTheme.inkMuted,
+                    color: AppTheme.muted(context),
                   ),
               ],
             ),
@@ -1296,6 +1328,7 @@ class _ProfileMetricBox extends StatelessWidget {
             Text(
               value,
               style: AppTheme.serifHeading(
+                context: context,
                 fontSize: 20,
                 fontWeight: FontWeight.w700,
               ),
@@ -1303,7 +1336,7 @@ class _ProfileMetricBox extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               subtitle,
-              style: AppTheme.sansBody(fontSize: 11, color: AppTheme.inkLight),
+              style: AppTheme.sansBody(context: context, fontSize: 11, color: AppTheme.lightColor(context)),
             ),
           ],
         ),
@@ -1333,9 +1366,9 @@ class _SettingTile extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
-          color: AppTheme.background,
+          color: AppTheme.bg(context),
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: AppTheme.inkFaint, width: 1.2),
+          border: Border.all(color: AppTheme.faint(context), width: 1.2),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1347,6 +1380,7 @@ class _SettingTile extends StatelessWidget {
                   Text(
                     title,
                     style: AppTheme.sansBody(
+                      context: context,
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
                     ),
@@ -1355,8 +1389,9 @@ class _SettingTile extends StatelessWidget {
                   Text(
                     subtitle,
                     style: AppTheme.sansBody(
+                      context: context,
                       fontSize: 12,
-                      color: AppTheme.inkMuted,
+                      color: AppTheme.muted(context),
                     ),
                   ),
                 ],
@@ -1392,10 +1427,10 @@ class _SoundPresetTile extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: BoxDecoration(
-          color: isSelected ? AppTheme.sand : Colors.transparent,
+          color: isSelected ? AppTheme.sandColor(context) : Colors.transparent,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: isSelected ? AppTheme.ink : AppTheme.inkLight,
+            color: isSelected ? AppTheme.inkColor(context) : AppTheme.lightColor(context),
             width: isSelected ? 1.4 : 1.0,
           ),
         ),
@@ -1406,7 +1441,7 @@ class _SoundPresetTile extends StatelessWidget {
                   ? Icons.radio_button_checked
                   : Icons.radio_button_unchecked,
               size: 18,
-              color: isSelected ? AppTheme.ink : AppTheme.inkMuted,
+              color: isSelected ? AppTheme.text(context) : AppTheme.muted(context),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -1416,6 +1451,7 @@ class _SoundPresetTile extends StatelessWidget {
                   Text(
                     title,
                     style: AppTheme.sansBody(
+                      context: context,
                       fontSize: 14,
                       fontWeight:
                           isSelected ? FontWeight.w700 : FontWeight.w500,
@@ -1425,8 +1461,9 @@ class _SoundPresetTile extends StatelessWidget {
                   Text(
                     subtitle,
                     style: AppTheme.sansBody(
+                      context: context,
                       fontSize: 11,
-                      color: AppTheme.inkMuted,
+                      color: AppTheme.muted(context),
                     ),
                   ),
                 ],
@@ -1439,21 +1476,22 @@ class _SoundPresetTile extends StatelessWidget {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                 decoration: BoxDecoration(
-                  color: AppTheme.background,
+                  color: AppTheme.bg(context),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: AppTheme.ink, width: 1),
-                  boxShadow: AppTheme.smallTactileShadow,
+                  border: Border.all(color: AppTheme.inkColor(context), width: 1),
+                  boxShadow: AppTheme.smallShadow(context),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.play_arrow_rounded,
-                        size: 14, color: AppTheme.ink),
+                    Icon(Icons.play_arrow_rounded,
+                        size: 14, color: AppTheme.text(context)),
                     const SizedBox(width: 4),
                     Text(
                       'Preview',
                       style: AppTheme.sansLabel(
-                          fontSize: 9, color: AppTheme.ink),
+                          context: context,
+                          fontSize: 9, color: AppTheme.text(context)),
                     ),
                   ],
                 ),

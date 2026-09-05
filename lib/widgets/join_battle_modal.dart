@@ -102,9 +102,9 @@ class _JoinBattleModalState extends State<JoinBattleModal> {
           SnackBar(
             content: Row(
               children: [
-                const Icon(
+                Icon(
                   Icons.error_outline_rounded,
-                  color: AppTheme.background,
+                  color: AppTheme.bg(context),
                   size: 18,
                 ),
                 const SizedBox(width: 8),
@@ -112,7 +112,8 @@ class _JoinBattleModalState extends State<JoinBattleModal> {
                   child: Text(
                     err,
                     style: AppTheme.sansBody(
-                      color: AppTheme.background,
+                      context: context,
+                      color: AppTheme.bg(context),
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -120,10 +121,10 @@ class _JoinBattleModalState extends State<JoinBattleModal> {
               ],
             ),
             behavior: SnackBarBehavior.floating,
-            backgroundColor: AppTheme.ink,
+            backgroundColor: AppTheme.inkColor(context),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
-              side: BorderSide(color: AppTheme.ink, width: 1),
+              side: BorderSide(color: AppTheme.inkColor(context), width: 1),
             ),
             duration: const Duration(seconds: 3),
           ),
@@ -142,13 +143,13 @@ class _JoinBattleModalState extends State<JoinBattleModal> {
       ),
       child: Container(
         padding: const EdgeInsets.all(24.0),
-        decoration: const BoxDecoration(
-          color: AppTheme.background,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        decoration: BoxDecoration(
+          color: AppTheme.bg(context),
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
           border: Border(
-            top: BorderSide(color: AppTheme.ink, width: 1.5),
-            left: BorderSide(color: AppTheme.ink, width: 1.5),
-            right: BorderSide(color: AppTheme.ink, width: 1.5),
+            top: BorderSide(color: AppTheme.inkColor(context), width: 1.5),
+            left: BorderSide(color: AppTheme.inkColor(context), width: 1.5),
+            right: BorderSide(color: AppTheme.inkColor(context), width: 1.5),
           ),
         ),
         child: Column(
@@ -160,7 +161,7 @@ class _JoinBattleModalState extends State<JoinBattleModal> {
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: AppTheme.inkFaint,
+                  color: AppTheme.faint(context),
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -169,23 +170,23 @@ class _JoinBattleModalState extends State<JoinBattleModal> {
 
             Row(
               children: [
-                const SparkleDoodle(size: 20),
+                SparkleDoodle(size: 20, color: AppTheme.inkColor(context)),
                 const SizedBox(width: 8),
                 Text(
                   'Join Focus Battle',
-                  style: AppTheme.serifHeading(fontSize: 22),
+                  style: AppTheme.serifHeading(context: context, fontSize: 22),
                 ),
               ],
             ),
             const SizedBox(height: 6),
             Text(
               'Enter the 6-character room code shared by your friend.',
-              style: AppTheme.sansBody(fontSize: 13, color: AppTheme.inkMuted),
+              style: AppTheme.sansBody(context: context, fontSize: 13, color: AppTheme.muted(context)),
             ),
             const SizedBox(height: 20),
 
             // Room Code Input
-            Text('ROOM CODE', style: AppTheme.sansLabel(fontSize: 11)),
+            Text('ROOM CODE', style: AppTheme.sansLabel(context: context, fontSize: 11)),
             const SizedBox(height: 6),
             TextField(
               controller: _codeController,
@@ -195,6 +196,7 @@ class _JoinBattleModalState extends State<JoinBattleModal> {
                 FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9]')),
               ],
               style: AppTheme.serifHeading(
+                context: context,
                 fontSize: 22,
                 fontWeight: FontWeight.w700,
                 letterSpacing: 4.0,
@@ -202,12 +204,13 @@ class _JoinBattleModalState extends State<JoinBattleModal> {
               decoration: InputDecoration(
                 hintText: 'e.g. K7XM4P',
                 hintStyle: AppTheme.serifHeading(
+                  context: context,
                   fontSize: 20,
-                  color: AppTheme.inkLight,
+                  color: AppTheme.lightColor(context),
                   letterSpacing: 2.0,
                 ),
                 filled: true,
-                fillColor: AppTheme.sand,
+                fillColor: AppTheme.sandColor(context),
                 contentPadding: const EdgeInsets.symmetric(
                   horizontal: 16,
                   vertical: 12,
@@ -216,8 +219,8 @@ class _JoinBattleModalState extends State<JoinBattleModal> {
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide(
                     color: _errorMessage != null
-                        ? AppTheme.errorMuted
-                        : AppTheme.ink,
+                        ? AppTheme.error(context)
+                        : AppTheme.inkColor(context),
                     width: 1.2,
                   ),
                 ),
@@ -225,8 +228,8 @@ class _JoinBattleModalState extends State<JoinBattleModal> {
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide(
                     color: _errorMessage != null
-                        ? AppTheme.errorMuted
-                        : AppTheme.ink,
+                        ? AppTheme.error(context)
+                        : AppTheme.inkColor(context),
                     width: 1.8,
                   ),
                 ),
@@ -235,27 +238,27 @@ class _JoinBattleModalState extends State<JoinBattleModal> {
             const SizedBox(height: 18),
 
             // Display Name
-            Text('YOUR DISPLAY NAME', style: AppTheme.sansLabel(fontSize: 11)),
+            Text('YOUR DISPLAY NAME', style: AppTheme.sansLabel(context: context, fontSize: 11)),
             const SizedBox(height: 6),
             TextField(
               controller: _nameController,
-              style: AppTheme.sansBody(fontWeight: FontWeight.w600),
+              style: AppTheme.sansBody(context: context, fontWeight: FontWeight.w600),
               decoration: InputDecoration(
                 hintText: 'e.g. Maya, Sam, Liam',
-                hintStyle: AppTheme.sansBody(color: AppTheme.inkLight),
+                hintStyle: AppTheme.sansBody(context: context, color: AppTheme.lightColor(context)),
                 filled: true,
-                fillColor: AppTheme.sand,
+                fillColor: AppTheme.sandColor(context),
                 contentPadding: const EdgeInsets.symmetric(
                   horizontal: 14,
                   vertical: 12,
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: AppTheme.ink, width: 1.2),
+                  borderSide: BorderSide(color: AppTheme.inkColor(context), width: 1.2),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: AppTheme.ink, width: 1.8),
+                  borderSide: BorderSide(color: AppTheme.inkColor(context), width: 1.8),
                 ),
               ),
             ),
@@ -270,18 +273,20 @@ class _JoinBattleModalState extends State<JoinBattleModal> {
                   vertical: 10,
                 ),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFFBEBE8),
+                  color: AppTheme.isDark(context)
+                      ? const Color(0xFF381E1C)
+                      : const Color(0xFFFBEBE8),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: AppTheme.errorMuted.withValues(alpha: 0.6),
+                    color: AppTheme.error(context).withValues(alpha: 0.6),
                     width: 1.2,
                   ),
                 ),
                 child: Row(
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.error_outline_rounded,
-                      color: AppTheme.errorMuted,
+                      color: AppTheme.error(context),
                       size: 18,
                     ),
                     const SizedBox(width: 10),
@@ -289,8 +294,9 @@ class _JoinBattleModalState extends State<JoinBattleModal> {
                       child: Text(
                         _errorMessage!,
                         style: AppTheme.sansBody(
+                          context: context,
                           fontSize: 13,
-                          color: AppTheme.errorMuted,
+                          color: AppTheme.error(context),
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -307,7 +313,7 @@ class _JoinBattleModalState extends State<JoinBattleModal> {
               label: battleProvider.isLoading
                   ? 'Connecting & Joining Room...'
                   : 'Join Battle Room',
-              fillColor: AppTheme.sage,
+              fillColor: AppTheme.sageColor(context),
               height: 52,
               fontSize: 15,
               onTap: battleProvider.isLoading ? () {} : _handleJoin,

@@ -25,8 +25,8 @@ class LockInLogo extends StatelessWidget {
       height: size,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(size * 0.28),
-        border: Border.all(color: AppTheme.ink, width: 1.5),
-        boxShadow: AppTheme.smallTactileShadow,
+        border: Border.all(color: AppTheme.inkColor(context), width: 1.5),
+        boxShadow: AppTheme.smallShadow(context),
       ),
       clipBehavior: Clip.antiAlias,
       child: logo,
@@ -156,7 +156,7 @@ class SparkleDoodle extends StatelessWidget {
   Widget build(BuildContext context) {
     return CustomPaint(
       size: Size(size, size),
-      painter: _SparklePainter(color: color ?? AppTheme.ink),
+      painter: _SparklePainter(color: color ?? AppTheme.inkColor(context)),
     );
   }
 }
@@ -228,9 +228,12 @@ class _TactileButtonState extends State<TactileButton> {
 
   @override
   Widget build(BuildContext context) {
-    final effectiveFill = widget.fillColor ?? AppTheme.peach;
-    final effectiveText = widget.textColor ?? AppTheme.ink;
-    final effectiveBorder = widget.borderColor ?? AppTheme.ink;
+    final effectiveFill = widget.fillColor ?? AppTheme.peachColor(context);
+    final effectiveText = widget.textColor ??
+        (effectiveFill == AppTheme.inkColor(context)
+            ? AppTheme.bg(context)
+            : AppTheme.text(context));
+    final effectiveBorder = widget.borderColor ?? AppTheme.inkColor(context);
 
     final content = AnimatedContainer(
       duration: const Duration(milliseconds: 70),
@@ -311,8 +314,8 @@ class InkProgressBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final effectiveFill = fillColor ?? AppTheme.ink;
-    final effectiveBorder = borderColor ?? AppTheme.ink;
+    final effectiveFill = fillColor ?? AppTheme.inkColor(context);
+    final effectiveBorder = borderColor ?? AppTheme.inkColor(context);
     final clampedProgress = progress.clamp(0.0, 1.0);
     return Container(
       height: height,
@@ -364,20 +367,20 @@ class DurationChip extends StatelessWidget {
         duration: const Duration(milliseconds: 150),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
         decoration: BoxDecoration(
-          color: isSelected ? AppTheme.ink : Colors.transparent,
+          color: isSelected ? AppTheme.inkColor(context) : Colors.transparent,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: isSelected ? AppTheme.ink : AppTheme.inkFaint,
+            color: isSelected ? AppTheme.inkColor(context) : AppTheme.faint(context),
             width: 1.2,
           ),
-          boxShadow: isSelected ? AppTheme.smallTactileShadow : [],
+          boxShadow: isSelected ? AppTheme.smallShadow(context) : [],
         ),
         child: Text(
           text,
           style: AppTheme.sansBody(
             fontSize: 13,
             fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-            color: isSelected ? AppTheme.background : AppTheme.inkMuted,
+            color: isSelected ? AppTheme.bg(context) : AppTheme.muted(context),
           ),
         ),
       ),

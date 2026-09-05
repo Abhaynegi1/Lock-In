@@ -85,21 +85,21 @@ class _CreateBattleModalState extends State<CreateBattleModal> {
           SnackBar(
             content: Row(
               children: [
-                Icon(Icons.error_outline_rounded, color: AppTheme.background, size: 18),
+                Icon(Icons.error_outline_rounded, color: AppTheme.bg(context), size: 18),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     err,
-                    style: AppTheme.sansBody(color: AppTheme.background, fontWeight: FontWeight.w500),
+                    style: AppTheme.sansBody(context: context, color: AppTheme.bg(context), fontWeight: FontWeight.w500),
                   ),
                 ),
               ],
             ),
             behavior: SnackBarBehavior.floating,
-            backgroundColor: AppTheme.ink,
+            backgroundColor: AppTheme.inkColor(context),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
-              side: BorderSide(color: AppTheme.ink, width: 1),
+              side: BorderSide(color: AppTheme.inkColor(context), width: 1),
             ),
             duration: const Duration(seconds: 3),
           ),
@@ -118,13 +118,13 @@ class _CreateBattleModalState extends State<CreateBattleModal> {
       ),
       child: Container(
         padding: const EdgeInsets.all(24.0),
-        decoration: const BoxDecoration(
-          color: AppTheme.background,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        decoration: BoxDecoration(
+          color: AppTheme.bg(context),
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
           border: Border(
-            top: BorderSide(color: AppTheme.ink, width: 1.5),
-            left: BorderSide(color: AppTheme.ink, width: 1.5),
-            right: BorderSide(color: AppTheme.ink, width: 1.5),
+            top: BorderSide(color: AppTheme.inkColor(context), width: 1.5),
+            left: BorderSide(color: AppTheme.inkColor(context), width: 1.5),
+            right: BorderSide(color: AppTheme.inkColor(context), width: 1.5),
           ),
         ),
         child: Column(
@@ -137,7 +137,7 @@ class _CreateBattleModalState extends State<CreateBattleModal> {
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: AppTheme.inkFaint,
+                  color: AppTheme.faint(context),
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -146,32 +146,32 @@ class _CreateBattleModalState extends State<CreateBattleModal> {
 
             Row(
               children: [
-                const SparkleDoodle(size: 20),
+                SparkleDoodle(size: 20, color: AppTheme.inkColor(context)),
                 const SizedBox(width: 8),
                 Text(
                   'Create Focus Battle',
-                  style: AppTheme.serifHeading(fontSize: 22),
+                  style: AppTheme.serifHeading(context: context, fontSize: 22),
                 ),
               ],
             ),
             const SizedBox(height: 6),
             Text(
               'Generate a room code and invite a friend. No account required.',
-              style: AppTheme.sansBody(fontSize: 13, color: AppTheme.inkMuted),
+              style: AppTheme.sansBody(context: context, fontSize: 13, color: AppTheme.muted(context)),
             ),
             const SizedBox(height: 20),
 
             // Display Name
-            Text('YOUR DISPLAY NAME', style: AppTheme.sansLabel(fontSize: 11)),
+            Text('YOUR DISPLAY NAME', style: AppTheme.sansLabel(context: context, fontSize: 11)),
             const SizedBox(height: 6),
             TextField(
               controller: _nameController,
-              style: AppTheme.sansBody(fontWeight: FontWeight.w600),
+              style: AppTheme.sansBody(context: context, fontWeight: FontWeight.w600),
               decoration: InputDecoration(
                 hintText: 'e.g. Maya, Sam, Liam',
-                hintStyle: AppTheme.sansBody(color: AppTheme.inkLight),
+                hintStyle: AppTheme.sansBody(context: context, color: AppTheme.lightColor(context)),
                 filled: true,
-                fillColor: AppTheme.sand,
+                fillColor: AppTheme.sandColor(context),
                 contentPadding: const EdgeInsets.symmetric(
                   horizontal: 14,
                   vertical: 12,
@@ -179,14 +179,14 @@ class _CreateBattleModalState extends State<CreateBattleModal> {
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide(
-                    color: _errorMessage != null ? AppTheme.errorMuted : AppTheme.ink,
+                    color: _errorMessage != null ? AppTheme.error(context) : AppTheme.inkColor(context),
                     width: 1.2,
                   ),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide(
-                    color: _errorMessage != null ? AppTheme.errorMuted : AppTheme.ink,
+                    color: _errorMessage != null ? AppTheme.error(context) : AppTheme.inkColor(context),
                     width: 1.8,
                   ),
                 ),
@@ -195,7 +195,7 @@ class _CreateBattleModalState extends State<CreateBattleModal> {
             const SizedBox(height: 20),
 
             // Battle Duration
-            Text('BATTLE DURATION', style: AppTheme.sansLabel(fontSize: 11)),
+            Text('BATTLE DURATION', style: AppTheme.sansLabel(context: context, fontSize: 11)),
             const SizedBox(height: 8),
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
@@ -214,28 +214,29 @@ class _CreateBattleModalState extends State<CreateBattleModal> {
                           ),
                           decoration: BoxDecoration(
                             color: _selectedDuration == mins
-                                ? AppTheme.ink
-                                : AppTheme.sand,
+                                ? AppTheme.inkColor(context)
+                                : AppTheme.sandColor(context),
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
-                              color: AppTheme.ink,
+                              color: AppTheme.inkColor(context),
                               width: _selectedDuration == mins ? 1.5 : 1.0,
                             ),
                             boxShadow: _selectedDuration == mins
-                                ? AppTheme.smallTactileShadow
+                                ? AppTheme.smallShadow(context)
                                 : null,
                           ),
                           child: Center(
                             child: Text(
                               '${mins}m',
                               style: AppTheme.sansBody(
+                                context: context,
                                 fontSize: 14,
                                 fontWeight: _selectedDuration == mins
                                     ? FontWeight.w700
                                     : FontWeight.w500,
                                 color: _selectedDuration == mins
-                                    ? AppTheme.background
-                                    : AppTheme.ink,
+                                    ? AppTheme.bg(context)
+                                    : AppTheme.text(context),
                               ),
                             ),
                           ),
@@ -254,14 +255,14 @@ class _CreateBattleModalState extends State<CreateBattleModal> {
                             vertical: 10,
                           ),
                           decoration: BoxDecoration(
-                            color: isCustom ? AppTheme.ink : AppTheme.sand,
+                            color: isCustom ? AppTheme.inkColor(context) : AppTheme.sandColor(context),
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
-                              color: AppTheme.ink,
+                              color: AppTheme.inkColor(context),
                               width: isCustom ? 1.5 : 1.0,
                             ),
                             boxShadow: isCustom
-                                ? AppTheme.smallTactileShadow
+                                ? AppTheme.smallShadow(context)
                                 : null,
                           ),
                           child: Center(
@@ -270,13 +271,14 @@ class _CreateBattleModalState extends State<CreateBattleModal> {
                                   ? 'Custom (${_selectedDuration}m)'
                                   : 'Custom',
                               style: AppTheme.sansBody(
+                                context: context,
                                 fontSize: 14,
                                 fontWeight: isCustom
                                     ? FontWeight.w700
                                     : FontWeight.w500,
                                 color: isCustom
-                                    ? AppTheme.background
-                                    : AppTheme.ink,
+                                    ? AppTheme.bg(context)
+                                    : AppTheme.text(context),
                               ),
                             ),
                           ),
@@ -295,15 +297,17 @@ class _CreateBattleModalState extends State<CreateBattleModal> {
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFFBEBE8),
+                  color: AppTheme.isDark(context)
+                      ? const Color(0xFF381E1C)
+                      : const Color(0xFFFBEBE8),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: AppTheme.errorMuted.withValues(alpha: 0.6), width: 1.2),
+                  border: Border.all(color: AppTheme.error(context).withValues(alpha: 0.6), width: 1.2),
                 ),
                 child: Row(
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.error_outline_rounded,
-                      color: AppTheme.errorMuted,
+                      color: AppTheme.error(context),
                       size: 18,
                     ),
                     const SizedBox(width: 10),
@@ -311,8 +315,9 @@ class _CreateBattleModalState extends State<CreateBattleModal> {
                       child: Text(
                         _errorMessage!,
                         style: AppTheme.sansBody(
+                          context: context,
                           fontSize: 13,
-                          color: AppTheme.errorMuted,
+                          color: AppTheme.error(context),
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -329,7 +334,7 @@ class _CreateBattleModalState extends State<CreateBattleModal> {
               label: battleProvider.isLoading
                   ? 'Connecting & Creating Room...'
                   : 'Create Room Code',
-              fillColor: AppTheme.peach,
+              fillColor: AppTheme.peachColor(context),
               height: 52,
               fontSize: 15,
               onTap: battleProvider.isLoading ? () {} : _handleCreate,
@@ -362,10 +367,10 @@ class _CreateBattleModalState extends State<CreateBattleModal> {
               child: Container(
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
-                  color: AppTheme.background,
+                  color: AppTheme.bg(context),
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: AppTheme.ink, width: 1.5),
-                  boxShadow: AppTheme.tactileShadow,
+                  border: Border.all(color: AppTheme.inkColor(context), width: 1.5),
+                  boxShadow: AppTheme.shadow(context),
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -377,16 +382,17 @@ class _CreateBattleModalState extends State<CreateBattleModal> {
                         Text(
                           'Custom battle time',
                           style: AppTheme.serifHeading(
+                            context: context,
                             fontSize: 20,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
                         GestureDetector(
                           onTap: () => Navigator.pop(dialogCtx),
-                          child: const Icon(
+                          child: Icon(
                             Icons.close,
                             size: 20,
-                            color: AppTheme.inkMuted,
+                            color: AppTheme.muted(context),
                           ),
                         ),
                       ],
@@ -395,8 +401,9 @@ class _CreateBattleModalState extends State<CreateBattleModal> {
                     Text(
                       'Enter battle time in minutes (1 - 180):',
                       style: AppTheme.sansBody(
+                        context: context,
                         fontSize: 13,
-                        color: AppTheme.inkMuted,
+                        color: AppTheme.muted(context),
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -426,6 +433,7 @@ class _CreateBattleModalState extends State<CreateBattleModal> {
                             textAlign: TextAlign.center,
                             autofocus: true,
                             style: AppTheme.serifTimer(
+                              context: context,
                               fontSize: 32,
                               fontWeight: FontWeight.w800,
                             ),
@@ -434,24 +442,25 @@ class _CreateBattleModalState extends State<CreateBattleModal> {
                                 vertical: 12,
                               ),
                               filled: true,
-                              fillColor: AppTheme.sand,
+                              fillColor: AppTheme.sandColor(context),
                               suffixText: 'min ',
                               suffixStyle: AppTheme.sansBody(
+                                context: context,
                                 fontSize: 13,
                                 fontWeight: FontWeight.w600,
-                                color: AppTheme.inkMuted,
+                                color: AppTheme.muted(context),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(14),
-                                borderSide: const BorderSide(
-                                  color: AppTheme.ink,
+                                borderSide: BorderSide(
+                                  color: AppTheme.inkColor(context),
                                   width: 1.5,
                                 ),
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(14),
-                                borderSide: const BorderSide(
-                                  color: AppTheme.ink,
+                                borderSide: BorderSide(
+                                  color: AppTheme.inkColor(context),
                                   width: 2.0,
                                 ),
                               ),
@@ -482,7 +491,7 @@ class _CreateBattleModalState extends State<CreateBattleModal> {
                         Expanded(
                           child: TactileButton(
                             label: 'Cancel',
-                            fillColor: AppTheme.sand,
+                            fillColor: AppTheme.sandColor(context),
                             height: 48,
                             borderRadius: 14,
                             fontSize: 14,
@@ -493,7 +502,7 @@ class _CreateBattleModalState extends State<CreateBattleModal> {
                         Expanded(
                           child: TactileButton(
                             label: 'Set time',
-                            fillColor: AppTheme.peach,
+                            fillColor: AppTheme.peachColor(context),
                             height: 48,
                             borderRadius: 14,
                             fontSize: 14,
@@ -535,12 +544,12 @@ class _BattleDialogAdjustBtn extends StatelessWidget {
         width: 46,
         height: 46,
         decoration: BoxDecoration(
-          color: AppTheme.sand,
+          color: AppTheme.sandColor(context),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppTheme.ink, width: 1.5),
-          boxShadow: AppTheme.smallTactileShadow,
+          border: Border.all(color: AppTheme.inkColor(context), width: 1.5),
+          boxShadow: AppTheme.smallShadow(context),
         ),
-        child: Icon(icon, color: AppTheme.ink, size: 20),
+        child: Icon(icon, color: AppTheme.text(context), size: 20),
       ),
     );
   }

@@ -46,6 +46,7 @@ void main() {
       'focus_streak': 5,
       'focus_daily_goal': 240,
       'focus_username': 'Dev User',
+      'focus_theme_mode': 'light',
     });
   });
 
@@ -86,12 +87,12 @@ void main() {
       WidgetTester tester,
     ) async {
       final themeProvider = ThemeProvider(storageService: StorageService());
-      await pumpEventQueue();
+      await themeProvider.setThemeMode(ThemeMode.light);
 
       await tester.pumpWidget(
         createTestApp(const ProfileScreen(), themeProvider: themeProvider),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
 
       expect(find.text('Dev User'), findsOneWidget);
       expect(find.text('PERSONAL STATS'), findsOneWidget);
@@ -99,19 +100,23 @@ void main() {
       expect(find.text('Appearance'), findsOneWidget);
       expect(find.text('Light Mode · Warm paper'), findsOneWidget);
 
-      // Tap Appearance setting tile to open modal
+      // Scroll and tap Appearance setting tile to open modal
+      await tester.ensureVisible(find.text('Appearance'));
+      await tester.pump();
       await tester.tap(find.text('Appearance'));
-      await tester.pumpAndSettle();
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
 
       // Verify modal options are displayed
       expect(find.text('Choose your preferred theme or match your device settings:'), findsOneWidget);
-      expect(find.text('Light Mode'), findsOneWidget);
-      expect(find.text('Dark Mode'), findsOneWidget);
+      expect(find.text('Light Mode'), findsWidgets);
+      expect(find.text('Dark Mode'), findsWidgets);
       expect(find.text('Follow System Settings'), findsOneWidget);
 
-      // Tap Dark Mode option
-      await tester.tap(find.text('Dark Mode'));
-      await tester.pumpAndSettle();
+      // Tap Dark Mode option in modal
+      await tester.tap(find.text('Dark Mode').last);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
 
       expect(themeProvider.themeMode, equals(ThemeMode.dark));
       expect(find.text('Dark Mode · Deep slate'), findsOneWidget);

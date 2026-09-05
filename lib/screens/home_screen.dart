@@ -30,7 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.background,
+      backgroundColor: AppTheme.bg(context),
       body: IndexedStack(
         index: _currentTabIndex,
         children: const [
@@ -77,19 +77,21 @@ class _TodayView extends StatelessWidget {
                     Text(
                       'LOCK IN',
                       style: AppTheme.sansBody(
+                        context: context,
                         fontSize: 13,
                         fontWeight: FontWeight.w800,
                         letterSpacing: 1.8,
-                        color: AppTheme.ink,
+                        color: AppTheme.text(context),
                       ),
                     ),
                     const SizedBox(height: 1),
                     Text(
                       'FOCUS CLUB',
                       style: AppTheme.sansLabel(
+                        context: context,
                         fontSize: 9,
                         letterSpacing: 1.2,
-                        color: AppTheme.inkMuted,
+                        color: AppTheme.muted(context),
                       ),
                     ),
                   ],
@@ -103,11 +105,12 @@ class _TodayView extends StatelessWidget {
             const SizedBox(height: 28),
 
             // Solo Focus Label & Serif Headline
-            Text('SOLO FOCUS', style: AppTheme.sansLabel()),
+            Text('SOLO FOCUS', style: AppTheme.sansLabel(context: context)),
             const SizedBox(height: 6),
             Text(
               'One thing\nat a time.',
               style: AppTheme.serifHeading(
+                context: context,
                 fontSize: 34,
                 fontWeight: FontWeight.w700,
                 height: 1.12,
@@ -117,8 +120,9 @@ class _TodayView extends StatelessWidget {
             Text(
               'A quiet $selectedMinutes minutes for the work that matters.',
               style: AppTheme.sansBody(
+                context: context,
                 fontSize: 14,
-                color: AppTheme.inkMuted,
+                color: AppTheme.muted(context),
                 height: 1.4,
               ),
             ),
@@ -166,24 +170,24 @@ class _TodayView extends StatelessWidget {
                     alignment: Alignment.center,
                     children: [
                       // Organic Hand-Drawn doodle circle outline
-                      const CustomPaint(
-                        size: Size(210, 210),
+                      CustomPaint(
+                        size: const Size(210, 210),
                         painter: OrganicCirclePainter(
-                          color: AppTheme.ink,
+                          color: AppTheme.inkColor(context),
                           strokeWidth: 1.5,
                         ),
                       ),
 
                       // Tiny decorative sparkle doodles around timer
-                      const Positioned(
+                      Positioned(
                         top: 14,
                         right: 18,
-                        child: SparkleDoodle(size: 16, color: AppTheme.ink),
+                        child: SparkleDoodle(size: 16, color: AppTheme.inkColor(context)),
                       ),
-                      const Positioned(
+                      Positioned(
                         bottom: 22,
                         left: 16,
-                        child: SparkleDoodle(size: 12, color: AppTheme.ink),
+                        child: SparkleDoodle(size: 12, color: AppTheme.inkColor(context)),
                       ),
 
                       // Timer value & sublabel
@@ -193,6 +197,7 @@ class _TodayView extends StatelessWidget {
                           Text(
                             provider.selectedTimerFormatted,
                             style: AppTheme.serifTimer(
+                              context: context,
                               fontSize: 48,
                               fontWeight: FontWeight.w800,
                             ),
@@ -201,8 +206,9 @@ class _TodayView extends StatelessWidget {
                           Text(
                             'your next session',
                             style: AppTheme.sansBody(
+                              context: context,
                               fontSize: 12,
-                              color: AppTheme.inkMuted,
+                              color: AppTheme.muted(context),
                               fontWeight: FontWeight.w500,
                             ),
                           ),
@@ -223,30 +229,38 @@ class _TodayView extends StatelessWidget {
                 Text(
                   'Today',
                   style: AppTheme.sansBody(
+                    context: context,
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
-                    color: AppTheme.ink,
+                    color: AppTheme.text(context),
                   ),
                 ),
                 Text(
                   provider.todayProgressText,
                   style: AppTheme.sansBody(
+                    context: context,
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
-                    color: AppTheme.ink,
+                    color: AppTheme.text(context),
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 8),
-            InkProgressBar(progress: provider.todayProgressRatio, height: 7),
+            InkProgressBar(
+              progress: provider.todayProgressRatio,
+              height: 7,
+              fillColor: AppTheme.inkColor(context),
+              borderColor: AppTheme.inkColor(context),
+            ),
 
             const SizedBox(height: 20),
 
-            // Primary Button: Full width, peach fill, 1.5px black border, 3px hard offset shadow
+            // Primary Button: Full width, peach fill, 1.5px border, 3px hard offset shadow
             TactileButton(
               label: 'Start focus',
-              fillColor: AppTheme.peach,
+              fillColor: AppTheme.peachColor(context),
+              textColor: AppTheme.ink,
               height: 54,
               borderRadius: 16,
               fontSize: 16,
@@ -290,10 +304,10 @@ class _TodayView extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
-                  color: AppTheme.background,
+                  color: AppTheme.bg(context),
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: AppTheme.ink, width: 1.5),
-                  boxShadow: AppTheme.tactileShadow,
+                  border: Border.all(color: AppTheme.inkColor(context), width: 1.5),
+                  boxShadow: AppTheme.shadow(context),
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -305,16 +319,17 @@ class _TodayView extends StatelessWidget {
                         Text(
                           'Custom focus time',
                           style: AppTheme.serifHeading(
+                            context: context,
                             fontSize: 20,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
                         GestureDetector(
                           onTap: () => Navigator.pop(dialogCtx),
-                          child: const Icon(
+                          child: Icon(
                             Icons.close,
                             size: 20,
-                            color: AppTheme.inkMuted,
+                            color: AppTheme.muted(context),
                           ),
                         ),
                       ],
@@ -323,8 +338,9 @@ class _TodayView extends StatelessWidget {
                     Text(
                       'Enter focus time in minutes (1 - 180):',
                       style: AppTheme.sansBody(
+                        context: context,
                         fontSize: 13,
-                        color: AppTheme.inkMuted,
+                        color: AppTheme.muted(context),
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -354,6 +370,7 @@ class _TodayView extends StatelessWidget {
                             textAlign: TextAlign.center,
                             autofocus: true,
                             style: AppTheme.serifTimer(
+                              context: context,
                               fontSize: 32,
                               fontWeight: FontWeight.w800,
                             ),
@@ -362,24 +379,25 @@ class _TodayView extends StatelessWidget {
                                 vertical: 12,
                               ),
                               filled: true,
-                              fillColor: AppTheme.sand,
+                              fillColor: AppTheme.sandColor(context),
                               suffixText: 'min ',
                               suffixStyle: AppTheme.sansBody(
+                                context: context,
                                 fontSize: 13,
                                 fontWeight: FontWeight.w600,
-                                color: AppTheme.inkMuted,
+                                color: AppTheme.muted(context),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(14),
-                                borderSide: const BorderSide(
-                                  color: AppTheme.ink,
+                                borderSide: BorderSide(
+                                  color: AppTheme.inkColor(context),
                                   width: 1.5,
                                 ),
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(14),
-                                borderSide: const BorderSide(
-                                  color: AppTheme.ink,
+                                borderSide: BorderSide(
+                                  color: AppTheme.inkColor(context),
                                   width: 2.0,
                                 ),
                               ),
@@ -410,7 +428,8 @@ class _TodayView extends StatelessWidget {
                         Expanded(
                           child: TactileButton(
                             label: 'Cancel',
-                            fillColor: AppTheme.sand,
+                            fillColor: AppTheme.sandColor(context),
+                            textColor: AppTheme.text(context),
                             height: 48,
                             borderRadius: 14,
                             fontSize: 14,
@@ -421,7 +440,8 @@ class _TodayView extends StatelessWidget {
                         Expanded(
                           child: TactileButton(
                             label: 'Set time',
-                            fillColor: AppTheme.peach,
+                            fillColor: AppTheme.peachColor(context),
+                            textColor: AppTheme.ink,
                             height: 48,
                             borderRadius: 14,
                             fontSize: 14,
@@ -461,12 +481,12 @@ class _DialogAdjustBtn extends StatelessWidget {
         width: 46,
         height: 46,
         decoration: BoxDecoration(
-          color: AppTheme.sand,
+          color: AppTheme.sandColor(context),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppTheme.ink, width: 1.5),
-          boxShadow: AppTheme.smallTactileShadow,
+          border: Border.all(color: AppTheme.inkColor(context), width: 1.5),
+          boxShadow: AppTheme.smallShadow(context),
         ),
-        child: Icon(icon, color: AppTheme.ink, size: 20),
+        child: Icon(icon, color: AppTheme.text(context), size: 20),
       ),
     );
   }
@@ -485,9 +505,9 @@ class _QuietBottomNav extends StatelessWidget {
     const items = ['Today', 'Battles', 'Log'];
 
     return Container(
-      decoration: const BoxDecoration(
-        color: AppTheme.background,
-        border: Border(top: BorderSide(color: AppTheme.inkFaint, width: 1.0)),
+      decoration: BoxDecoration(
+        color: AppTheme.bg(context),
+        border: Border(top: BorderSide(color: AppTheme.faint(context), width: 1.0)),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
       child: SafeArea(
@@ -511,11 +531,12 @@ class _QuietBottomNav extends StatelessWidget {
                       Text(
                         items[index],
                         style: AppTheme.sansBody(
+                          context: context,
                           fontSize: 13,
                           fontWeight: isSelected
                               ? FontWeight.w700
                               : FontWeight.w500,
-                          color: isSelected ? AppTheme.ink : AppTheme.inkLight,
+                          color: isSelected ? AppTheme.text(context) : AppTheme.lightColor(context),
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -524,7 +545,7 @@ class _QuietBottomNav extends StatelessWidget {
                         width: isSelected ? 18 : 0,
                         height: 2,
                         decoration: BoxDecoration(
-                          color: isSelected ? AppTheme.ink : Colors.transparent,
+                          color: isSelected ? AppTheme.text(context) : Colors.transparent,
                           borderRadius: BorderRadius.circular(1),
                         ),
                       ),
@@ -553,7 +574,7 @@ class _QuietBottomNav extends StatelessWidget {
                           shape: BoxShape.circle,
                           border: Border.all(
                             color: isSelected
-                                ? AppTheme.ink
+                                ? AppTheme.text(context)
                                 : Colors.transparent,
                             width: 2.0,
                           ),
@@ -562,7 +583,7 @@ class _QuietBottomNav extends StatelessWidget {
                           avatarPath: timerProvider.userAvatar,
                           size: 30,
                           borderWidth: 1.5,
-                          borderColor: AppTheme.ink,
+                          borderColor: AppTheme.inkColor(context),
                           showShadow: false,
                         ),
                       ),

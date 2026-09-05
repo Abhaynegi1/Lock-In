@@ -26,7 +26,7 @@ class ResultScreen extends StatelessWidget {
                   .round());
 
     return Scaffold(
-      backgroundColor: AppTheme.background,
+      backgroundColor: AppTheme.bg(context),
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
@@ -55,19 +55,19 @@ class ResultScreen extends StatelessWidget {
                                 width: 48,
                                 height: 48,
                                 decoration: BoxDecoration(
-                                  color: AppTheme.sand,
+                                  color: AppTheme.sandColor(context),
                                   shape: BoxShape.circle,
                                   border: Border.all(
-                                    color: AppTheme.ink,
+                                    color: AppTheme.inkColor(context),
                                     width: 1.5,
                                   ),
-                                  boxShadow: AppTheme.smallTactileShadow,
+                                  boxShadow: AppTheme.smallShadow(context),
                                 ),
-                                child: const Center(
+                                child: Center(
                                   child: Icon(
                                     Icons.close,
                                     size: 22,
-                                    color: AppTheme.ink,
+                                    color: AppTheme.text(context),
                                   ),
                                 ),
                               ),
@@ -78,6 +78,7 @@ class ResultScreen extends StatelessWidget {
                       Text(
                         isWin ? 'Session completed.' : 'Session interrupted.',
                         style: AppTheme.serifHeading(
+                          context: context,
                           fontSize: 28,
                           fontWeight: FontWeight.w700,
                         ),
@@ -90,8 +91,9 @@ class ResultScreen extends StatelessWidget {
                                   : 'Unbroken deep work recorded. Your momentum continues.')
                             : 'The session ended early. Rest for a minute and start fresh when ready.',
                         style: AppTheme.sansBody(
+                          context: context,
                           fontSize: 14,
-                          color: AppTheme.inkMuted,
+                          color: AppTheme.muted(context),
                           height: 1.4,
                         ),
                       ),
@@ -107,23 +109,24 @@ class ResultScreen extends StatelessWidget {
                             vertical: 12,
                           ),
                           decoration: BoxDecoration(
-                            color: AppTheme.sand,
+                            color: AppTheme.sandColor(context),
                             borderRadius: BorderRadius.circular(14),
-                            border: Border.all(color: AppTheme.ink, width: 1.2),
-                            boxShadow: AppTheme.smallTactileShadow,
+                            border: Border.all(color: AppTheme.inkColor(context), width: 1.2),
+                            boxShadow: AppTheme.smallShadow(context),
                           ),
                           child: Row(
                             children: [
-                              const Icon(
+                              Icon(
                                 Icons.check_circle_outline,
                                 size: 20,
-                                color: AppTheme.ink,
+                                color: AppTheme.text(context),
                               ),
                               const SizedBox(width: 10),
                               Expanded(
                                 child: Text(
                                   'Extension ended early. Your ${actualMinutes}m session was safely recorded!',
                                   style: AppTheme.sansBody(
+                                    context: context,
                                     fontSize: 13,
                                     fontWeight: FontWeight.w600,
                                   ),
@@ -134,7 +137,7 @@ class ResultScreen extends StatelessWidget {
                         ),
                       ],
 
-                      Divider(color: AppTheme.inkFaint, thickness: 1),
+                      Divider(color: AppTheme.faint(context), thickness: 1),
                       const SizedBox(height: 20),
 
                       // Stats Cards
@@ -165,9 +168,9 @@ class ResultScreen extends StatelessWidget {
                         Container(
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
-                            color: AppTheme.sand,
+                            color: AppTheme.sandColor(context),
                             borderRadius: BorderRadius.circular(16),
-                            border: Border.all(color: AppTheme.ink, width: 1.2),
+                            border: Border.all(color: AppTheme.inkColor(context), width: 1.2),
                           ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -177,7 +180,7 @@ class ResultScreen extends StatelessWidget {
                                 children: [
                                   Text(
                                     'BATTLE WITH ${activeBattle.opponentName.toUpperCase()}',
-                                    style: AppTheme.sansLabel(fontSize: 10),
+                                    style: AppTheme.sansLabel(context: context, fontSize: 10),
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
@@ -185,6 +188,7 @@ class ResultScreen extends StatelessWidget {
                                         ? '+$actualMinutes minutes added'
                                         : 'No minutes recorded',
                                     style: AppTheme.sansBody(
+                                      context: context,
                                       fontSize: 13,
                                       fontWeight: FontWeight.w600,
                                     ),
@@ -194,6 +198,7 @@ class ResultScreen extends StatelessWidget {
                               Text(
                                 activeBattle.scoreComparison,
                                 style: AppTheme.serifHeading(
+                                  context: context,
                                   fontSize: 20,
                                   fontWeight: FontWeight.w700,
                                 ),
@@ -225,7 +230,8 @@ class ResultScreen extends StatelessWidget {
                       // Return action
                       TactileButton(
                         label: 'Back to Today',
-                        fillColor: AppTheme.sand,
+                        fillColor: AppTheme.sandColor(context),
+                        textColor: AppTheme.text(context),
                         height: 50,
                         borderRadius: 16,
                         fontSize: 15,
@@ -284,10 +290,10 @@ class _ExtendSessionCardState extends State<_ExtendSessionCard> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppTheme.background,
+        color: AppTheme.bg(context),
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: AppTheme.ink, width: 1.5),
-        boxShadow: AppTheme.tactileShadow,
+        border: Border.all(color: AppTheme.inkColor(context), width: 1.5),
+        boxShadow: AppTheme.shadow(context),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -297,13 +303,14 @@ class _ExtendSessionCardState extends State<_ExtendSessionCard> {
             children: [
               Row(
                 children: [
-                  const SparkleDoodle(size: 14),
+                  SparkleDoodle(size: 14, color: AppTheme.inkColor(context)),
                   const SizedBox(width: 8),
                   Text(
                     'EXTEND SESSION',
                     style: AppTheme.sansLabel(
+                      context: context,
                       fontSize: 11,
-                      color: AppTheme.ink,
+                      color: AppTheme.text(context),
                     ),
                   ),
                 ],
@@ -311,8 +318,9 @@ class _ExtendSessionCardState extends State<_ExtendSessionCard> {
               Text(
                 'Keep momentum rolling',
                 style: AppTheme.sansBody(
+                  context: context,
                   fontSize: 11,
-                  color: AppTheme.inkMuted,
+                  color: AppTheme.muted(context),
                 ),
               ),
             ],
@@ -332,6 +340,7 @@ class _ExtendSessionCardState extends State<_ExtendSessionCard> {
                   child: Text(
                     '+$_extensionMinutes min',
                     style: AppTheme.serifHeading(
+                      context: context,
                       fontSize: 22,
                       fontWeight: FontWeight.w800,
                     ),
@@ -364,10 +373,10 @@ class _ExtendSessionCardState extends State<_ExtendSessionCard> {
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 6),
                       decoration: BoxDecoration(
-                        color: isSelected ? AppTheme.peach : AppTheme.sand,
+                        color: isSelected ? AppTheme.peachColor(context) : AppTheme.sandColor(context),
                         borderRadius: BorderRadius.circular(10),
                         border: Border.all(
-                          color: AppTheme.ink,
+                          color: AppTheme.inkColor(context),
                           width: isSelected ? 1.4 : 1.0,
                         ),
                       ),
@@ -375,11 +384,12 @@ class _ExtendSessionCardState extends State<_ExtendSessionCard> {
                         child: Text(
                           '+${mins}m',
                           style: AppTheme.sansBody(
+                            context: context,
                             fontSize: 12,
                             fontWeight: isSelected
                                 ? FontWeight.w700
                                 : FontWeight.w500,
-                            color: AppTheme.ink,
+                            color: isSelected ? AppTheme.ink : AppTheme.text(context),
                           ),
                         ),
                       ),
@@ -394,7 +404,8 @@ class _ExtendSessionCardState extends State<_ExtendSessionCard> {
           // Action Button
           TactileButton(
             label: 'Extend session (+${_extensionMinutes}m)',
-            fillColor: AppTheme.peach,
+            fillColor: AppTheme.peachColor(context),
+            textColor: AppTheme.ink,
             height: 48,
             borderRadius: 14,
             fontSize: 15,
@@ -428,20 +439,19 @@ class _StepperButton extends StatelessWidget {
           width: 40,
           height: 40,
           decoration: BoxDecoration(
-            color: AppTheme.sand,
+            color: AppTheme.sandColor(context),
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppTheme.ink, width: 1.2),
-            boxShadow: enabled ? AppTheme.smallTactileShadow : null,
+            border: Border.all(color: AppTheme.inkColor(context), width: 1.2),
+            boxShadow: enabled ? AppTheme.smallShadow(context) : null,
           ),
           child: Center(
-            child: Icon(icon, size: 20, color: AppTheme.ink),
+            child: Icon(icon, size: 20, color: AppTheme.text(context)),
           ),
         ),
       ),
     );
   }
 }
-
 
 class _ResultStatCard extends StatelessWidget {
   final String label;
@@ -459,21 +469,22 @@ class _ResultStatCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppTheme.background,
+        color: AppTheme.bg(context),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppTheme.ink, width: 1.2),
+        border: Border.all(color: AppTheme.inkColor(context), width: 1.2),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             label,
-            style: AppTheme.sansLabel(fontSize: 10, color: AppTheme.inkMuted),
+            style: AppTheme.sansLabel(context: context, fontSize: 10, color: AppTheme.muted(context)),
           ),
           const SizedBox(height: 6),
           Text(
             value,
             style: AppTheme.serifHeading(
+              context: context,
               fontSize: 24,
               fontWeight: FontWeight.w700,
             ),
@@ -481,7 +492,7 @@ class _ResultStatCard extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             subtitle,
-            style: AppTheme.sansBody(fontSize: 11, color: AppTheme.inkLight),
+            style: AppTheme.sansBody(context: context, fontSize: 11, color: AppTheme.lightColor(context)),
           ),
         ],
       ),

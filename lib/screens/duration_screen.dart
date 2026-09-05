@@ -19,11 +19,11 @@ class _DurationScreenState extends State<DurationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.background,
+      backgroundColor: AppTheme.bg(context),
       appBar: AppBar(
         title: Text(
           'SELECT DURATION',
-          style: AppTheme.sansLabel(fontSize: 12, letterSpacing: 1.5),
+          style: AppTheme.sansLabel(context: context, fontSize: 12, letterSpacing: 1.5),
         ),
         centerTitle: true,
       ),
@@ -35,12 +35,12 @@ class _DurationScreenState extends State<DurationScreen> {
             const SizedBox(height: 10),
             Text(
               'Choose your focus block.',
-              style: AppTheme.serifHeading(fontSize: 26),
+              style: AppTheme.serifHeading(context: context, fontSize: 26),
             ),
             const SizedBox(height: 6),
             Text(
               'Pick an unbroken duration for this session.',
-              style: AppTheme.sansBody(color: AppTheme.inkMuted),
+              style: AppTheme.sansBody(context: context, color: AppTheme.muted(context)),
             ),
             const SizedBox(height: 32),
             Expanded(
@@ -74,7 +74,8 @@ class _DurationScreenState extends State<DurationScreen> {
             ),
             TactileButton(
               label: 'Start focus',
-              fillColor: AppTheme.peach,
+              fillColor: AppTheme.peachColor(context),
+              textColor: AppTheme.ink,
               onTap: () {
                 context.read<TimerProvider>().startSession(
                   minutes: _selectedDuration,
@@ -108,13 +109,13 @@ class _DurationCard extends StatelessWidget {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 150),
         decoration: BoxDecoration(
-          color: isSelected ? AppTheme.sand : AppTheme.background,
+          color: isSelected ? AppTheme.sandColor(context) : AppTheme.bg(context),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: isSelected ? AppTheme.ink : AppTheme.inkFaint,
+            color: isSelected ? AppTheme.inkColor(context) : AppTheme.faint(context),
             width: isSelected ? 2 : 1.2,
           ),
-          boxShadow: isSelected ? AppTheme.smallTactileShadow : [],
+          boxShadow: isSelected ? AppTheme.smallShadow(context) : [],
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -122,16 +123,18 @@ class _DurationCard extends StatelessWidget {
             Text(
               '$minutes',
               style: AppTheme.serifHeading(
+                context: context,
                 fontSize: 42,
                 fontWeight: FontWeight.w700,
-                color: isSelected ? AppTheme.ink : AppTheme.inkMuted,
+                color: isSelected ? AppTheme.text(context) : AppTheme.muted(context),
               ),
             ),
             Text(
               'MINUTES',
               style: AppTheme.sansLabel(
+                context: context,
                 fontSize: 10,
-                color: isSelected ? AppTheme.ink : AppTheme.inkLight,
+                color: isSelected ? AppTheme.text(context) : AppTheme.lightColor(context),
               ),
             ),
           ],

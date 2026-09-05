@@ -44,19 +44,21 @@ class BattleResultScreen extends StatelessWidget {
     if (isDraw) {
       headline = 'Battle Tied.';
       subtext = 'Both players completed the full focus block unbroken.';
-      badgeColor = AppTheme.sand;
+      badgeColor = AppTheme.sandColor(context);
     } else if (isWin) {
       headline = 'Victory.';
       subtext = isForfeit
           ? '$opponentName conceded early. You stayed locked in!'
           : 'You completed your focus block and won the duel.';
-      badgeColor = AppTheme.sage;
+      badgeColor = AppTheme.sageColor(context);
     } else {
       headline = 'Defeat.';
       subtext = isForfeit
           ? 'You left the session early.'
           : '$opponentName held focus longer this round.';
-      badgeColor = const Color(0xFFFBEBE8);
+      badgeColor = AppTheme.isDark(context)
+          ? const Color(0xFF381E1C)
+          : const Color(0xFFFBEBE8);
     }
 
     return PopScope(
@@ -66,7 +68,7 @@ class BattleResultScreen extends StatelessWidget {
         _returnToHome(context, battleProvider);
       },
       child: Scaffold(
-        backgroundColor: AppTheme.background,
+        backgroundColor: AppTheme.bg(context),
         body: SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
@@ -76,204 +78,210 @@ class BattleResultScreen extends StatelessWidget {
                 // Dismiss/Close logo button
                 GestureDetector(
                   onTap: () => _returnToHome(context, battleProvider),
-                child: Container(
-                  width: 48,
-                  height: 48,
-                  decoration: BoxDecoration(
-                    color: badgeColor,
-                    shape: BoxShape.circle,
-                    border: Border.all(color: AppTheme.ink, width: 1.5),
-                    boxShadow: AppTheme.smallTactileShadow,
-                  ),
-                  child: Center(
-                    child: Icon(
-                      isWin
-                          ? Icons.emoji_events_outlined
-                          : (isDraw ? Icons.handshake_outlined : Icons.close),
-                      size: 24,
-                      color: AppTheme.ink,
+                  child: Container(
+                    width: 48,
+                    height: 48,
+                    decoration: BoxDecoration(
+                      color: badgeColor,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: AppTheme.inkColor(context), width: 1.5),
+                      boxShadow: AppTheme.smallShadow(context),
                     ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-
-              // Result Headline
-              Text(
-                headline,
-                style: AppTheme.serifHeading(
-                  fontSize: 32,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-              const SizedBox(height: 6),
-              Text(
-                subtext,
-                style: AppTheme.sansBody(
-                  fontSize: 14,
-                  color: AppTheme.inkMuted,
-                  height: 1.4,
-                ),
-              ),
-
-              const SizedBox(height: 28),
-              Divider(color: AppTheme.inkFaint, thickness: 1),
-              const SizedBox(height: 24),
-
-              // Match Summary Card
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: AppTheme.sand,
-                  borderRadius: BorderRadius.circular(18),
-                  border: Border.all(color: AppTheme.ink, width: 1.5),
-                  boxShadow: AppTheme.tactileShadow,
-                ),
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'MATCH STATS',
-                          style: AppTheme.sansLabel(fontSize: 10),
-                        ),
-                        Text(
-                          'Room: ${result?.roomCode ?? "------"}',
-                          style: AppTheme.sansLabel(
-                            fontSize: 10,
-                            color: AppTheme.inkMuted,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        _PlayerSummaryColumn(
-                          name:
-                              '${result?.localParticipant.displayName ?? "You"} (You)',
-                          isWinner: isWin,
-                          isForfeited: isForfeit && !isWin,
-                        ),
-                        Text(
-                          'VS',
-                          style: AppTheme.serifHeading(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                            color: AppTheme.inkMuted,
-                          ),
-                        ),
-                        _PlayerSummaryColumn(
-                          name: opponentName,
-                          isWinner: !isWin && !isDraw,
-                          isForfeited: isForfeit && isWin,
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 20),
-
-              // Guest note
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
-                ),
-                decoration: BoxDecoration(
-                  color: AppTheme.background,
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: AppTheme.inkFaint, width: 1),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(
-                      Icons.check_circle_outline,
-                      size: 18,
-                      color: AppTheme.ink,
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Text(
-                        'Battle recorded in your local history.',
-                        style: AppTheme.sansBody(
-                          fontSize: 12,
-                          color: AppTheme.inkMuted,
-                        ),
+                    child: Center(
+                      child: Icon(
+                        isWin
+                            ? Icons.emoji_events_outlined
+                            : (isDraw ? Icons.handshake_outlined : Icons.close),
+                        size: 24,
+                        color: AppTheme.text(context),
                       ),
                     ),
-                  ],
+                  ),
                 ),
-              ),
-
-              // Extend Session Card (Host only - identical to solo focus)
-              if (battleProvider.isHost) ...[
                 const SizedBox(height: 20),
-                _ExtendSessionCard(
-                  onExtend: (minutes) {
-                    battleProvider.extendBattle(minutes);
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const BattleFocusScreen(),
-                      ),
-                    );
-                  },
+
+                // Result Headline
+                Text(
+                  headline,
+                  style: AppTheme.serifHeading(
+                    context: context,
+                    fontSize: 32,
+                    fontWeight: FontWeight.w800,
+                  ),
                 ),
-              ] else ...[
-                const SizedBox(height: 16),
+                const SizedBox(height: 6),
+                Text(
+                  subtext,
+                  style: AppTheme.sansBody(
+                    context: context,
+                    fontSize: 14,
+                    color: AppTheme.muted(context),
+                    height: 1.4,
+                  ),
+                ),
+
+                const SizedBox(height: 28),
+                Divider(color: AppTheme.faint(context), thickness: 1),
+                const SizedBox(height: 24),
+
+                // Match Summary Card
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: AppTheme.sandColor(context),
+                    borderRadius: BorderRadius.circular(18),
+                    border: Border.all(color: AppTheme.inkColor(context), width: 1.5),
+                    boxShadow: AppTheme.shadow(context),
+                  ),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'MATCH STATS',
+                            style: AppTheme.sansLabel(context: context, fontSize: 10),
+                          ),
+                          Text(
+                            'Room: ${result?.roomCode ?? "------"}',
+                            style: AppTheme.sansLabel(
+                              context: context,
+                              fontSize: 10,
+                              color: AppTheme.muted(context),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          _PlayerSummaryColumn(
+                            name:
+                                '${result?.localParticipant.displayName ?? "You"} (You)',
+                            isWinner: isWin,
+                            isForfeited: isForfeit && !isWin,
+                          ),
+                          Text(
+                            'VS',
+                            style: AppTheme.serifHeading(
+                              context: context,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                              color: AppTheme.muted(context),
+                            ),
+                          ),
+                          _PlayerSummaryColumn(
+                            name: opponentName,
+                            isWinner: !isWin && !isDraw,
+                            isForfeited: isForfeit && isWin,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+
+                // Guest note
                 Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 16,
                     vertical: 12,
                   ),
                   decoration: BoxDecoration(
-                    color: AppTheme.sand,
+                    color: AppTheme.bg(context),
                     borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: AppTheme.ink, width: 1.2),
+                    border: Border.all(color: AppTheme.faint(context), width: 1),
                   ),
                   child: Row(
                     children: [
-                      const SparkleDoodle(size: 16),
+                      Icon(
+                        Icons.check_circle_outline,
+                        size: 18,
+                        color: AppTheme.inkColor(context),
+                      ),
                       const SizedBox(width: 10),
                       Expanded(
                         child: Text(
-                          'Waiting for host... host can extend the session.',
+                          'Battle recorded in your local history.',
                           style: AppTheme.sansBody(
+                            context: context,
                             fontSize: 12,
-                            color: AppTheme.inkMuted,
-                            fontWeight: FontWeight.w500,
+                            color: AppTheme.muted(context),
                           ),
                         ),
                       ),
                     ],
                   ),
                 ),
+
+                // Extend Session Card (Host only - identical to solo focus)
+                if (battleProvider.isHost) ...[
+                  const SizedBox(height: 20),
+                  _ExtendSessionCard(
+                    onExtend: (minutes) {
+                      battleProvider.extendBattle(minutes);
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const BattleFocusScreen(),
+                        ),
+                      );
+                    },
+                  ),
+                ] else ...[
+                  const SizedBox(height: 16),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppTheme.sandColor(context),
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(color: AppTheme.inkColor(context), width: 1.2),
+                    ),
+                    child: Row(
+                      children: [
+                        SparkleDoodle(size: 16, color: AppTheme.inkColor(context)),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            'Waiting for host... host can extend the session.',
+                            style: AppTheme.sansBody(
+                              context: context,
+                              fontSize: 12,
+                              color: AppTheme.muted(context),
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+
+                const SizedBox(height: 24),
+
+                // Primary Done Button
+                TactileButton(
+                  label: 'Return to Home',
+                  fillColor: AppTheme.inkColor(context),
+                  textColor: AppTheme.bg(context),
+                  height: 52,
+                  fontSize: 15,
+                  onTap: () => _returnToHome(context, battleProvider),
+                ),
+                const SizedBox(height: 16),
               ],
-
-              const SizedBox(height: 24),
-
-              // Primary Done Button
-              TactileButton(
-                label: 'Return to Home',
-                fillColor: AppTheme.ink,
-                textColor: AppTheme.background,
-                height: 52,
-                fontSize: 15,
-                onTap: () => _returnToHome(context, battleProvider),
-              ),
-              const SizedBox(height: 16),
-            ],
+            ),
           ),
         ),
       ),
-    ),
-  );
-}
+    );
+  }
 }
 
 class _PlayerSummaryColumn extends StatelessWidget {
@@ -293,23 +301,32 @@ class _PlayerSummaryColumn extends StatelessWidget {
       children: [
         Text(
           name,
-          style: AppTheme.sansBody(fontSize: 14, fontWeight: FontWeight.w700),
+          style: AppTheme.sansBody(
+            context: context,
+            fontSize: 14,
+            fontWeight: FontWeight.w700,
+          ),
         ),
         const SizedBox(height: 4),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
           decoration: BoxDecoration(
             color: isWinner
-                ? AppTheme.sage
-                : (isForfeited ? const Color(0xFFFBEBE8) : AppTheme.background),
+                ? AppTheme.sageColor(context)
+                : (isForfeited
+                    ? (AppTheme.isDark(context)
+                        ? const Color(0xFF381E1C)
+                        : const Color(0xFFFBEBE8))
+                    : AppTheme.bg(context)),
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: AppTheme.ink, width: 1),
+            border: Border.all(color: AppTheme.inkColor(context), width: 1),
           ),
           child: Text(
             isWinner ? 'WINNER' : (isForfeited ? 'FORFEIT' : 'FINISHED'),
             style: AppTheme.sansLabel(
+              context: context,
               fontSize: 9,
-              color: isForfeited ? AppTheme.errorMuted : AppTheme.ink,
+              color: isForfeited ? AppTheme.error(context) : AppTheme.text(context),
               fontWeight: FontWeight.w700,
             ),
           ),
@@ -356,10 +373,10 @@ class _ExtendSessionCardState extends State<_ExtendSessionCard> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppTheme.background,
+        color: AppTheme.bg(context),
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: AppTheme.ink, width: 1.5),
-        boxShadow: AppTheme.tactileShadow,
+        border: Border.all(color: AppTheme.inkColor(context), width: 1.5),
+        boxShadow: AppTheme.shadow(context),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -369,13 +386,14 @@ class _ExtendSessionCardState extends State<_ExtendSessionCard> {
             children: [
               Row(
                 children: [
-                  const SparkleDoodle(size: 14),
+                  SparkleDoodle(size: 14, color: AppTheme.inkColor(context)),
                   const SizedBox(width: 8),
                   Text(
                     'EXTEND SESSION',
                     style: AppTheme.sansLabel(
+                      context: context,
                       fontSize: 11,
-                      color: AppTheme.ink,
+                      color: AppTheme.text(context),
                     ),
                   ),
                 ],
@@ -383,8 +401,9 @@ class _ExtendSessionCardState extends State<_ExtendSessionCard> {
               Text(
                 'Keep momentum rolling',
                 style: AppTheme.sansBody(
+                  context: context,
                   fontSize: 11,
-                  color: AppTheme.inkMuted,
+                  color: AppTheme.muted(context),
                 ),
               ),
             ],
@@ -404,6 +423,7 @@ class _ExtendSessionCardState extends State<_ExtendSessionCard> {
                   child: Text(
                     '+$_extensionMinutes min',
                     style: AppTheme.serifHeading(
+                      context: context,
                       fontSize: 22,
                       fontWeight: FontWeight.w800,
                     ),
@@ -436,10 +456,12 @@ class _ExtendSessionCardState extends State<_ExtendSessionCard> {
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 6),
                       decoration: BoxDecoration(
-                        color: isSelected ? AppTheme.peach : AppTheme.sand,
+                        color: isSelected
+                            ? AppTheme.peachColor(context)
+                            : AppTheme.sandColor(context),
                         borderRadius: BorderRadius.circular(10),
                         border: Border.all(
-                          color: AppTheme.ink,
+                          color: AppTheme.inkColor(context),
                           width: isSelected ? 1.4 : 1.0,
                         ),
                       ),
@@ -447,11 +469,12 @@ class _ExtendSessionCardState extends State<_ExtendSessionCard> {
                         child: Text(
                           '+${mins}m',
                           style: AppTheme.sansBody(
+                            context: context,
                             fontSize: 12,
                             fontWeight: isSelected
                                 ? FontWeight.w700
                                 : FontWeight.w500,
-                            color: AppTheme.ink,
+                            color: AppTheme.text(context),
                           ),
                         ),
                       ),
@@ -466,7 +489,7 @@ class _ExtendSessionCardState extends State<_ExtendSessionCard> {
           // Action Button
           TactileButton(
             label: 'Extend session (+${_extensionMinutes}m)',
-            fillColor: AppTheme.peach,
+            fillColor: AppTheme.peachColor(context),
             height: 48,
             borderRadius: 14,
             fontSize: 15,
@@ -500,12 +523,12 @@ class _StepperButton extends StatelessWidget {
           width: 40,
           height: 40,
           decoration: BoxDecoration(
-            color: AppTheme.sand,
+            color: AppTheme.sandColor(context),
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppTheme.ink, width: 1.2),
-            boxShadow: enabled ? AppTheme.smallTactileShadow : null,
+            border: Border.all(color: AppTheme.inkColor(context), width: 1.2),
+            boxShadow: enabled ? AppTheme.smallShadow(context) : null,
           ),
-          child: Icon(icon, size: 18, color: AppTheme.ink),
+          child: Icon(icon, size: 18, color: AppTheme.text(context)),
         ),
       ),
     );

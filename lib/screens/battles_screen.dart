@@ -39,7 +39,7 @@ class _BattlesScreenState extends State<BattlesScreen> {
     final hasAnyBattles = asyncBattles.isNotEmpty || guestBattles.isNotEmpty;
 
     return Scaffold(
-      backgroundColor: AppTheme.background,
+      backgroundColor: AppTheme.bg(context),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
@@ -53,23 +53,24 @@ class _BattlesScreenState extends State<BattlesScreen> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('FOCUS BATTLES', style: AppTheme.sansLabel()),
+                      Text('FOCUS BATTLES', style: AppTheme.sansLabel(context: context)),
                       const SizedBox(height: 4),
                       Text(
                         'Friendly accountability.',
-                        style: AppTheme.serifHeading(fontSize: 26),
+                        style: AppTheme.serifHeading(context: context, fontSize: 26),
                       ),
                     ],
                   ),
-                  const SparkleDoodle(size: 24),
+                  SparkleDoodle(size: 24, color: AppTheme.inkColor(context)),
                 ],
               ),
               const SizedBox(height: 8),
               Text(
                 'Focus alongside friends with live accountability. No account required.',
                 style: AppTheme.sansBody(
+                  context: context,
                   fontSize: 14,
-                  color: AppTheme.inkMuted,
+                  color: AppTheme.muted(context),
                   height: 1.4,
                 ),
               ),
@@ -84,10 +85,10 @@ class _BattlesScreenState extends State<BattlesScreen> {
                       child: Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: AppTheme.sand,
+                          color: AppTheme.sandColor(context),
                           borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: AppTheme.ink, width: 1.5),
-                          boxShadow: AppTheme.smallTactileShadow,
+                          border: Border.all(color: AppTheme.inkColor(context), width: 1.5),
+                          boxShadow: AppTheme.smallShadow(context),
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -96,9 +97,9 @@ class _BattlesScreenState extends State<BattlesScreen> {
                               padding: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: AppTheme.peach,
+                                color: AppTheme.peachColor(context),
                                 border: Border.all(
-                                  color: AppTheme.ink,
+                                  color: AppTheme.inkColor(context),
                                   width: 1.2,
                                 ),
                               ),
@@ -112,6 +113,7 @@ class _BattlesScreenState extends State<BattlesScreen> {
                             Text(
                               'Create Battle',
                               style: AppTheme.serifHeading(
+                                context: context,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w700,
                               ),
@@ -120,8 +122,9 @@ class _BattlesScreenState extends State<BattlesScreen> {
                             Text(
                               'Get room code',
                               style: AppTheme.sansBody(
+                                context: context,
                                 fontSize: 12,
-                                color: AppTheme.inkMuted,
+                                color: AppTheme.muted(context),
                               ),
                             ),
                           ],
@@ -136,10 +139,10 @@ class _BattlesScreenState extends State<BattlesScreen> {
                       child: Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: AppTheme.sand,
+                          color: AppTheme.sandColor(context),
                           borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: AppTheme.ink, width: 1.5),
-                          boxShadow: AppTheme.smallTactileShadow,
+                          border: Border.all(color: AppTheme.inkColor(context), width: 1.5),
+                          boxShadow: AppTheme.smallShadow(context),
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -148,9 +151,9 @@ class _BattlesScreenState extends State<BattlesScreen> {
                               padding: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: AppTheme.sage,
+                                color: AppTheme.sageColor(context),
                                 border: Border.all(
-                                  color: AppTheme.ink,
+                                  color: AppTheme.inkColor(context),
                                   width: 1.2,
                                 ),
                               ),
@@ -164,6 +167,7 @@ class _BattlesScreenState extends State<BattlesScreen> {
                             Text(
                               'Join Battle',
                               style: AppTheme.serifHeading(
+                                context: context,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w700,
                               ),
@@ -172,8 +176,9 @@ class _BattlesScreenState extends State<BattlesScreen> {
                             Text(
                               'Enter 6-char code',
                               style: AppTheme.sansBody(
+                                context: context,
                                 fontSize: 12,
-                                color: AppTheme.inkMuted,
+                                color: AppTheme.muted(context),
                               ),
                             ),
                           ],
@@ -185,10 +190,10 @@ class _BattlesScreenState extends State<BattlesScreen> {
               ),
 
               const SizedBox(height: 24),
-              Divider(color: AppTheme.inkFaint, thickness: 1),
+              Divider(color: AppTheme.faint(context), thickness: 1),
               const SizedBox(height: 16),
 
-              Text('BATTLE HISTORY', style: AppTheme.sansLabel(fontSize: 11)),
+              Text('BATTLE HISTORY', style: AppTheme.sansLabel(context: context, fontSize: 11)),
               const SizedBox(height: 12),
 
               if (!hasAnyBattles)
@@ -201,13 +206,13 @@ class _BattlesScreenState extends State<BattlesScreen> {
                         const SizedBox(height: 16),
                         Text(
                           'No battles recorded yet.',
-                          style: AppTheme.serifHeading(fontSize: 18),
+                          style: AppTheme.serifHeading(context: context, fontSize: 18),
                         ),
                         const SizedBox(height: 6),
                         Text(
                           'Create a room or enter an invite code to duel a friend.',
                           textAlign: TextAlign.center,
-                          style: AppTheme.sansBody(color: AppTheme.inkMuted),
+                          style: AppTheme.sansBody(context: context, color: AppTheme.muted(context)),
                         ),
                       ],
                     ),
@@ -258,9 +263,9 @@ class _GuestBattleCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppTheme.background,
+        color: AppTheme.bg(context),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppTheme.ink, width: 1.2),
+        border: Border.all(color: AppTheme.inkColor(context), width: 1.2),
       ),
       child: Row(
         children: [
@@ -269,13 +274,14 @@ class _GuestBattleCard extends StatelessWidget {
             height: 40,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: AppTheme.sand,
-              border: Border.all(color: AppTheme.ink, width: 1.2),
+              color: AppTheme.sandColor(context),
+              border: Border.all(color: AppTheme.inkColor(context), width: 1.2),
             ),
             child: Center(
               child: Text(
                 initial,
                 style: AppTheme.serifHeading(
+                  context: context,
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
                 ),
@@ -290,6 +296,7 @@ class _GuestBattleCard extends StatelessWidget {
                 Text(
                   '1v1 with $opponentName',
                   style: AppTheme.sansBody(
+                    context: context,
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
                   ),
@@ -298,8 +305,9 @@ class _GuestBattleCard extends StatelessWidget {
                 Text(
                   '${battle.durationMinutes} min · Room ${battle.roomCode}',
                   style: AppTheme.sansBody(
+                    context: context,
                     fontSize: 12,
-                    color: AppTheme.inkMuted,
+                    color: AppTheme.muted(context),
                   ),
                 ),
               ],
@@ -308,15 +316,16 @@ class _GuestBattleCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(
-              color: isComplete ? AppTheme.sage : AppTheme.sand,
+              color: isComplete ? AppTheme.sageColor(context) : AppTheme.sandColor(context),
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: AppTheme.ink, width: 1),
+              border: Border.all(color: AppTheme.inkColor(context), width: 1),
             ),
             child: Text(
               isComplete ? 'FINISHED' : 'SAVED',
               style: AppTheme.sansLabel(
+                context: context,
                 fontSize: 9,
-                color: AppTheme.ink,
+                color: isComplete ? AppTheme.ink : AppTheme.text(context),
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -340,9 +349,9 @@ class _BattleCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppTheme.background,
+        color: AppTheme.bg(context),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppTheme.ink, width: 1.2),
+        border: Border.all(color: AppTheme.inkColor(context), width: 1.2),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -354,13 +363,14 @@ class _BattleCard extends StatelessWidget {
                 height: 36,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: AppTheme.sand,
-                  border: Border.all(color: AppTheme.ink, width: 1.2),
+                  color: AppTheme.sandColor(context),
+                  border: Border.all(color: AppTheme.inkColor(context), width: 1.2),
                 ),
                 child: Center(
                   child: Text(
                     battle.opponentInitials,
                     style: AppTheme.serifHeading(
+                      context: context,
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
                     ),
@@ -375,6 +385,7 @@ class _BattleCard extends StatelessWidget {
                     Text(
                       'Battle with ${battle.opponentName}',
                       style: AppTheme.sansBody(
+                        context: context,
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
                       ),
@@ -385,8 +396,9 @@ class _BattleCard extends StatelessWidget {
                           ? "You're ahead · ${battle.endsIn}"
                           : "Behind by ${(battle.opponentMinutes - battle.userMinutes)}m · ${battle.endsIn}",
                       style: AppTheme.sansBody(
+                        context: context,
                         fontSize: 12,
-                        color: AppTheme.inkMuted,
+                        color: AppTheme.muted(context),
                       ),
                     ),
                   ],
@@ -395,6 +407,7 @@ class _BattleCard extends StatelessWidget {
               Text(
                 battle.scoreComparison,
                 style: AppTheme.serifHeading(
+                  context: context,
                   fontSize: 22,
                   fontWeight: FontWeight.w700,
                 ),
@@ -411,15 +424,17 @@ class _BattleCard extends StatelessWidget {
                   Text(
                     'You: ${battle.userMinutes}m',
                     style: AppTheme.sansLabel(
+                      context: context,
                       fontSize: 11,
-                      color: AppTheme.ink,
+                      color: AppTheme.text(context),
                     ),
                   ),
                   Text(
                     '${battle.opponentName}: ${battle.opponentMinutes}m',
                     style: AppTheme.sansLabel(
+                      context: context,
                       fontSize: 11,
-                      color: AppTheme.inkMuted,
+                      color: AppTheme.muted(context),
                     ),
                   ),
                 ],
@@ -430,17 +445,17 @@ class _BattleCard extends StatelessWidget {
                 width: double.infinity,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(4),
-                  border: Border.all(color: AppTheme.ink, width: 1.2),
-                  color: AppTheme.sand,
+                  border: Border.all(color: AppTheme.inkColor(context), width: 1.2),
+                  color: AppTheme.sandColor(context),
                 ),
                 child: Row(
                   children: [
                     Expanded(
                       flex: (userRatio * 100).toInt().clamp(1, 99),
                       child: Container(
-                        decoration: const BoxDecoration(
-                          color: AppTheme.ink,
-                          borderRadius: BorderRadius.horizontal(
+                        decoration: BoxDecoration(
+                          color: AppTheme.inkColor(context),
+                          borderRadius: const BorderRadius.horizontal(
                             left: Radius.circular(3),
                           ),
                         ),
@@ -449,9 +464,9 @@ class _BattleCard extends StatelessWidget {
                     Expanded(
                       flex: ((1.0 - userRatio) * 100).toInt().clamp(1, 99),
                       child: Container(
-                        decoration: const BoxDecoration(
-                          color: AppTheme.peach,
-                          borderRadius: BorderRadius.horizontal(
+                        decoration: BoxDecoration(
+                          color: AppTheme.peachColor(context),
+                          borderRadius: const BorderRadius.horizontal(
                             right: Radius.circular(3),
                           ),
                         ),
@@ -468,7 +483,8 @@ class _BattleCard extends StatelessWidget {
             label: 'Enter battle focus',
             height: 48,
             fontSize: 14,
-            fillColor: AppTheme.peach,
+            fillColor: AppTheme.peachColor(context),
+            textColor: AppTheme.ink,
             onTap: () {
               context.read<TimerProvider>().startSession(
                 minutes: 45,

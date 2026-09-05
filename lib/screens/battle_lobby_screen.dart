@@ -39,15 +39,17 @@ class _BattleLobbyScreenState extends State<BattleLobbyScreen> {
 
     if (battle == null) {
       return Scaffold(
-        backgroundColor: AppTheme.background,
+        backgroundColor: AppTheme.bg(context),
         body: Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text('No active battle room'),
+              Text('No active battle room', style: AppTheme.sansBody(context: context)),
               const SizedBox(height: 12),
               TactileButton(
                 label: 'Return',
+                fillColor: AppTheme.peachColor(context),
+                textColor: AppTheme.ink,
                 onTap: () => Navigator.pop(context),
               ),
             ],
@@ -61,7 +63,7 @@ class _BattleLobbyScreenState extends State<BattleLobbyScreen> {
     final isLocalReady = battleProvider.isLocalReady;
 
     return Scaffold(
-      backgroundColor: AppTheme.background,
+      backgroundColor: AppTheme.bg(context),
       body: SafeArea(
         child: Stack(
           children: [
@@ -83,12 +85,12 @@ class _BattleLobbyScreenState extends State<BattleLobbyScreen> {
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            border: Border.all(color: AppTheme.ink, width: 1.2),
+                            border: Border.all(color: AppTheme.inkColor(context), width: 1.2),
                           ),
-                          child: const Icon(
+                          child: Icon(
                             Icons.arrow_back,
                             size: 18,
-                            color: AppTheme.ink,
+                            color: AppTheme.text(context),
                           ),
                         ),
                       ),
@@ -98,13 +100,13 @@ class _BattleLobbyScreenState extends State<BattleLobbyScreen> {
                           vertical: 6,
                         ),
                         decoration: BoxDecoration(
-                          color: AppTheme.sand,
+                          color: AppTheme.sandColor(context),
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: AppTheme.ink, width: 1.2),
+                          border: Border.all(color: AppTheme.inkColor(context), width: 1.2),
                         ),
                         child: Text(
                           '${battle.durationMinutes} MINUTE DUEL',
-                          style: AppTheme.sansLabel(fontSize: 10),
+                          style: AppTheme.sansLabel(context: context, fontSize: 10),
                         ),
                       ),
                     ],
@@ -116,16 +118,16 @@ class _BattleLobbyScreenState extends State<BattleLobbyScreen> {
                     width: double.infinity,
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: AppTheme.sand,
+                      color: AppTheme.sandColor(context),
                       borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: AppTheme.ink, width: 1.5),
-                      boxShadow: AppTheme.tactileShadow,
+                      border: Border.all(color: AppTheme.inkColor(context), width: 1.5),
+                      boxShadow: AppTheme.shadow(context),
                     ),
                     child: Column(
                       children: [
                         Text(
                           'SHARE ROOM CODE',
-                          style: AppTheme.sansLabel(fontSize: 10),
+                          style: AppTheme.sansLabel(context: context, fontSize: 10),
                         ),
                         const SizedBox(height: 8),
                         Row(
@@ -134,6 +136,7 @@ class _BattleLobbyScreenState extends State<BattleLobbyScreen> {
                             Text(
                               battle.roomCode,
                               style: AppTheme.serifHeading(
+                                context: context,
                                 fontSize: 36,
                                 fontWeight: FontWeight.w800,
                                 letterSpacing: 6.0,
@@ -146,12 +149,12 @@ class _BattleLobbyScreenState extends State<BattleLobbyScreen> {
                                   ClipboardData(text: battle.roomCode),
                                 );
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text(
+                                  SnackBar(
+                                    content: const Text(
                                       'Room code copied to clipboard!',
                                     ),
-                                    duration: Duration(seconds: 2),
-                                    backgroundColor: AppTheme.ink,
+                                    duration: const Duration(seconds: 2),
+                                    backgroundColor: AppTheme.inkColor(context),
                                   ),
                                 );
                               },
@@ -159,16 +162,16 @@ class _BattleLobbyScreenState extends State<BattleLobbyScreen> {
                                 padding: const EdgeInsets.all(6),
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
-                                  color: AppTheme.background,
+                                  color: AppTheme.bg(context),
                                   border: Border.all(
-                                    color: AppTheme.ink,
+                                    color: AppTheme.inkColor(context),
                                     width: 1.2,
                                   ),
                                 ),
-                                child: const Icon(
+                                child: Icon(
                                   Icons.copy,
                                   size: 16,
-                                  color: AppTheme.ink,
+                                  color: AppTheme.text(context),
                                 ),
                               ),
                               tooltip: 'Copy Code',
@@ -180,8 +183,9 @@ class _BattleLobbyScreenState extends State<BattleLobbyScreen> {
                           'Your friend can enter this code in LockIn without signing up.',
                           textAlign: TextAlign.center,
                           style: AppTheme.sansBody(
+                            context: context,
                             fontSize: 12,
-                            color: AppTheme.inkMuted,
+                            color: AppTheme.muted(context),
                           ),
                         ),
                       ],
@@ -191,7 +195,7 @@ class _BattleLobbyScreenState extends State<BattleLobbyScreen> {
                   const SizedBox(height: 28),
                   Text(
                     'PARTICIPANTS (1V1)',
-                    style: AppTheme.sansLabel(fontSize: 11),
+                    style: AppTheme.sansLabel(context: context, fontSize: 11),
                   ),
                   const SizedBox(height: 12),
 
@@ -218,7 +222,7 @@ class _BattleLobbyScreenState extends State<BattleLobbyScreen> {
                         color: Colors.transparent,
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
-                          color: AppTheme.inkFaint,
+                          color: AppTheme.faint(context),
                           width: 1.2,
                           style: BorderStyle.solid,
                         ),
@@ -230,16 +234,16 @@ class _BattleLobbyScreenState extends State<BattleLobbyScreen> {
                             height: 36,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: AppTheme.sand,
+                              color: AppTheme.sandColor(context),
                               border: Border.all(
-                                color: AppTheme.inkFaint,
+                                color: AppTheme.faint(context),
                                 width: 1.0,
                               ),
                             ),
-                            child: const Icon(
+                            child: Icon(
                               Icons.hourglass_empty,
                               size: 18,
-                              color: AppTheme.inkMuted,
+                              color: AppTheme.muted(context),
                             ),
                           ),
                           const SizedBox(width: 12),
@@ -249,16 +253,18 @@ class _BattleLobbyScreenState extends State<BattleLobbyScreen> {
                               Text(
                                 'Waiting for opponent...',
                                 style: AppTheme.sansBody(
+                                  context: context,
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
-                                  color: AppTheme.inkMuted,
+                                  color: AppTheme.muted(context),
                                 ),
                               ),
                               Text(
                                 'Share the code above to connect',
                                 style: AppTheme.sansBody(
+                                  context: context,
                                   fontSize: 12,
-                                  color: AppTheme.inkLight,
+                                  color: AppTheme.lightColor(context),
                                 ),
                               ),
                             ],
@@ -272,7 +278,7 @@ class _BattleLobbyScreenState extends State<BattleLobbyScreen> {
                   // Ready Button
                   TactileButton(
                     label: isLocalReady ? 'READY! (WAITING)' : 'MARK AS READY',
-                    fillColor: isLocalReady ? AppTheme.sage : AppTheme.peach,
+                    fillColor: isLocalReady ? AppTheme.sageColor(context) : AppTheme.peachColor(context),
                     textColor: AppTheme.ink,
                     height: 52,
                     fontSize: 15,
@@ -288,16 +294,17 @@ class _BattleLobbyScreenState extends State<BattleLobbyScreen> {
             // Countdown Overlay
             if (isCountdown)
               Container(
-                color: AppTheme.ink.withValues(alpha: 0.85),
+                color: (AppTheme.isDark(context) ? Colors.black : AppTheme.ink).withValues(alpha: 0.85),
                 child: Center(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      SparkleDoodle(size: 32, color: AppTheme.sand),
+                      SparkleDoodle(size: 32, color: AppTheme.peachColor(context)),
                       const SizedBox(height: 16),
                       Text(
                         'STARTING IN',
                         style: AppTheme.sansLabel(
+                          context: context,
                           fontSize: 14,
                           color: AppTheme.sand,
                           letterSpacing: 2.0,
@@ -309,7 +316,7 @@ class _BattleLobbyScreenState extends State<BattleLobbyScreen> {
                         style: AppTheme.serifHeading(
                           fontSize: 84,
                           fontWeight: FontWeight.w900,
-                          color: AppTheme.background,
+                          color: Colors.white,
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -334,25 +341,25 @@ class _BattleLobbyScreenState extends State<BattleLobbyScreen> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: AppTheme.background,
+        backgroundColor: AppTheme.bg(context),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
-          side: BorderSide(color: AppTheme.ink, width: 1.5),
+          side: BorderSide(color: AppTheme.inkColor(context), width: 1.5),
         ),
-        title: Text('Leave Lobby?', style: AppTheme.serifHeading(fontSize: 20)),
+        title: Text('Leave Lobby?', style: AppTheme.serifHeading(context: context, fontSize: 20)),
         content: Text(
           'Leaving will cancel your battle invitation.',
-          style: AppTheme.sansBody(color: AppTheme.inkMuted),
+          style: AppTheme.sansBody(context: context, color: AppTheme.muted(context)),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text('Stay', style: AppTheme.sansBody(color: AppTheme.ink)),
+            child: Text('Stay', style: AppTheme.sansBody(context: context, color: AppTheme.text(context))),
           ),
           TactileButton(
             label: 'Leave',
-            fillColor: const Color(0xFFFBEBE8),
-            textColor: AppTheme.errorMuted,
+            fillColor: AppTheme.isDark(context) ? const Color(0xFF381E1C) : const Color(0xFFFBEBE8),
+            textColor: AppTheme.error(context),
             isFullWidth: false,
             height: 42,
             onTap: () {
@@ -387,9 +394,9 @@ class _ParticipantCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
-        color: AppTheme.background,
+        color: AppTheme.bg(context),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppTheme.ink, width: 1.2),
+        border: Border.all(color: AppTheme.inkColor(context), width: 1.2),
       ),
       child: Row(
         children: [
@@ -398,8 +405,8 @@ class _ParticipantCard extends StatelessWidget {
             height: 40,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: isReady ? AppTheme.sage : AppTheme.sand,
-              border: Border.all(color: AppTheme.ink, width: 1.2),
+              color: isReady ? AppTheme.sageColor(context) : AppTheme.sandColor(context),
+              border: Border.all(color: AppTheme.inkColor(context), width: 1.2),
             ),
             child: Center(
               child: Text(
@@ -407,8 +414,10 @@ class _ParticipantCard extends StatelessWidget {
                     ? participant!.displayName[0].toUpperCase()
                     : '?',
                 style: AppTheme.serifHeading(
+                  context: context,
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
+                  color: isReady ? AppTheme.ink : AppTheme.text(context),
                 ),
               ),
             ),
@@ -423,6 +432,7 @@ class _ParticipantCard extends StatelessWidget {
                     Text(
                       participant!.displayName,
                       style: AppTheme.sansBody(
+                        context: context,
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
                       ),
@@ -432,8 +442,9 @@ class _ParticipantCard extends StatelessWidget {
                       Text(
                         '(You)',
                         style: AppTheme.sansLabel(
+                          context: context,
                           fontSize: 10,
-                          color: AppTheme.inkMuted,
+                          color: AppTheme.muted(context),
                         ),
                       ),
                     ],
@@ -442,8 +453,9 @@ class _ParticipantCard extends StatelessWidget {
                 Text(
                   isHost ? 'Host' : 'Challenger',
                   style: AppTheme.sansBody(
+                    context: context,
                     fontSize: 12,
-                    color: AppTheme.inkMuted,
+                    color: AppTheme.muted(context),
                   ),
                 ),
               ],
@@ -452,15 +464,16 @@ class _ParticipantCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(
-              color: isReady ? AppTheme.sage : AppTheme.sand,
+              color: isReady ? AppTheme.sageColor(context) : AppTheme.sandColor(context),
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: AppTheme.ink, width: 1),
+              border: Border.all(color: AppTheme.inkColor(context), width: 1),
             ),
             child: Text(
               isReady ? 'READY' : 'NOT READY',
               style: AppTheme.sansLabel(
+                context: context,
                 fontSize: 10,
-                color: AppTheme.ink,
+                color: isReady ? AppTheme.ink : AppTheme.text(context),
                 fontWeight: FontWeight.w700,
               ),
             ),

@@ -96,7 +96,7 @@ class _FocusScreenState extends State<FocusScreen> with WidgetsBindingObserver {
         MediaQuery.of(context).orientation == Orientation.landscape;
 
     return Scaffold(
-      backgroundColor: AppTheme.background,
+      backgroundColor: AppTheme.bg(context),
       body: SafeArea(
         child: isLandscape
             ? _buildLandscapeLayout(context, provider, isBattle, activeBattle)
@@ -106,6 +106,7 @@ class _FocusScreenState extends State<FocusScreen> with WidgetsBindingObserver {
   }
 
   Widget _buildHeader(
+    BuildContext context,
     TimerProvider provider,
     bool isBattle,
     BattleModel? activeBattle,
@@ -114,20 +115,21 @@ class _FocusScreenState extends State<FocusScreen> with WidgetsBindingObserver {
       return Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: AppTheme.sand,
+          color: AppTheme.sandColor(context),
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: AppTheme.ink, width: 1.2),
+          border: Border.all(color: AppTheme.inkColor(context), width: 1.2),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Row(
               children: [
-                const SparkleDoodle(size: 14),
+                SparkleDoodle(size: 14, color: AppTheme.inkColor(context)),
                 const SizedBox(width: 8),
                 Text(
                   'Battle with ${activeBattle.opponentName}',
                   style: AppTheme.sansBody(
+                    context: context,
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
                   ),
@@ -137,6 +139,7 @@ class _FocusScreenState extends State<FocusScreen> with WidgetsBindingObserver {
             Text(
               activeBattle.scoreComparison,
               style: AppTheme.serifHeading(
+                context: context,
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
               ),
@@ -156,7 +159,7 @@ class _FocusScreenState extends State<FocusScreen> with WidgetsBindingObserver {
               provider.isExtending
                   ? 'EXTENDING FOCUS · ${provider.baseCompletedMinutes}M SAVED'
                   : 'SOLO FOCUS',
-              style: AppTheme.sansLabel(fontSize: 10),
+              style: AppTheme.sansLabel(context: context, fontSize: 10),
             ),
           ],
         ),
@@ -164,10 +167,10 @@ class _FocusScreenState extends State<FocusScreen> with WidgetsBindingObserver {
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
           decoration: BoxDecoration(
             color: provider.isStrictAntiDistraction
-                ? AppTheme.sand
-                : AppTheme.sage,
+                ? AppTheme.sandColor(context)
+                : AppTheme.sageColor(context),
             borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: AppTheme.inkFaint, width: 1),
+            border: Border.all(color: AppTheme.faint(context), width: 1),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -175,9 +178,9 @@ class _FocusScreenState extends State<FocusScreen> with WidgetsBindingObserver {
               Container(
                 width: 6,
                 height: 6,
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: AppTheme.ink,
+                  color: AppTheme.text(context),
                 ),
               ),
               const SizedBox(width: 6),
@@ -185,7 +188,11 @@ class _FocusScreenState extends State<FocusScreen> with WidgetsBindingObserver {
                 provider.isStrictAntiDistraction
                     ? 'STRICT · SCREEN AWAKE'
                     : 'FLEXIBLE FOCUS',
-                style: AppTheme.sansLabel(fontSize: 9, color: AppTheme.ink),
+                style: AppTheme.sansLabel(
+                  context: context,
+                  fontSize: 9,
+                  color: provider.isStrictAntiDistraction ? AppTheme.text(context) : AppTheme.ink,
+                ),
               ),
             ],
           ),
@@ -214,7 +221,7 @@ class _FocusScreenState extends State<FocusScreen> with WidgetsBindingObserver {
                 ),
                 child: Column(
                   children: [
-                    _buildHeader(provider, isBattle, activeBattle),
+                    _buildHeader(context, provider, isBattle, activeBattle),
                     const Spacer(flex: 2),
 
                     // Main Organic Doodle Timer Circle
@@ -225,27 +232,27 @@ class _FocusScreenState extends State<FocusScreen> with WidgetsBindingObserver {
                         child: Stack(
                           alignment: Alignment.center,
                           children: [
-                            const CustomPaint(
-                              size: Size(240, 240),
+                            CustomPaint(
+                              size: const Size(240, 240),
                               painter: OrganicCirclePainter(
-                                color: AppTheme.ink,
+                                color: AppTheme.inkColor(context),
                                 strokeWidth: 1.8,
                               ),
                             ),
-                            const Positioned(
+                            Positioned(
                               top: 18,
                               right: 22,
                               child: SparkleDoodle(
                                 size: 18,
-                                color: AppTheme.ink,
+                                color: AppTheme.inkColor(context),
                               ),
                             ),
-                            const Positioned(
+                            Positioned(
                               bottom: 24,
                               left: 20,
                               child: SparkleDoodle(
                                 size: 14,
-                                color: AppTheme.ink,
+                                color: AppTheme.inkColor(context),
                               ),
                             ),
                             Column(
@@ -254,6 +261,7 @@ class _FocusScreenState extends State<FocusScreen> with WidgetsBindingObserver {
                                 Text(
                                   provider.timerString,
                                   style: AppTheme.serifTimer(
+                                    context: context,
                                     fontSize: 54,
                                     fontWeight: FontWeight.w800,
                                   ),
@@ -266,8 +274,9 @@ class _FocusScreenState extends State<FocusScreen> with WidgetsBindingObserver {
                                           ? 'focusing together'
                                           : 'remaining focus'),
                                   style: AppTheme.sansBody(
+                                    context: context,
                                     fontSize: 12,
-                                    color: AppTheme.inkMuted,
+                                    color: AppTheme.muted(context),
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
@@ -286,6 +295,8 @@ class _FocusScreenState extends State<FocusScreen> with WidgetsBindingObserver {
                       child: InkProgressBar(
                         progress: provider.completionRatio,
                         height: 6,
+                        fillColor: AppTheme.inkColor(context),
+                        borderColor: AppTheme.inkColor(context),
                       ),
                     ),
 
@@ -298,9 +309,10 @@ class _FocusScreenState extends State<FocusScreen> with WidgetsBindingObserver {
                           : _getCalmSubtext(provider.progress, isBattle),
                       textAlign: TextAlign.center,
                       style: AppTheme.serifHeading(
+                        context: context,
                         fontSize: 18,
                         fontWeight: FontWeight.w500,
-                        color: AppTheme.inkMuted,
+                        color: AppTheme.muted(context),
                       ),
                     ),
 
@@ -313,14 +325,14 @@ class _FocusScreenState extends State<FocusScreen> with WidgetsBindingObserver {
                         label: provider.isExtending
                             ? 'End extension early'
                             : 'End session early',
-                        leading: const Icon(
+                        leading: Icon(
                           Icons.stop_circle_outlined,
                           size: 18,
-                          color: AppTheme.ink,
+                          color: AppTheme.text(context),
                         ),
-                        fillColor: AppTheme.sand,
-                        textColor: AppTheme.ink,
-                        borderColor: AppTheme.ink,
+                        fillColor: AppTheme.sandColor(context),
+                        textColor: AppTheme.text(context),
+                        borderColor: AppTheme.inkColor(context),
                         height: 48,
                         borderRadius: 14,
                         fontSize: 14,
@@ -360,22 +372,22 @@ class _FocusScreenState extends State<FocusScreen> with WidgetsBindingObserver {
                   child: Stack(
                     alignment: Alignment.center,
                     children: [
-                      const CustomPaint(
-                        size: Size(190, 190),
+                      CustomPaint(
+                        size: const Size(190, 190),
                         painter: OrganicCirclePainter(
-                          color: AppTheme.ink,
+                          color: AppTheme.inkColor(context),
                           strokeWidth: 1.6,
                         ),
                       ),
-                      const Positioned(
+                      Positioned(
                         top: 14,
                         right: 16,
-                        child: SparkleDoodle(size: 16, color: AppTheme.ink),
+                        child: SparkleDoodle(size: 16, color: AppTheme.inkColor(context)),
                       ),
-                      const Positioned(
+                      Positioned(
                         bottom: 18,
                         left: 14,
-                        child: SparkleDoodle(size: 12, color: AppTheme.ink),
+                        child: SparkleDoodle(size: 12, color: AppTheme.inkColor(context)),
                       ),
                       Column(
                         mainAxisSize: MainAxisSize.min,
@@ -383,6 +395,7 @@ class _FocusScreenState extends State<FocusScreen> with WidgetsBindingObserver {
                           Text(
                             provider.timerString,
                             style: AppTheme.serifTimer(
+                              context: context,
                               fontSize: 42,
                               fontWeight: FontWeight.w800,
                             ),
@@ -395,8 +408,9 @@ class _FocusScreenState extends State<FocusScreen> with WidgetsBindingObserver {
                                     ? 'focusing together'
                                     : 'remaining focus'),
                             style: AppTheme.sansBody(
+                              context: context,
                               fontSize: 11,
-                              color: AppTheme.inkMuted,
+                              color: AppTheme.muted(context),
                               fontWeight: FontWeight.w500,
                             ),
                           ),
@@ -416,33 +430,39 @@ class _FocusScreenState extends State<FocusScreen> with WidgetsBindingObserver {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  _buildHeader(provider, isBattle, activeBattle),
+                  _buildHeader(context, provider, isBattle, activeBattle),
                   const SizedBox(height: 12),
                   Text(
                     provider.isExtending
                         ? "Pushing boundaries. Keep momentum rolling."
                         : _getCalmSubtext(provider.progress, isBattle),
                     style: AppTheme.serifHeading(
+                      context: context,
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
-                      color: AppTheme.inkMuted,
+                      color: AppTheme.muted(context),
                     ),
                   ),
                   const SizedBox(height: 12),
-                  InkProgressBar(progress: provider.completionRatio, height: 6),
+                  InkProgressBar(
+                    progress: provider.completionRatio,
+                    height: 6,
+                    fillColor: AppTheme.inkColor(context),
+                    borderColor: AppTheme.inkColor(context),
+                  ),
                   const SizedBox(height: 16),
                   TactileButton(
                     label: provider.isExtending
                         ? 'End extension early'
                         : 'End session early',
-                    leading: const Icon(
+                    leading: Icon(
                       Icons.stop_circle_outlined,
                       size: 18,
-                      color: AppTheme.ink,
+                      color: AppTheme.text(context),
                     ),
-                    fillColor: AppTheme.sand,
-                    textColor: AppTheme.ink,
-                    borderColor: AppTheme.ink,
+                    fillColor: AppTheme.sandColor(context),
+                    textColor: AppTheme.text(context),
+                    borderColor: AppTheme.inkColor(context),
                     height: 44,
                     borderRadius: 14,
                     fontSize: 13,
@@ -483,10 +503,10 @@ class _FocusScreenState extends State<FocusScreen> with WidgetsBindingObserver {
         child: Container(
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
-            color: AppTheme.background,
+            color: AppTheme.bg(context),
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: AppTheme.ink, width: 1.5),
-            boxShadow: AppTheme.tactileShadow,
+            border: Border.all(color: AppTheme.inkColor(context), width: 1.5),
+            boxShadow: AppTheme.shadow(context),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -495,6 +515,7 @@ class _FocusScreenState extends State<FocusScreen> with WidgetsBindingObserver {
               Text(
                 isExtending ? 'End extension?' : 'End focus session?',
                 style: AppTheme.serifHeading(
+                  context: context,
                   fontSize: 20,
                   fontWeight: FontWeight.w700,
                 ),
@@ -505,8 +526,9 @@ class _FocusScreenState extends State<FocusScreen> with WidgetsBindingObserver {
                     ? 'Leaving now will end the extension early. Your completed ${baseMinutes}m session is already safely saved!'
                     : 'Leaving now will mark this session as incomplete and reset your current streak.',
                 style: AppTheme.sansBody(
+                  context: context,
                   fontSize: 14,
-                  color: AppTheme.inkMuted,
+                  color: AppTheme.muted(context),
                   height: 1.4,
                 ),
               ),
@@ -516,7 +538,8 @@ class _FocusScreenState extends State<FocusScreen> with WidgetsBindingObserver {
                   Expanded(
                     child: TactileButton(
                       label: isExtending ? 'Keep extending' : 'Stay locked in',
-                      fillColor: AppTheme.sage,
+                      fillColor: AppTheme.sageColor(context),
+                      textColor: AppTheme.ink,
                       height: 46,
                       borderRadius: 14,
                       fontSize: 13,
@@ -527,8 +550,8 @@ class _FocusScreenState extends State<FocusScreen> with WidgetsBindingObserver {
                   Expanded(
                     child: TactileButton(
                       label: isExtending ? 'End extension' : 'End session',
-                      fillColor: const Color(0xFFFBEBE8),
-                      textColor: AppTheme.errorMuted,
+                      fillColor: AppTheme.isDark(context) ? const Color(0xFF381E1C) : const Color(0xFFFBEBE8),
+                      textColor: AppTheme.error(context),
                       height: 46,
                       borderRadius: 14,
                       fontSize: 13,

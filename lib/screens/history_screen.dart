@@ -32,7 +32,7 @@ class HistoryScreen extends StatelessWidget {
     }
 
     return Scaffold(
-      backgroundColor: AppTheme.background,
+      backgroundColor: AppTheme.bg(context),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
@@ -46,11 +46,11 @@ class HistoryScreen extends StatelessWidget {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('FOCUS LOG', style: AppTheme.sansLabel()),
+                      Text('FOCUS LOG', style: AppTheme.sansLabel(context: context)),
                       const SizedBox(height: 4),
                       Text(
                         'Quiet momentum.',
-                        style: AppTheme.serifHeading(fontSize: 26),
+                        style: AppTheme.serifHeading(context: context, fontSize: 26),
                       ),
                     ],
                   ),
@@ -61,8 +61,9 @@ class HistoryScreen extends StatelessWidget {
               Text(
                 'Every completed block of intentional time recorded without distraction.',
                 style: AppTheme.sansBody(
+                  context: context,
                   fontSize: 14,
-                  color: AppTheme.inkMuted,
+                  color: AppTheme.muted(context),
                   height: 1.4,
                 ),
               ),
@@ -75,9 +76,9 @@ class HistoryScreen extends StatelessWidget {
                   horizontal: 20,
                 ),
                 decoration: BoxDecoration(
-                  color: AppTheme.sand,
+                  color: AppTheme.sandColor(context),
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AppTheme.ink, width: 1.2),
+                  border: Border.all(color: AppTheme.inkColor(context), width: 1.2),
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -86,9 +87,9 @@ class HistoryScreen extends StatelessWidget {
                       value: '${totalHours}h',
                       label: 'Total Focused',
                     ),
-                    Container(width: 1, height: 36, color: AppTheme.inkFaint),
+                    Container(width: 1, height: 36, color: AppTheme.faint(context)),
                     _StatColumn(value: '$wonSessions', label: 'Completed'),
-                    Container(width: 1, height: 36, color: AppTheme.inkFaint),
+                    Container(width: 1, height: 36, color: AppTheme.faint(context)),
                     _StatColumn(
                       value: '${provider.currentStreak}',
                       label: 'Streak',
@@ -97,7 +98,7 @@ class HistoryScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 24),
-              Divider(color: AppTheme.inkFaint, thickness: 1),
+              Divider(color: AppTheme.faint(context), thickness: 1),
               const SizedBox(height: 10),
 
               if (history.isEmpty)
@@ -110,12 +111,12 @@ class HistoryScreen extends StatelessWidget {
                         const SizedBox(height: 16),
                         Text(
                           'Your log is clean.',
-                          style: AppTheme.serifHeading(fontSize: 18),
+                          style: AppTheme.serifHeading(context: context, fontSize: 18),
                         ),
                         const SizedBox(height: 6),
                         Text(
                           'Complete your first focus session to start your momentum.',
-                          style: AppTheme.sansBody(color: AppTheme.inkMuted),
+                          style: AppTheme.sansBody(context: context, color: AppTheme.muted(context)),
                           textAlign: TextAlign.center,
                         ),
                       ],
@@ -148,6 +149,7 @@ class _StatColumn extends StatelessWidget {
         Text(
           value,
           style: AppTheme.serifHeading(
+            context: context,
             fontSize: 22,
             fontWeight: FontWeight.w700,
           ),
@@ -155,7 +157,7 @@ class _StatColumn extends StatelessWidget {
         const SizedBox(height: 2),
         Text(
           label,
-          style: AppTheme.sansLabel(fontSize: 10, color: AppTheme.inkMuted),
+          style: AppTheme.sansLabel(context: context, fontSize: 10, color: AppTheme.muted(context)),
         ),
       ],
     );
@@ -197,30 +199,32 @@ class _DateSeparator extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(
-              color: AppTheme.sand,
+              color: AppTheme.sandColor(context),
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: AppTheme.ink, width: 1.0),
+              border: Border.all(color: AppTheme.inkColor(context), width: 1.0),
             ),
             child: Text(
               _formatDateHeader(date),
               style: AppTheme.sansLabel(
+                context: context,
                 fontSize: 10,
-                color: AppTheme.ink,
+                color: AppTheme.text(context),
                 fontWeight: FontWeight.w700,
                 letterSpacing: 0.8,
               ),
             ),
           ),
           const SizedBox(width: 10),
-          Expanded(child: Container(height: 1, color: AppTheme.inkFaint)),
+          Expanded(child: Container(height: 1, color: AppTheme.faint(context))),
           const SizedBox(width: 10),
           Text(
             totalMins > 0
                 ? '$totalMins min'
                 : '${sessions.length} session${sessions.length == 1 ? "" : "s"}',
             style: AppTheme.sansLabel(
+              context: context,
               fontSize: 10,
-              color: AppTheme.inkMuted,
+              color: AppTheme.muted(context),
               letterSpacing: 0.4,
             ),
           ),
@@ -244,10 +248,10 @@ class _LogItem extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
       decoration: BoxDecoration(
-        color: AppTheme.background,
+        color: AppTheme.bg(context),
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
-          color: session.isWin ? AppTheme.ink : AppTheme.inkFaint,
+          color: session.isWin ? AppTheme.inkColor(context) : AppTheme.faint(context),
           width: 1.2,
         ),
       ),
@@ -259,8 +263,8 @@ class _LogItem extends StatelessWidget {
             height: 10,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: session.isWin ? AppTheme.sage : AppTheme.errorMuted,
-              border: Border.all(color: AppTheme.ink, width: 1),
+              color: session.isWin ? AppTheme.sageColor(context) : AppTheme.error(context),
+              border: Border.all(color: AppTheme.inkColor(context), width: 1),
             ),
           ),
           const SizedBox(width: 14),
@@ -273,6 +277,7 @@ class _LogItem extends StatelessWidget {
                     Text(
                       '${session.durationMinutes}m focus',
                       style: AppTheme.sansBody(
+                        context: context,
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
                       ),
@@ -284,9 +289,9 @@ class _LogItem extends StatelessWidget {
                         vertical: 2,
                       ),
                       decoration: BoxDecoration(
-                        color: isBattle ? AppTheme.peach : AppTheme.sand,
+                        color: isBattle ? AppTheme.peachColor(context) : AppTheme.sandColor(context),
                         borderRadius: BorderRadius.circular(6),
-                        border: Border.all(color: AppTheme.ink, width: 0.8),
+                        border: Border.all(color: AppTheme.inkColor(context), width: 0.8),
                       ),
                       child: Text(
                         isBattle
@@ -295,8 +300,9 @@ class _LogItem extends StatelessWidget {
                                   : 'BATTLE')
                             : 'SOLO',
                         style: AppTheme.sansLabel(
+                          context: context,
                           fontSize: 9,
-                          color: AppTheme.ink,
+                          color: AppTheme.text(context),
                         ),
                       ),
                     ),
@@ -311,8 +317,9 @@ class _LogItem extends StatelessWidget {
                       ? '$timeStr · Target was ${session.targetDurationMinutes}m'
                       : timeStr,
                   style: AppTheme.sansBody(
+                    context: context,
                     fontSize: 12,
-                    color: AppTheme.inkMuted,
+                    color: AppTheme.muted(context),
                   ),
                 ),
               ],
@@ -321,9 +328,10 @@ class _LogItem extends StatelessWidget {
           Text(
             session.isWin ? 'Completed' : 'Interrupted',
             style: AppTheme.sansBody(
+              context: context,
               fontSize: 13,
               fontWeight: FontWeight.w600,
-              color: session.isWin ? AppTheme.ink : AppTheme.errorMuted,
+              color: session.isWin ? AppTheme.text(context) : AppTheme.error(context),
             ),
           ),
         ],

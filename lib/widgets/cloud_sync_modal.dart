@@ -26,10 +26,10 @@ class CloudSyncModal extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
       decoration: BoxDecoration(
-        color: AppTheme.background,
+        color: AppTheme.bg(context),
         borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-        border: Border.all(color: AppTheme.ink, width: 1.5),
-        boxShadow: AppTheme.tactileShadow,
+        border: Border.all(color: AppTheme.inkColor(context), width: 1.5),
+        boxShadow: AppTheme.shadow(context),
       ),
       child: SafeArea(
         child: SingleChildScrollView(
@@ -43,7 +43,7 @@ class CloudSyncModal extends StatelessWidget {
                   width: 36,
                   height: 4,
                   decoration: BoxDecoration(
-                    color: AppTheme.inkLight,
+                    color: AppTheme.lightColor(context),
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -60,14 +60,14 @@ class CloudSyncModal extends StatelessWidget {
                         width: 38,
                         height: 38,
                         decoration: BoxDecoration(
-                          color: AppTheme.sand,
+                          color: AppTheme.sandColor(context),
                           shape: BoxShape.circle,
-                          border: Border.all(color: AppTheme.ink, width: 1.2),
+                          border: Border.all(color: AppTheme.inkColor(context), width: 1.2),
                         ),
-                        child: const Icon(
+                        child: Icon(
                           Icons.cloud_outlined,
                           size: 20,
-                          color: AppTheme.ink,
+                          color: AppTheme.text(context),
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -77,6 +77,7 @@ class CloudSyncModal extends StatelessWidget {
                           Text(
                             'Cloud Backup',
                             style: AppTheme.serifHeading(
+                              context: context,
                               fontSize: 20,
                               fontWeight: FontWeight.w700,
                             ),
@@ -84,8 +85,9 @@ class CloudSyncModal extends StatelessWidget {
                           Text(
                             auth.isAuthenticated ? 'Account Connected' : 'Local-First Sync',
                             style: AppTheme.sansLabel(
+                              context: context,
                               fontSize: 10,
-                              color: AppTheme.inkMuted,
+                              color: AppTheme.muted(context),
                             ),
                           ),
                         ],
@@ -94,36 +96,39 @@ class CloudSyncModal extends StatelessWidget {
                   ),
                   GestureDetector(
                     onTap: () => Navigator.pop(context),
-                    child: const Icon(
+                    child: Icon(
                       Icons.close,
                       size: 22,
-                      color: AppTheme.inkMuted,
+                      color: AppTheme.muted(context),
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: 16),
-              Divider(color: AppTheme.inkFaint, thickness: 1),
+              Divider(color: AppTheme.faint(context), thickness: 1),
               const SizedBox(height: 16),
 
               if (auth.errorMessage != null && auth.errorMessage!.isNotEmpty) ...[
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFFBEBE8),
+                    color: AppTheme.isDark(context)
+                        ? const Color(0xFF381E1C)
+                        : const Color(0xFFFBEBE8),
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AppTheme.errorMuted, width: 1.0),
+                    border: Border.all(color: AppTheme.error(context), width: 1.0),
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.info_outline, size: 16, color: AppTheme.errorMuted),
+                      Icon(Icons.info_outline, size: 16, color: AppTheme.error(context)),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
                           auth.errorMessage!,
                           style: AppTheme.sansBody(
+                            context: context,
                             fontSize: 12,
-                            color: AppTheme.errorMuted,
+                            color: AppTheme.error(context),
                           ),
                         ),
                       ),
@@ -138,8 +143,9 @@ class CloudSyncModal extends StatelessWidget {
                 Text(
                   'Backup your focus history, streaks, and preferences safely to the cloud.',
                   style: AppTheme.sansBody(
+                    context: context,
                     fontSize: 14,
-                    color: AppTheme.ink,
+                    color: AppTheme.text(context),
                     height: 1.4,
                   ),
                 ),
@@ -168,7 +174,7 @@ class CloudSyncModal extends StatelessWidget {
                 // Sign in with Google button
                 TactileButton(
                   label: auth.isSyncing ? 'Connecting...' : 'Continue with Google',
-                  fillColor: AppTheme.peach,
+                  fillColor: AppTheme.peachColor(context),
                   height: 52,
                   borderRadius: 16,
                   fontSize: 15,
@@ -193,9 +199,9 @@ class CloudSyncModal extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: AppTheme.sand,
+                    color: AppTheme.sandColor(context),
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: AppTheme.ink, width: 1.2),
+                    border: Border.all(color: AppTheme.inkColor(context), width: 1.2),
                   ),
                   child: Row(
                     children: [
@@ -204,9 +210,9 @@ class CloudSyncModal extends StatelessWidget {
                         width: 44,
                         height: 44,
                         decoration: BoxDecoration(
-                          color: AppTheme.peach,
+                          color: AppTheme.peachColor(context),
                           shape: BoxShape.circle,
-                          border: Border.all(color: AppTheme.ink, width: 1.5),
+                          border: Border.all(color: AppTheme.inkColor(context), width: 1.5),
                         ),
                         child: Center(
                           child: Text(
@@ -214,6 +220,7 @@ class CloudSyncModal extends StatelessWidget {
                                 ? auth.userDisplayName[0].toUpperCase()
                                 : 'U',
                             style: AppTheme.serifHeading(
+                              context: context,
                               fontSize: 18,
                               fontWeight: FontWeight.w700,
                             ),
@@ -228,6 +235,7 @@ class CloudSyncModal extends StatelessWidget {
                             Text(
                               auth.userDisplayName,
                               style: AppTheme.sansBody(
+                                context: context,
                                 fontSize: 14,
                                 fontWeight: FontWeight.w700,
                               ),
@@ -236,8 +244,9 @@ class CloudSyncModal extends StatelessWidget {
                             Text(
                               auth.userEmail,
                               style: AppTheme.sansBody(
+                                context: context,
                                 fontSize: 12,
-                                color: AppTheme.inkMuted,
+                                color: AppTheme.muted(context),
                               ),
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -247,16 +256,17 @@ class CloudSyncModal extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
-                          color: AppTheme.sage,
+                          color: AppTheme.sageColor(context),
                           borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: AppTheme.ink, width: 1.0),
+                          border: Border.all(color: AppTheme.inkColor(context), width: 1.0),
                         ),
                         child: Text(
                           'CONNECTED',
                           style: AppTheme.sansLabel(
+                            context: context,
                             fontSize: 9,
                             fontWeight: FontWeight.w700,
-                            color: AppTheme.ink,
+                            color: AppTheme.text(context),
                           ),
                         ),
                       ),
@@ -272,8 +282,9 @@ class CloudSyncModal extends StatelessWidget {
                     Text(
                       'Last Synced:',
                       style: AppTheme.sansBody(
+                        context: context,
                         fontSize: 12,
-                        color: AppTheme.inkMuted,
+                        color: AppTheme.muted(context),
                       ),
                     ),
                     Text(
@@ -281,9 +292,10 @@ class CloudSyncModal extends StatelessWidget {
                           ? DateFormat('MMM d, h:mm a').format(auth.lastSyncedAt!)
                           : 'Up to date',
                       style: AppTheme.sansBody(
+                        context: context,
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
-                        color: AppTheme.ink,
+                        color: AppTheme.text(context),
                       ),
                     ),
                   ],
@@ -296,7 +308,7 @@ class CloudSyncModal extends StatelessWidget {
                     Expanded(
                       child: TactileButton(
                         label: auth.isSyncing ? 'Syncing...' : 'Sync Now',
-                        fillColor: AppTheme.peach,
+                        fillColor: AppTheme.peachColor(context),
                         height: 48,
                         borderRadius: 14,
                         fontSize: 14,
@@ -319,7 +331,7 @@ class CloudSyncModal extends StatelessWidget {
                     Expanded(
                       child: TactileButton(
                         label: 'Sign Out',
-                        fillColor: AppTheme.sand,
+                        fillColor: AppTheme.sandColor(context),
                         height: 48,
                         borderRadius: 14,
                         fontSize: 14,
@@ -343,8 +355,9 @@ class CloudSyncModal extends StatelessWidget {
                   child: Text(
                     'Signing out keeps all local history and statistics on this device.',
                     style: AppTheme.sansLabel(
+                      context: context,
                       fontSize: 10,
-                      color: AppTheme.inkLight,
+                      color: AppTheme.lightColor(context),
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -375,13 +388,13 @@ class _SyncFeatureTile extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
-        color: AppTheme.sand,
+        color: AppTheme.sandColor(context),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppTheme.ink, width: 1.0),
+        border: Border.all(color: AppTheme.inkColor(context), width: 1.0),
       ),
       child: Row(
         children: [
-          Icon(icon, size: 20, color: AppTheme.ink),
+          Icon(icon, size: 20, color: AppTheme.text(context)),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -390,6 +403,7 @@ class _SyncFeatureTile extends StatelessWidget {
                 Text(
                   title,
                   style: AppTheme.sansBody(
+                    context: context,
                     fontSize: 13,
                     fontWeight: FontWeight.w700,
                   ),
@@ -397,8 +411,9 @@ class _SyncFeatureTile extends StatelessWidget {
                 Text(
                   subtitle,
                   style: AppTheme.sansBody(
+                    context: context,
                     fontSize: 11,
-                    color: AppTheme.inkMuted,
+                    color: AppTheme.muted(context),
                   ),
                 ),
               ],

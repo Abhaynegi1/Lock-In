@@ -64,12 +64,13 @@ class _AvatarPickerModalState extends State<AvatarPickerModal> {
                 content: Text(
                   'Profile picture updated!',
                   style: AppTheme.sansBody(
+                    context: context,
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
-                    color: AppTheme.sand,
+                    color: AppTheme.bg(context),
                   ),
                 ),
-                backgroundColor: AppTheme.ink,
+                backgroundColor: AppTheme.inkColor(context),
                 behavior: SnackBarBehavior.floating,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -84,9 +85,13 @@ class _AvatarPickerModalState extends State<AvatarPickerModal> {
               SnackBar(
                 content: Text(
                   'Only photo files (PNG, JPG, WEBP) are allowed, not documents.',
-                  style: AppTheme.sansBody(fontSize: 13, color: AppTheme.sand),
+                  style: AppTheme.sansBody(
+                    context: context,
+                    fontSize: 13,
+                    color: Colors.white,
+                  ),
                 ),
-                backgroundColor: AppTheme.errorMuted,
+                backgroundColor: AppTheme.error(context),
                 behavior: SnackBarBehavior.floating,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -102,9 +107,13 @@ class _AvatarPickerModalState extends State<AvatarPickerModal> {
           SnackBar(
             content: Text(
               'Could not pick image: $e',
-              style: AppTheme.sansBody(fontSize: 13, color: AppTheme.sand),
+              style: AppTheme.sansBody(
+                context: context,
+                fontSize: 13,
+                color: Colors.white,
+              ),
             ),
-            backgroundColor: AppTheme.errorMuted,
+            backgroundColor: AppTheme.error(context),
             behavior: SnackBarBehavior.floating,
           ),
         );
@@ -125,12 +134,13 @@ class _AvatarPickerModalState extends State<AvatarPickerModal> {
           content: Text(
             'Default avatar selected!',
             style: AppTheme.sansBody(
+              context: context,
               fontSize: 13,
               fontWeight: FontWeight.w600,
-              color: AppTheme.sand,
+              color: AppTheme.bg(context),
             ),
           ),
-          backgroundColor: AppTheme.ink,
+          backgroundColor: AppTheme.inkColor(context),
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
@@ -151,13 +161,13 @@ class _AvatarPickerModalState extends State<AvatarPickerModal> {
       constraints: BoxConstraints(
         maxHeight: MediaQuery.of(context).size.height * 0.88,
       ),
-      decoration: const BoxDecoration(
-        color: AppTheme.background,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      decoration: BoxDecoration(
+        color: AppTheme.bg(context),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
         border: Border(
-          top: BorderSide(color: AppTheme.ink, width: 2),
-          left: BorderSide(color: AppTheme.ink, width: 2),
-          right: BorderSide(color: AppTheme.ink, width: 2),
+          top: BorderSide(color: AppTheme.inkColor(context), width: 2),
+          left: BorderSide(color: AppTheme.inkColor(context), width: 2),
+          right: BorderSide(color: AppTheme.inkColor(context), width: 2),
         ),
       ),
       child: SafeArea(
@@ -174,7 +184,7 @@ class _AvatarPickerModalState extends State<AvatarPickerModal> {
                   width: 40,
                   height: 4,
                   decoration: BoxDecoration(
-                    color: AppTheme.inkMuted.withValues(alpha: 0.4),
+                    color: AppTheme.muted(context).withValues(alpha: 0.4),
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -191,6 +201,7 @@ class _AvatarPickerModalState extends State<AvatarPickerModal> {
                       Text(
                         'Profile Picture',
                         style: AppTheme.serifHeading(
+                          context: context,
                           fontSize: 22,
                           fontWeight: FontWeight.w700,
                         ),
@@ -199,8 +210,9 @@ class _AvatarPickerModalState extends State<AvatarPickerModal> {
                       Text(
                         'Choose an avatar or upload from gallery',
                         style: AppTheme.sansBody(
+                          context: context,
                           fontSize: 13,
-                          color: AppTheme.inkMuted,
+                          color: AppTheme.muted(context),
                         ),
                       ),
                     ],
@@ -210,14 +222,14 @@ class _AvatarPickerModalState extends State<AvatarPickerModal> {
                     child: Container(
                       padding: const EdgeInsets.all(6),
                       decoration: BoxDecoration(
-                        color: AppTheme.sand,
+                        color: AppTheme.sandColor(context),
                         shape: BoxShape.circle,
-                        border: Border.all(color: AppTheme.ink, width: 1.2),
+                        border: Border.all(color: AppTheme.inkColor(context), width: 1.2),
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.close,
                         size: 18,
-                        color: AppTheme.ink,
+                        color: AppTheme.text(context),
                       ),
                     ),
                   ),
@@ -234,10 +246,10 @@ class _AvatarPickerModalState extends State<AvatarPickerModal> {
                   horizontal: 20,
                 ),
                 decoration: BoxDecoration(
-                  color: AppTheme.sand,
+                  color: AppTheme.sandColor(context),
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AppTheme.ink, width: 1.5),
-                  boxShadow: AppTheme.smallTactileShadow,
+                  border: Border.all(color: AppTheme.inkColor(context), width: 1.5),
+                  boxShadow: AppTheme.smallShadow(context),
                 ),
                 child: Row(
                   children: [
@@ -255,9 +267,10 @@ class _AvatarPickerModalState extends State<AvatarPickerModal> {
                           Text(
                             'Active Profile Picture',
                             style: AppTheme.sansBody(
+                              context: context,
                               fontSize: 11,
                               fontWeight: FontWeight.w700,
-                              color: AppTheme.inkMuted,
+                              color: AppTheme.muted(context),
                             ),
                           ),
                           const SizedBox(height: 2),
@@ -270,6 +283,7 @@ class _AvatarPickerModalState extends State<AvatarPickerModal> {
                                           ?.label ??
                                       'Default Preset'),
                             style: AppTheme.serifHeading(
+                              context: context,
                               fontSize: 17,
                               fontWeight: FontWeight.w700,
                             ),
@@ -287,6 +301,7 @@ class _AvatarPickerModalState extends State<AvatarPickerModal> {
               Text(
                 'DEFAULT AVATARS',
                 style: AppTheme.sansLabel(
+                  context: context,
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
                 ),
@@ -314,18 +329,18 @@ class _AvatarPickerModalState extends State<AvatarPickerModal> {
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
                         color: isSelected
-                            ? AppTheme.peach.withValues(alpha: 0.4)
-                            : AppTheme.sand,
+                            ? AppTheme.peachColor(context).withValues(alpha: 0.4)
+                            : AppTheme.sandColor(context),
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
                           color: isSelected
-                              ? AppTheme.ink
-                              : AppTheme.ink.withValues(alpha: 0.4),
+                              ? AppTheme.inkColor(context)
+                              : AppTheme.inkColor(context).withValues(alpha: 0.4),
                           width: isSelected ? 2.2 : 1.2,
                         ),
                         boxShadow: isSelected
-                            ? AppTheme.tactileShadow
-                            : AppTheme.smallTactileShadow,
+                            ? AppTheme.shadow(context)
+                            : AppTheme.smallShadow(context),
                       ),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -345,17 +360,17 @@ class _AvatarPickerModalState extends State<AvatarPickerModal> {
                                   child: Container(
                                     padding: const EdgeInsets.all(2),
                                     decoration: BoxDecoration(
-                                      color: AppTheme.sage,
+                                      color: AppTheme.sageColor(context),
                                       shape: BoxShape.circle,
                                       border: Border.all(
-                                        color: AppTheme.ink,
+                                        color: AppTheme.inkColor(context),
                                         width: 1.5,
                                       ),
                                     ),
-                                    child: const Icon(
+                                    child: Icon(
                                       Icons.check,
                                       size: 12,
-                                      color: AppTheme.ink,
+                                      color: AppTheme.text(context),
                                     ),
                                   ),
                                 ),
@@ -365,11 +380,12 @@ class _AvatarPickerModalState extends State<AvatarPickerModal> {
                           Text(
                             preset.label,
                             style: AppTheme.sansBody(
+                              context: context,
                               fontSize: 12,
                               fontWeight: isSelected
                                   ? FontWeight.w700
                                   : FontWeight.w600,
-                              color: AppTheme.ink,
+                              color: AppTheme.text(context),
                             ),
                           ),
                         ],
@@ -385,6 +401,7 @@ class _AvatarPickerModalState extends State<AvatarPickerModal> {
               Text(
                 'CUSTOM PHOTO',
                 style: AppTheme.sansLabel(
+                  context: context,
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
                 ),
@@ -401,16 +418,16 @@ class _AvatarPickerModalState extends State<AvatarPickerModal> {
                   ),
                   decoration: BoxDecoration(
                     color: isCustomPhoto
-                        ? AppTheme.peach.withValues(alpha: 0.4)
-                        : AppTheme.sand,
+                        ? AppTheme.peachColor(context).withValues(alpha: 0.4)
+                        : AppTheme.sandColor(context),
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
                       color: isCustomPhoto
-                          ? AppTheme.ink
-                          : AppTheme.ink.withValues(alpha: 0.5),
+                          ? AppTheme.inkColor(context)
+                          : AppTheme.inkColor(context).withValues(alpha: 0.5),
                       width: isCustomPhoto ? 2.0 : 1.2,
                     ),
-                    boxShadow: AppTheme.smallTactileShadow,
+                    boxShadow: AppTheme.smallShadow(context),
                   ),
                   child: Row(
                     children: [
@@ -418,25 +435,25 @@ class _AvatarPickerModalState extends State<AvatarPickerModal> {
                         width: 46,
                         height: 46,
                         decoration: BoxDecoration(
-                          color: AppTheme.background,
+                          color: AppTheme.bg(context),
                           shape: BoxShape.circle,
-                          border: Border.all(color: AppTheme.ink, width: 1.5),
+                          border: Border.all(color: AppTheme.inkColor(context), width: 1.5),
                         ),
                         child: _isPicking
-                            ? const Center(
+                            ? Center(
                                 child: SizedBox(
                                   width: 20,
                                   height: 20,
                                   child: CircularProgressIndicator(
                                     strokeWidth: 2,
-                                    color: AppTheme.ink,
+                                    color: AppTheme.inkColor(context),
                                   ),
                                 ),
                               )
-                            : const Icon(
+                            : Icon(
                                 Icons.add_photo_alternate_outlined,
                                 size: 24,
-                                color: AppTheme.ink,
+                                color: AppTheme.text(context),
                               ),
                       ),
                       const SizedBox(width: 14),
@@ -447,23 +464,25 @@ class _AvatarPickerModalState extends State<AvatarPickerModal> {
                             Text(
                               'Choose from Gallery',
                               style: AppTheme.sansBody(
+                                context: context,
                                 fontSize: 14,
                                 fontWeight: FontWeight.w700,
-                                color: AppTheme.ink,
+                                color: AppTheme.text(context),
                               ),
                             ),
                             const SizedBox(height: 2),
                             Text(
                               'Select any photo (PNG, JPG, WEBP)',
                               style: AppTheme.sansBody(
+                                context: context,
                                 fontSize: 12,
-                                color: AppTheme.inkMuted,
+                                color: AppTheme.muted(context),
                               ),
                             ),
                           ],
                         ),
                       ),
-                      Icon(Icons.chevron_right, color: AppTheme.ink),
+                      Icon(Icons.chevron_right, color: AppTheme.text(context)),
                     ],
                   ),
                 ),
