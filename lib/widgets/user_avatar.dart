@@ -19,6 +19,11 @@ class DefaultAvatarItem {
 class AppAvatars {
   static const List<DefaultAvatarItem> presets = [
     DefaultAvatarItem(
+      path: '',
+      label: 'Classic Profile',
+      description: 'Standard profile icon',
+    ),
+    DefaultAvatarItem(
       path: 'assets/default_pfp/avatar-spark.svg',
       label: 'Peach Spark',
       description: 'Energetic focus',
@@ -67,8 +72,8 @@ class UserAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final effectivePath = (avatarPath == null || avatarPath!.trim().isEmpty)
-        ? StorageService.defaultAvatar
+    final effectivePath = (avatarPath == null || avatarPath!.trim().isEmpty || avatarPath == 'default')
+        ? ''
         : avatarPath!.trim();
     final effectiveBorderColor = borderColor ?? AppTheme.inkColor(context);
 
@@ -88,6 +93,10 @@ class UserAvatar extends StatelessWidget {
   }
 
   Widget _buildAvatarContent(BuildContext context, String path) {
+    if (path.isEmpty) {
+      return _fallbackIcon(context);
+    }
+
     if (path.startsWith('assets/') || path.endsWith('.svg')) {
       return SvgPicture.asset(
         path,
@@ -106,29 +115,23 @@ class UserAvatar extends StatelessWidget {
           width: size,
           height: size,
           fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) => _fallbackSvg(context),
+          errorBuilder: (context, error, stackTrace) => _fallbackIcon(context),
         );
       }
     } catch (_) {
       // Fallback
     }
 
-    return _fallbackSvg(context);
-  }
-
-  Widget _fallbackSvg(BuildContext context) {
-    return SvgPicture.asset(
-      StorageService.defaultAvatar,
-      width: size,
-      height: size,
-      fit: BoxFit.cover,
-      placeholderBuilder: (_) => _fallbackIcon(context),
-    );
+    return _fallbackIcon(context);
   }
 
   Widget _fallbackIcon(BuildContext context) {
     return Center(
-      child: Icon(Icons.person_rounded, size: size * 0.55, color: AppTheme.inkColor(context)),
+      child: Icon(
+        Icons.person_rounded,
+        size: size * 0.58,
+        color: AppTheme.text(context),
+      ),
     );
   }
 }

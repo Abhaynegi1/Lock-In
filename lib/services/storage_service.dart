@@ -11,7 +11,7 @@ class StorageService {
   static const String _dailyGoalKey = 'focus_daily_goal';
   static const String _userNameKey = 'focus_username';
   static const String _userAvatarKey = 'focus_user_avatar';
-  static const String defaultAvatar = 'assets/default_pfp/avatar-spark.svg';
+  static const String defaultAvatar = '';
   static const String _strictAntiDistractionKey =
       'focus_strict_anti_distraction';
   static const String _finishCueModeKey = 'focus_finish_cue_mode';
